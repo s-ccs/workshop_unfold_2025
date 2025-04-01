@@ -1,19 +1,18 @@
 project:
   type: website
+  title: "Unfold.jl Workshop 2025"
 
 website:
-  title: "Unfold.jl workshop 2025"
+  title: "Unfold.jl Workshop 2025"
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Overview
       - about.qmd
+    background: primary
 
 format:
   html:
-    theme: cosmo
+    theme: minty
     css: styles.css
     toc: true
-
-
-
