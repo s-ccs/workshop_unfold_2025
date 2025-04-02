@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://s-ccs.github.io/workshop_unfold_2025/about.html</loc>
-    <lastmod>2025-04-01T17:21:01.121Z</lastmod>
+    <loc>https://s-ccs.github.io/workshop_unfold_2025/registration.html</loc>
+    <lastmod>2025-04-02T14:00:11.488Z</lastmod>
   </url>
   <url>
     <loc>https://s-ccs.github.io/workshop_unfold_2025/index.html</loc>
-    <lastmod>2025-04-01T17:21:01.121Z</lastmod>
+    <lastmod>2025-04-02T14:00:11.488Z</lastmod>
+  </url>
+  <url>
+    <loc>https://s-ccs.github.io/workshop_unfold_2025/program.html</loc>
+    <lastmod>2025-04-02T14:00:11.488Z</lastmod>
   </url>
 </urlset>

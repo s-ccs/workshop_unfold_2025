@@ -1,16 +1,23 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "registration.html",
+    "href": "registration.html",
+    "title": "Registration",
     "section": "",
     "text": "About this site"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "website",
+    "title": "Welcome!",
     "section": "",
     "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "program.html",
+    "href": "program.html",
+    "title": "Workshop program",
+    "section": "",
+    "text": "About this site"
   }
 ]
