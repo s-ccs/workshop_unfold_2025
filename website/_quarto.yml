@@ -7,8 +7,10 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Overview
-      - about.qmd
+        text: Home
+      - href: program.qmd
+        text: Program
+      - registration.qmd
     background: primary
 
 format:

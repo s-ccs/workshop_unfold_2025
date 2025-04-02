@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: "Registration"
 ---
 
 About this site
