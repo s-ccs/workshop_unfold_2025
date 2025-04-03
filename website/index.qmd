@@ -2,16 +2,21 @@
 title: "Welcome! 🐙"
 ---
 
-Welcome to the first official Unfold workshop! Here you will learn everything to be able to do _your_ first Unfold analysis!
+Welcome to the **first official Unfold.jl workshop**! Here you will learn everything to be able to do _your_ first Unfold analysis!
+The workshop will be **free** and **fully online**, so you can join from anywhere in the world. 
 
 ## What even is Unfold? 🤔
-If you're not already familiar with Unfold or regression ERP's, we recommend you to read the original publication by [Ehinger & Dimigen](https://peerj.com/articles/7838/)
+Unfold.jl is a Julia Package for regression and event-based time series analysis, with a focus on regression ERPs for EEG analysis.
+
+If you're not already familiar with Unfold or regression ERP's, we recommend you to read the original publication by [Ehinger & Dimigen](https://peerj.com/articles/7838/).
 
 ## Material covered 💪
-During the workshop we will cover [tba]. For more information please have a look at an (initial) schedule [here](program.qmd).
+During the workshop we will cover everything from mass-univariate modeling of EEG data until marginalized effects and overlap correction. For more information please have a look at our (preliminary) schedule [here](program.qmd).
 
 ## Important dates & registration 📅
-[Registration](registration.qmd): until 07.05.2025
+[__Registration__](registration.qmd): until 07.05.2025
 
-Workshop date: 09.05.2025
+__Tentative workshop date__: 09.05.2025
 
+## Organizers
+The workshop is jointly organized by [Romy Frömer](https://www.birmingham.ac.uk/staff/profiles/psychology/froemer-romy), [Benedikt Ehinger](https://benediktehinger.de/blog/science/about-me/) and the [Stuttgart - Computational Cognitive Science group](www.s-ccs.de).
