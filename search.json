@@ -9,9 +9,37 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Welcome!",
+    "title": "Welcome! 🐙",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "Welcome to the first official Unfold.jl workshop! Here you will learn everything to be able to do your first Unfold analysis! The workshop will be free and fully online, so you can join from anywhere in the world."
+  },
+  {
+    "objectID": "index.html#what-even-is-unfold",
+    "href": "index.html#what-even-is-unfold",
+    "title": "Welcome! 🐙",
+    "section": "What even is Unfold? 🤔",
+    "text": "What even is Unfold? 🤔\nUnfold.jl is a Julia Package for regression and event-based time series analysis, with a focus on regression ERPs for EEG analysis.\nIf you’re not already familiar with Unfold or regression ERP’s, we recommend you to read the original publication by Ehinger & Dimigen."
+  },
+  {
+    "objectID": "index.html#material-covered",
+    "href": "index.html#material-covered",
+    "title": "Welcome! 🐙",
+    "section": "Material covered 💪",
+    "text": "Material covered 💪\nDuring the workshop we will cover everything from mass-univariate modeling of EEG data until marginalized effects and overlap correction. For more information please have a look at our (preliminary) schedule here."
+  },
+  {
+    "objectID": "index.html#important-dates-registration",
+    "href": "index.html#important-dates-registration",
+    "title": "Welcome! 🐙",
+    "section": "Important dates & registration 📅",
+    "text": "Important dates & registration 📅\nRegistration: until 07.05.2025\nTentative workshop date: 09.05.2025"
+  },
+  {
+    "objectID": "index.html#organizers",
+    "href": "index.html#organizers",
+    "title": "Welcome! 🐙",
+    "section": "Organizers",
+    "text": "Organizers\nThe workshop is jointly organized by Romy Frömer, Benedikt Ehinger and the Stuttgart - Computational Cognitive Science group."
   },
   {
     "objectID": "program.html",
