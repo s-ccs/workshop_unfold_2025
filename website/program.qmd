@@ -24,3 +24,8 @@ All times are in Central European Summer Time (CEST).
 | 16:45 - 17:00 | Wrap-up                                                                            |
 
 : {.hover .striped}
+
+---
+::: {style="font-size: 80%; text-align: right;"}
+Each lesson consists of a lecture (~ 30min) and a subsequent exercise (~30min).
+:::
