@@ -16,7 +16,7 @@ During the workshop we will cover everything from mass-univariate modeling of EE
 ## Important dates & registration 📅
 [__Registration__](registration.qmd): until 07.05.2025
 
-__Tentative workshop date__: 09.05.2025
+__Tentative workshop date__: 09.05.2025; 10:00 - 17:00
 
 ## Organizers
-The workshop is jointly organized by [Romy Frömer](https://www.birmingham.ac.uk/staff/profiles/psychology/froemer-romy), [Benedikt Ehinger](https://benediktehinger.de/blog/science/about-me/) and the [Stuttgart - Computational Cognitive Science group](www.s-ccs.de).
+The workshop is jointly organized by [Romy Frömer](https://www.birmingham.ac.uk/staff/profiles/psychology/froemer-romy), [Benedikt Ehinger](https://benediktehinger.de/blog/science/about-me/) and the [Stuttgart - Computational Cognitive Science group](https://www.s-ccs.de/).
