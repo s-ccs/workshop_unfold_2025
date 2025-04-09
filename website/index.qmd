@@ -20,3 +20,6 @@ __Workshop date__: 09.05.2025; 10:00 - 17:00 CEST
 
 ## Organizers
 The workshop is jointly organized by [Romy Frömer](https://www.birmingham.ac.uk/staff/profiles/psychology/froemer-romy), [Benedikt Ehinger](https://benediktehinger.de/blog/science/about-me/) and the [Stuttgart - Computational Cognitive Science group](https://www.s-ccs.de/).
+
+## Contact ✉️
+Contact us at: [workshop@unfoldtoolbox.org](mailto:workshop@unfoldtoolbox.org)
