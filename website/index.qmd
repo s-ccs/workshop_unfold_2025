@@ -18,8 +18,8 @@ During the workshop we will cover everything from **mass-univariate modeling** o
 
 __Workshop date__: 09.05.2025; 10:00 - 17:00 CEST
 
-## Organizers
-The workshop is jointly organized by [Romy Frömer](https://www.birmingham.ac.uk/staff/profiles/psychology/froemer-romy), [Benedikt Ehinger](https://benediktehinger.de/blog/science/about-me/) and the [Stuttgart - Computational Cognitive Science group](https://www.s-ccs.de/).
+## Organizers 🗣️
+The workshop is hosted by the [CHBH](https://www.birmingham.ac.uk/research/centres-institutes/human-brain-health) at the University of Birmingham and jointly organized by [Romy Frömer](https://www.birmingham.ac.uk/staff/profiles/psychology/froemer-romy), [Benedikt Ehinger](https://benediktehinger.de/blog/science/about-me/) and the [Computational Cognitive Science group](https://www.s-ccs.de/) at the University of Stuttgart.
 
 ## Contact ✉️
 Contact us at: [workshop@unfoldtoolbox.org](mailto:workshop@unfoldtoolbox.org)
