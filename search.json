@@ -4,7 +4,7 @@
     "href": "registration.html",
     "title": "Registration",
     "section": "",
-    "text": ":::   :::"
+    "text": "Note\n\n\n\nSince our capacity for the practical exercises is limited, we will only be able to accept ~50 participants for the workshop. However, the lectures will also be available via livestream, and everyone is invited to follow along independently.\n\n\nTo register for the free Unfold.jl workshop, please fill out the form below until 07.05.2025. We will inform you via email if you got a place and share the Zoom link."
   },
   {
     "objectID": "index.html",
@@ -38,8 +38,15 @@
     "objectID": "index.html#organizers",
     "href": "index.html#organizers",
     "title": "Welcome! 🐙",
-    "section": "Organizers",
-    "text": "Organizers\nThe workshop is jointly organized by Romy Frömer, Benedikt Ehinger and the Stuttgart - Computational Cognitive Science group."
+    "section": "Organizers 🗣️",
+    "text": "Organizers 🗣️\nThe workshop is hosted by the CHBH at the University of Birmingham and jointly organized by Romy Frömer, Benedikt Ehinger and the Computational Cognitive Science group at the University of Stuttgart."
+  },
+  {
+    "objectID": "index.html#contact",
+    "href": "index.html#contact",
+    "title": "Welcome! 🐙",
+    "section": "Contact ✉️",
+    "text": "Contact ✉️\nContact us at: workshop@unfoldtoolbox.org"
   },
   {
     "objectID": "program.html",
