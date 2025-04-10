@@ -16,11 +16,11 @@ website:
     background: primary
   page-footer:
     left: |
-      ![](assets/unistuttgart_logo_englisch.png)
+      ![](assets/unistuttgart_logo_englisch.png){width=80%}
     center: |
-      ![](assets/logo_Unfold.jl.png){width=50%}
+      ![](assets/logo_Unfold.jl.png){width=40%}
     right: |
-      ![](assets/CHBH-main-landscape.png)
+      ![](assets/CHBH-main-landscape.png){width=80%}
 
 format:
   html:
