@@ -1,6 +1,8 @@
 project:
   type: website
   title: "Unfold.jl Workshop 2025"
+  resources: 
+    - "assets"
 
 website:
   title: "Unfold.jl Workshop 2025"
@@ -12,6 +14,13 @@ website:
         text: Program
       - registration.qmd
     background: primary
+  page-footer:
+    left: |
+      ![](assets/unistuttgart_logo_englisch.png)
+    center: |
+      ![](assets/logo_Unfold.jl.png){width=50%}
+    right: |
+      ![](assets/CHBH-main-landscape.png)
 
 format:
   html:
