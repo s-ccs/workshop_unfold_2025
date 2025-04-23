@@ -16,7 +16,10 @@ macro bind(def, element)
     #! format: on
 end
 
-# ╔═╡ d9912a4c-5d3a-11ee-381e-03ad95d59994
+# ╔═╡ af31e83b-f2ff-4947-9eca-bc404b77c4f4
+using BSplineKit
+
+# ╔═╡ 07b5c518-7d11-482e-a555-455ac55d0664
 begin
 	using Unfold # Formulas, fit, coefs, coeftable
 	using UnfoldSim # Simulation
@@ -29,283 +32,138 @@ begin
 	set_theme!(ggthemr(:fresh))
 end
 
-# ╔═╡ d18def09-658d-47af-92e6-d729c9f83667
+# ╔═╡ 0cfd65ae-2016-11f0-17d2-196bfbdf916e
 # load some PlutoUI + simulate_eeg utilities - externalized it to have the same functions in all worksheets
-include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/c28514362442bfc3f5075c225c2b26de17c62860/unfoldworkshop-utilities.jl"));
+include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/1671c91a2edc3e39bf17128b80fa95622e897576/unfoldworkshop-utilities.jl"));
 
 
-# ╔═╡ a49df28b-6587-4051-b777-26a56d339a2e
+# ╔═╡ dbe14b67-d100-4395-83c9-3ca3fed51068
 md"""
-# Simulate EEG & understand Pluto.jl
+# Non-linear effects
 [CC-By Benedikt Ehinger](www.s-ccs.de) - Unfold.jl Workshop
 """
 
-# ╔═╡ 363cb188-97c7-4ece-b416-08256da0b5f9
-md"""
-What follows is some code to get to know `Pluto.jl` a little bit, and implement a some interactive sliders!
-"""
-
-# ╔═╡ 1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
-md"""
-Let's start with simulating some EEG-data:
-"""
-
-# ╔═╡ ab033cea-1eb9-4237-a595-3928cca0a0ca
-aside(tip(md"**`n-repeats`** repeats one instance of a 2x5 design (10 events)\
-**`min_overlap`** controls the minimal distance between adjacent events"),v_offset=-170)
-
-# ╔═╡ 3cbe1c9d-d3e3-4757-ba8d-2867e37b1dbe
-my_tip("Pluto.jl",md"""
-`Pluto.jl` puts the outputs on top of the cell, not below. Your code is the "caption" of the output :)
-""")
-
-# ╔═╡ 65befddb-2542-473e-8b3b-0b5c5b9fe839
-question_box(md"""
-Change the value of `n_repeats` in the cell below to `3`.
-
-1) Observe that Pluto automatically updates all dependant cells.
-
-2) How does the simulated EEG change
-""")
-
-# ╔═╡ a851ef86-c830-4de3-b485-8997f9e5b81c
-n_repeats = 10
-
-# ╔═╡ 9d50b828-fafb-4ca3-b196-fed692476e22
-noiselevel = 0
-
-# ╔═╡ 8d0da37e-25bf-42e0-82cc-72cd24a5c82d
-md"""
-## Sliders
-We can also use Sliders instead of fixing the parameters. 
-
-A slider is defined like this:
-```julia
-@bind yourvariable PlutoUI.Slider(from:stepsize:to,show_value=true,
-					default=1)
-```
-"""
-
-# ╔═╡ 0b009035-d91a-4c46-a762-3ae33e5bae18
-question_box(md"""
-Now it is your turn
-1. Replace the cell with `n_repeats` above with a slider!
-""")
-
-# ╔═╡ ea71ee25-35bf-49bb-a869-db2cfe98c6f3
-md"""
-# Task 2: Your first mass univariate rERP anylysis
-"""
-
-# ╔═╡ 4a23c228-9494-4a59-8c3f-0b4d1621e322
-md"""
-## Experimental Design
-We already started by simulating a design with a 2-level factor `stimulation` (🚲 vs. 😊). 
-
-Later we'll add another 2-level factor `size` (small vs. large)
-
-And even later we'll add a  `continuous` effect from 0:15 (👀 sacccade amplitude) 
-"""
+# ╔═╡ b5087647-2515-4d46-bbcd-0accb95d063c
 
 
-# ╔═╡ 12b81ec4-9111-4583-b5ce-1bfe3a7e4f61
-md"""
-## Preparation
-The data are still continuous. For a mass-univariate analysis, we need to epoch them.
-"""
-
-# ╔═╡ 53ad0364-f7ad-4b27-90f8-f4e06bc26c22
-md"""
-## Analyze the data
-Let's run a 2-stage ERP analysis, extracting the intercept (condition = 🚗) and difference of condition (😊 - 🚗).
-"""
-
-# ╔═╡ 70e50157-289c-4d44-85b7-ed9fc3ba9dfb
-md"""
-### 1. Define a formula
-A formula is a easy to understand, but formal description of your linear model. Some formulas:
-
-- `@formula(0~1)` - just an intercept (= the mean!)\
-- `@formula(0~1+A)` - intercept + main/simple effect\
-- `@formula(0~1+A:B)` - intercept + interaction\
-- `@formula(0~1+A*B)` - intercept + simple effects + interaction\
-- `@formula(0~0+A)` - no  intercept + main effect\
-"""
-
-# ╔═╡ 3c43e8d0-fe44-47cf-8b7e-25e9efabb82f
-aside(md"""
-why does the left side have a `0` and not `ERP~1+A` or something? Just by convention!
-""",v_offset=-150)
-
-# ╔═╡ a643265c-e34f-4a77-939f-addce5d57117
-question_box(md"""
-Go ahead, define a formula for the intercept and for the `stimulation`.	
-
-`f = @formula ...`
-""")
-
-
-# ╔═╡ 67e82140-5d2d-4abe-9e77-6866cd7104e7
-f = @formula(0~1+stimulation*size) # missing # <-- replace me
-
-# ╔═╡ 852fbf20-9386-4c11-a000-04a38d2fa9e8
-!isa(f,Unfold.FormulaTerm) ? still_missing(md"The Formula `f` is not yet defined") : nothing
-
-# ╔═╡ 6ae533e8-ce36-48b2-8e4f-88a02e3089f2
-md"""
-### 2. Run the model
-After you specified the formula, we are ready to run the model on all time-points (and all channels, but we only have one ;)).
-"""
-
-# ╔═╡ e71ad2e4-103c-4165-b0f5-eb7b15d96b97
-md"""
-### 3. Extract the coefficients
-"""
-
-# ╔═╡ 04a5809a-d1ed-4477-b3e5-5c19f3522d30
-md"""
-There are two main ways to extract coeffients: 
-1. Extract as a matrix (`coef`)
-2. Extract as a 🧹tidy dataframe (`coeftable`)
-"""
-
-# ╔═╡ fc57a8a1-69b7-4dd0-aa56-8847f16a0253
-question_box(md"Let's start with `coef`, and see what we get. Add the correct command using `coef` and `m_erp` in the following cell.
-
-**Hint:** you can evoke the help by typing `?coef` in a cell
-")
-
-# ╔═╡ 35c94ce1-ef0e-4424-9e80-c948ec17e334
-question_box(md"Next, define `coefs_df` via `coeftable` to receive a tidy dataframe")
-
-# ╔═╡ cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
-md"""
-🧹Tidy dataframes allow us to plot them using some ggplot-type UnfoldMakie.jl magic (based on `AlgebraOfGraphics`)"""
-
-# ╔═╡ ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
-#n_repeats = 2
-PlutoTeachingTools.aside(md"Min. overlap: $(@bind min_overlap PlutoUI.Slider(0.1:0.1:1,show_value=true,
-					default=1))",v_offset=-50)
-
-# ╔═╡ 4de80b12-59c8-4cee-86d7-d13463fa263a
-eegdata,events = simulate_eeg(;noiselevel,
-							   n_repeats, 
-							   overlap=(min_overlap,0.2),
-multichannel = true,
-	twobytwo = true
-							);
-
-# ╔═╡ 635c697a-771a-4228-bde1-e38e21698905
-let # let enforces local scope, you cannot access variables from here outside this cell
-f,ax,h = lines(eegdata)
-vlines!(events.latency,linestyle=:dash)
-f
-end
-
-# ╔═╡ ec09f589-4d48-4780-b786-d1c9c115238d
-first(events,10)
-
-# ╔═╡ 6bd3bf55-947a-43d9-a367-e816a1c2d9c9
-eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.2, 0.8), sfreq = 100); # channel x timesteps x trials
-
-# ╔═╡ f13f93bf-f9a9-414e-8061-9d27d54e0cc2
-size(eegdata_epochs) # channels x times x trials
-
-# ╔═╡ 8dbd8657-4396-4d32-affb-25387e775ded
-size(eegdata)
-
-# ╔═╡ 2065acc9-0229-487d-9923-3553108bd3c2
-m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
-
-
-# ╔═╡ f6c405a1-e900-461b-9eb3-802348e8f691
-coefs = coef(m_erp)#missing # <-- replace me
-
-# ╔═╡ c3ac0645-e8f5-4d88-8257-1271683d85db
-@check_response(coefs,AbstractArray)
-
-# ╔═╡ a0d28de1-5485-48e1-9309-f3de4549d404
-series(coefs[1,:,:]')
-
-# ╔═╡ 2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
-coefs_df = coeftable(m_erp)#missing # <-- replace me
-
-# ╔═╡ 13f07084-c6e8-44ae-af07-17a2e4ea6ad5
-@check_response(coefs_df,Unfold.AbstractDataFrame)
-
-# ╔═╡ 0253718e-f1bd-4c78-9b53-11314120eb29
-plot_erp(coefs_df)
-
-# ╔═╡ b84ac0d3-832b-4afe-b02a-c328b91b795d
-coefs_df
-
-# ╔═╡ f854a1e7-3f37-4f38-9637-ea4326d6352d
-(;size_eeg=size(eegdata),n_repeats,min_overlap) # display some info parameters
-
-# ╔═╡ 2bde3123-09a5-4faa-84ba-8ef579179511
-question_box(md"""
-Looking at this ERPs: 
-1. Do we have an effect of  `condition`?
-2. What is going on in the baseline? What parameter do you need to change, to decrease this mess?
-""")
-
-# ╔═╡ eae8bcda-5120-47cd-b349-c27551743ada
+# ╔═╡ 83ca7107-4c44-4ab4-b63e-189eca8a2f52
 begin
-	md"""
-	Bravo! You made it to the end. If you still have time - here are some extra tasks you could do
-	
-	"""
-	
+	sfreq = 100;
+	eegdata,events = simulate_eeg(;noiselevel = 0,
+									   n_repeats = 10, 
+									   overlap=(0.5,0.2),
+									   continuouseffect=true,
+						);
+	eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.4, 0.8), sfreq = sfreq); # channel x timesteps x trials
+
 end
 
-# ╔═╡ f2898827-74d3-4e0c-88f2-02a68bedd9ab
-md"""
-### Under the hood
-Let's inspect the designmatrix (the $X$ in $$y=Xb + e$$)
-"""
+# ╔═╡ d9c68118-c2dc-4dd9-a193-7d7eb69d81c1
+warning_box(md"""
+To use splines with Unfold, we have to load the `BSplineKit` package!
+Be sure to run `using BSplineKit`
 
-# ╔═╡ 446e914e-0a40-4c84-8a57-d43c5399d900
-plot_designmatrix(designmatrix(m_erp),sort_data=false)
-
-# ╔═╡ 91a3aac1-3f48-4e58-b617-fa353d8948f7
-question_box(md"""
-1. The designmatrix is currently sorted by trial-number. After you sort it, can you answer the question whether the design is balanced [^1]
-
-[^1]: All condition-combinations have equal number of trials
-	""")
-
-# ╔═╡ b8f865b0-0ea0-4b2b-9505-f3c7e5e337a8
-md"""
-## Task Advanced
-If you reached here - ⚡🐆⚡ - you probably used Unfold before! Here are some tasks you could enjoy:
-
-
-"""
-
-# ╔═╡ b0af7e88-9eac-4842-8586-65d5904d7c61
-question_box(md"""
-1. Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. Can you adapt `plot_erp` to return useful results? You could try `layout=:channel=>nonnumeric`
-2. XXX
 """)
 
-# ╔═╡ ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
+# ╔═╡ 68e74f22-255d-484d-b773-35068973f33c
+question_box(md"""
+Change the formula to contain an intercept + `spl(sac_amp,5)`
+""")
+
+# ╔═╡ 989c46c5-db2d-4739-a9b6-3b6b76595683
+f =  missing; # <-- replace me
+
+# ╔═╡ 322787d7-e199-483f-ae28-ceb54e6881c1
+@check_response(f,Unfold.FormulaTerm)
+
+# ╔═╡ a3c6fe71-2c31-4b19-8133-9a74b471390f
+# uncomment once formula  is defined
+# m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs) 
+
+# ╔═╡ ec431cde-6d20-40a9-bb63-cfbb79396f2a
+# uncomment once formula is defined
+begin
+#eff = effects(Dict(:sac_amp=>0:10),m_erp)
+#plot_erp(eff,mapping=(;color=:sac_amp,group=:sac_amp))
+end
+
+# ╔═╡ e184e6bb-1b72-47c0-a505-154a16b73059
 md"""
-# Setup / Bookkeeping / Layout
-Nothing to see here, move along ;-)
+## Comparison to linear effect
+The next cell compares this with a linear effect.
 """
 
-# ╔═╡ 429c3317-df28-45d1-95ee-a77e90609ab8
+# ╔═╡ e8fb5eb1-4dc3-449f-b59d-1c986042c392
+let
+	m_erp_linear = fit(UnfoldModel,[Any=>(@formula(0~1+sac_amp),times)],events,eegdata_epochs) 
+	eff_linear = effects(Dict(:sac_amp=>0:10),m_erp_linear)
+	plot_erp(eff_linear,mapping=(;color=:sac_amp,group=:sac_amp))
+	end
+
+# ╔═╡ 073c8a10-3861-456d-b1b8-ac86d5be163e
+md"""
+**Quiz**: Do we have a linear or non-linear effect?
+"""
+
+# ╔═╡ 3a6dd194-38a4-42e3-898d-fb10b5b0155b
+md"""
+$(@bind q_nonlin PlutoUI.Radio(["Linear","Non-Linear", "Impossible to tell","Both"]))
+"""
 
 
-# ╔═╡ 472e5d28-ad91-4358-b174-495d6e5112fa
+# ╔═╡ 681867e2-22ca-4e02-b0d0-3c0a07e3954d
+isnothing(q_nonlin) ? nothing : q_nonlin == "Non-Linear" ? correct() : PlutoTeachingTools.keep_working(md"Think about whether a spline could potentially also model a linear effect!")
 
+# ╔═╡ ee931da7-1587-43f6-8a38-7b44a13c2618
+md"""
+## 🔍 Investigating the splines
+It is typically a good idea to investigate the placement of the splines in more detail. There is a convenience function `UnfoldMakie.plot_splines` to do so. 
+"""
 
-# ╔═╡ d0bd417a-8ab7-46f8-8a98-92b3b7ff5765
-TableOfContents() # add TOC to the side
+# ╔═╡ a406c967-04e2-4b1c-8f05-324af6e707b8
+question_box(md"Plot the internals of the spline using `plot_splines(model)`")
+
+# ╔═╡ 26f4d3c6-93b5-4f77-a0a5-42b8f8315cde
+# fill me with content :)
+
+# ╔═╡ 4ac2d1dc-1ab6-45c9-8dcb-8bd336248df2
+answer_box(md"`plot_splines(m_erp)`")
+
+# ╔═╡ 510494d1-c317-452d-ab4d-93daccf8d6d7
+md"""
+Now this is not particularly interesting, because our covariate is well balanced, and we have only 4 basis functions, thus everything is nicely symmetric. Let's add an outlier to the spline and check again:
+"""
+
+# ╔═╡ 53708f31-6559-47c1-8e09-17ec93475114
+
+let 
+	 events_outlier = deepcopy(events)
+	 events_outlier.sac_amp[1] = 100
+	 m_erp = fit(UnfoldModel,[Any=>(f,times)],events_outlier,eegdata_epochs,fit=false)
+	## add plotting here!
+
+end
+
+# ╔═╡ 252f00df-fe2b-44b7-9ea4-ad721b758c35
+question_box(md"""
+1. Add the `plot_splines` command above as well.
+2. What do you observe now? 
+3. Is this going to be a useful fit? 
+4. What could you do to adress this problem?""")
+
+# ╔═╡ c48cf8e8-ab9d-4b5e-a8b8-e5b269180f75
+md"""
+# Setup
+Nothing to see here, move along!
+"""
+
+# ╔═╡ 17c033bd-40b9-474f-866a-e4d9ef513e29
+TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+BSplineKit = "093aae92-e908-43d7-9660-e50ee39d5a0a"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 MakieThemes = "e296ed71-da82-5faf-88ab-0034a9761098"
 PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
@@ -315,6 +173,7 @@ UnfoldMakie = "69a5ce3b-64fb-4f22-ae69-36dd4416af2a"
 UnfoldSim = "ed8ae6d2-84d3-44c6-ab46-0baf21700804"
 
 [compat]
+BSplineKit = "~0.17.7"
 CairoMakie = "~0.13.4"
 MakieThemes = "~0.1.4"
 PlutoTeachingTools = "~0.3.1"
@@ -330,7 +189,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "00fc504fd7ab09a6f82d240ee167d14262e2e489"
+project_hash = "63b146a53c6770536e425324d963143ba29a3edc"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "e2478490447631aedba0823d4d7a80b2cc8cdb32"
@@ -2860,59 +2719,31 @@ version = "3.6.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═a49df28b-6587-4051-b777-26a56d339a2e
-# ╠═363cb188-97c7-4ece-b416-08256da0b5f9
-# ╟─1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
-# ╠═4de80b12-59c8-4cee-86d7-d13463fa263a
-# ╟─ab033cea-1eb9-4237-a595-3928cca0a0ca
-# ╟─3cbe1c9d-d3e3-4757-ba8d-2867e37b1dbe
-# ╠═f854a1e7-3f37-4f38-9637-ea4326d6352d
-# ╟─65befddb-2542-473e-8b3b-0b5c5b9fe839
-# ╠═a851ef86-c830-4de3-b485-8997f9e5b81c
-# ╠═9d50b828-fafb-4ca3-b196-fed692476e22
-# ╠═635c697a-771a-4228-bde1-e38e21698905
-# ╟─8d0da37e-25bf-42e0-82cc-72cd24a5c82d
-# ╟─0b009035-d91a-4c46-a762-3ae33e5bae18
-# ╟─ea71ee25-35bf-49bb-a869-db2cfe98c6f3
-# ╟─4a23c228-9494-4a59-8c3f-0b4d1621e322
-# ╠═ec09f589-4d48-4780-b786-d1c9c115238d
-# ╟─12b81ec4-9111-4583-b5ce-1bfe3a7e4f61
-# ╠═6bd3bf55-947a-43d9-a367-e816a1c2d9c9
-# ╠═8dbd8657-4396-4d32-affb-25387e775ded
-# ╠═f13f93bf-f9a9-414e-8061-9d27d54e0cc2
-# ╟─53ad0364-f7ad-4b27-90f8-f4e06bc26c22
-# ╟─70e50157-289c-4d44-85b7-ed9fc3ba9dfb
-# ╟─3c43e8d0-fe44-47cf-8b7e-25e9efabb82f
-# ╟─a643265c-e34f-4a77-939f-addce5d57117
-# ╠═67e82140-5d2d-4abe-9e77-6866cd7104e7
-# ╟─852fbf20-9386-4c11-a000-04a38d2fa9e8
-# ╟─6ae533e8-ce36-48b2-8e4f-88a02e3089f2
-# ╠═2065acc9-0229-487d-9923-3553108bd3c2
-# ╟─e71ad2e4-103c-4165-b0f5-eb7b15d96b97
-# ╟─04a5809a-d1ed-4477-b3e5-5c19f3522d30
-# ╟─fc57a8a1-69b7-4dd0-aa56-8847f16a0253
-# ╠═f6c405a1-e900-461b-9eb3-802348e8f691
-# ╟─c3ac0645-e8f5-4d88-8257-1271683d85db
-# ╠═a0d28de1-5485-48e1-9309-f3de4549d404
-# ╟─35c94ce1-ef0e-4424-9e80-c948ec17e334
-# ╠═2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
-# ╟─13f07084-c6e8-44ae-af07-17a2e4ea6ad5
-# ╟─cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
-# ╠═0253718e-f1bd-4c78-9b53-11314120eb29
-# ╠═b84ac0d3-832b-4afe-b02a-c328b91b795d
-# ╟─ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
-# ╟─2bde3123-09a5-4faa-84ba-8ef579179511
-# ╟─eae8bcda-5120-47cd-b349-c27551743ada
-# ╟─f2898827-74d3-4e0c-88f2-02a68bedd9ab
-# ╠═446e914e-0a40-4c84-8a57-d43c5399d900
-# ╟─91a3aac1-3f48-4e58-b617-fa353d8948f7
-# ╟─b8f865b0-0ea0-4b2b-9505-f3c7e5e337a8
-# ╟─b0af7e88-9eac-4842-8586-65d5904d7c61
-# ╟─ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
-# ╠═429c3317-df28-45d1-95ee-a77e90609ab8
-# ╠═472e5d28-ad91-4358-b174-495d6e5112fa
-# ╠═d18def09-658d-47af-92e6-d729c9f83667
-# ╠═d9912a4c-5d3a-11ee-381e-03ad95d59994
-# ╠═d0bd417a-8ab7-46f8-8a98-92b3b7ff5765
+# ╟─dbe14b67-d100-4395-83c9-3ca3fed51068
+# ╠═b5087647-2515-4d46-bbcd-0accb95d063c
+# ╠═83ca7107-4c44-4ab4-b63e-189eca8a2f52
+# ╟─d9c68118-c2dc-4dd9-a193-7d7eb69d81c1
+# ╠═af31e83b-f2ff-4947-9eca-bc404b77c4f4
+# ╠═68e74f22-255d-484d-b773-35068973f33c
+# ╠═989c46c5-db2d-4739-a9b6-3b6b76595683
+# ╟─322787d7-e199-483f-ae28-ceb54e6881c1
+# ╠═a3c6fe71-2c31-4b19-8133-9a74b471390f
+# ╠═ec431cde-6d20-40a9-bb63-cfbb79396f2a
+# ╠═e184e6bb-1b72-47c0-a505-154a16b73059
+# ╠═e8fb5eb1-4dc3-449f-b59d-1c986042c392
+# ╟─073c8a10-3861-456d-b1b8-ac86d5be163e
+# ╟─3a6dd194-38a4-42e3-898d-fb10b5b0155b
+# ╟─681867e2-22ca-4e02-b0d0-3c0a07e3954d
+# ╟─ee931da7-1587-43f6-8a38-7b44a13c2618
+# ╠═a406c967-04e2-4b1c-8f05-324af6e707b8
+# ╠═26f4d3c6-93b5-4f77-a0a5-42b8f8315cde
+# ╟─4ac2d1dc-1ab6-45c9-8dcb-8bd336248df2
+# ╟─510494d1-c317-452d-ab4d-93daccf8d6d7
+# ╠═53708f31-6559-47c1-8e09-17ec93475114
+# ╟─252f00df-fe2b-44b7-9ea4-ad721b758c35
+# ╟─c48cf8e8-ab9d-4b5e-a8b8-e5b269180f75
+# ╠═17c033bd-40b9-474f-866a-e4d9ef513e29
+# ╠═07b5c518-7d11-482e-a555-455ac55d0664
+# ╠═0cfd65ae-2016-11f0-17d2-196bfbdf916e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

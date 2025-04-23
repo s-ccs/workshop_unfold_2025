@@ -4,19 +4,7 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    #! format: off
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-    #! format: on
-end
-
-# ╔═╡ d9912a4c-5d3a-11ee-381e-03ad95d59994
+# ╔═╡ 6d194a6a-1fa2-11f0-2597-ff33ceac2429
 begin
 	using Unfold # Formulas, fit, coefs, coeftable
 	using UnfoldSim # Simulation
@@ -29,278 +17,212 @@ begin
 	set_theme!(ggthemr(:fresh))
 end
 
-# ╔═╡ d18def09-658d-47af-92e6-d729c9f83667
+# ╔═╡ a5de06d9-87de-434a-b4ed-c8cf60836197
 # load some PlutoUI + simulate_eeg utilities - externalized it to have the same functions in all worksheets
-include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/c28514362442bfc3f5075c225c2b26de17c62860/unfoldworkshop-utilities.jl"));
+include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/558d97de8a7f335336108ebed22b1cfb95cf051a/unfoldworkshop-utilities.jl"));
 
 
-# ╔═╡ a49df28b-6587-4051-b777-26a56d339a2e
+# ╔═╡ c4f134b5-4a86-44f8-919f-9acc6369fa42
 md"""
-# Simulate EEG & understand Pluto.jl
+# Continuous Predictors
 [CC-By Benedikt Ehinger](www.s-ccs.de) - Unfold.jl Workshop
 """
 
-# ╔═╡ 363cb188-97c7-4ece-b416-08256da0b5f9
+# ╔═╡ cab90ab1-a940-49ca-bf47-248433c92bdb
 md"""
-What follows is some code to get to know `Pluto.jl` a little bit, and implement a some interactive sliders!
+We will now expand our analysis by including a continuous predictor, afterwards, we'll introduce the concept of marginal effects
 """
 
-# ╔═╡ 1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
+# ╔═╡ 8b1f7c94-8a20-4b59-94f3-96feb693cf83
+begin
+
+	eegdata,events = simulate_eeg(;noiselevel = 1,
+									   n_repeats = 10,
+		continuouseffect = true,
+										);
+	eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.2, 0.8), sfreq = 100); # channel x timesteps x trials
+
+end
+
+# ╔═╡ a9345555-dcee-48de-82f2-311cc22c7294
+min_overlap = 0.5
+
+# ╔═╡ e1b91231-010e-4e66-b314-699cf61fd401
+first(events,3)
+
+# ╔═╡ 23d27c4d-f988-4f3c-994c-1058d31155ba
 md"""
-Let's start with simulating some EEG-data:
+## Adding a continuous predictor
+Adding a continuous[^contpred] predictor (e.g. `sac_amp`) to the formula will automatically add/regress/fit a linear effect of that predictor on the EEG data.
+
+
+
 """
 
-# ╔═╡ ab033cea-1eb9-4237-a595-3928cca0a0ca
-aside(tip(md"**`n-repeats`** repeats one instance of a 2x5 design (10 events)\
-**`min_overlap`** controls the minimal distance between adjacent events"),v_offset=-170)
-
-# ╔═╡ 3cbe1c9d-d3e3-4757-ba8d-2867e37b1dbe
-my_tip("Pluto.jl",md"""
-`Pluto.jl` puts the outputs on top of the cell, not below. Your code is the "caption" of the output :)
-""")
-
-# ╔═╡ 65befddb-2542-473e-8b3b-0b5c5b9fe839
-question_box(md"""
-Change the value of `n_repeats` in the cell below to `3`.
-
-1) Observe that Pluto automatically updates all dependant cells.
-
-2) How does the simulated EEG change
-""")
-
-# ╔═╡ a851ef86-c830-4de3-b485-8997f9e5b81c
-n_repeats = 10
-
-# ╔═╡ 9d50b828-fafb-4ca3-b196-fed692476e22
-noiselevel = 0
-
-# ╔═╡ 8d0da37e-25bf-42e0-82cc-72cd24a5c82d
+# ╔═╡ 630af54c-98b0-4c0c-844b-c0d9e4da4292
 md"""
-## Sliders
-We can also use Sliders instead of fixing the parameters. 
-
-A slider is defined like this:
-```julia
-@bind yourvariable PlutoUI.Slider(from:stepsize:to,show_value=true,
-					default=1)
-```
+[^contpred]: Julia/StatsModels.jl treats `Float` and `Int` as continuous, `Strings` and `Symbols` are automatically treated as type `Categorical`
 """
 
-# ╔═╡ 0b009035-d91a-4c46-a762-3ae33e5bae18
-question_box(md"""
-Now it is your turn
-1. Replace the cell with `n_repeats` above with a slider!
-""")
-
-# ╔═╡ ea71ee25-35bf-49bb-a869-db2cfe98c6f3
-md"""
-# Task 2: Your first mass univariate rERP anylysis
-"""
-
-# ╔═╡ 4a23c228-9494-4a59-8c3f-0b4d1621e322
-md"""
-## Experimental Design
-We already started by simulating a design with a 2-level factor `stimulation` (🚲 vs. 😊). 
-
-Later we'll add another 2-level factor `size` (small vs. large)
-
-And even later we'll add a  `continuous` effect from 0:15 (👀 sacccade amplitude) 
-"""
-
-
-# ╔═╡ 12b81ec4-9111-4583-b5ce-1bfe3a7e4f61
-md"""
-## Preparation
-The data are still continuous. For a mass-univariate analysis, we need to epoch them.
-"""
-
-# ╔═╡ 53ad0364-f7ad-4b27-90f8-f4e06bc26c22
-md"""
-## Analyze the data
-Let's run a 2-stage ERP analysis, extracting the intercept (condition = 🚗) and difference of condition (😊 - 🚗).
-"""
-
-# ╔═╡ 70e50157-289c-4d44-85b7-ed9fc3ba9dfb
-md"""
-### 1. Define a formula
-A formula is a easy to understand, but formal description of your linear model. Some formulas:
-
+# ╔═╡ 443716b4-5067-41fc-a347-14c8d5286ebd
+PlutoTeachingTools.Foldable(md"Want a reminder for the formula syntax?",md"""
 - `@formula(0~1)` - just an intercept (= the mean!)\
 - `@formula(0~1+A)` - intercept + main/simple effect\
 - `@formula(0~1+A:B)` - intercept + interaction\
 - `@formula(0~1+A*B)` - intercept + simple effects + interaction\
 - `@formula(0~0+A)` - no  intercept + main effect\
 """
+)
 
-# ╔═╡ 3c43e8d0-fe44-47cf-8b7e-25e9efabb82f
-aside(md"""
-why does the left side have a `0` and not `ERP~1+A` or something? Just by convention!
-""",v_offset=-150)
-
-# ╔═╡ a643265c-e34f-4a77-939f-addce5d57117
-question_box(md"""
-Go ahead, define a formula for the intercept and for the `stimulation`.	
-
-`f = @formula ...`
-""")
-
-
-# ╔═╡ 67e82140-5d2d-4abe-9e77-6866cd7104e7
-f = @formula(0~1+stimulation*size) # missing # <-- replace me
-
-# ╔═╡ 852fbf20-9386-4c11-a000-04a38d2fa9e8
-!isa(f,Unfold.FormulaTerm) ? still_missing(md"The Formula `f` is not yet defined") : nothing
-
-# ╔═╡ 6ae533e8-ce36-48b2-8e4f-88a02e3089f2
-md"""
-### 2. Run the model
-After you specified the formula, we are ready to run the model on all time-points (and all channels, but we only have one ;)).
-"""
-
-# ╔═╡ e71ad2e4-103c-4165-b0f5-eb7b15d96b97
-md"""
-### 3. Extract the coefficients
-"""
-
-# ╔═╡ 04a5809a-d1ed-4477-b3e5-5c19f3522d30
-md"""
-There are two main ways to extract coeffients: 
-1. Extract as a matrix (`coef`)
-2. Extract as a 🧹tidy dataframe (`coeftable`)
-"""
-
-# ╔═╡ fc57a8a1-69b7-4dd0-aa56-8847f16a0253
-question_box(md"Let's start with `coef`, and see what we get. Add the correct command using `coef` and `m_erp` in the following cell.
-
-**Hint:** you can evoke the help by typing `?coef` in a cell
-")
-
-# ╔═╡ 35c94ce1-ef0e-4424-9e80-c948ec17e334
-question_box(md"Next, define `coefs_df` via `coeftable` to receive a tidy dataframe")
-
-# ╔═╡ cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
-md"""
-🧹Tidy dataframes allow us to plot them using some ggplot-type UnfoldMakie.jl magic (based on `AlgebraOfGraphics`)"""
-
-# ╔═╡ ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
-#n_repeats = 2
-PlutoTeachingTools.aside(md"Min. overlap: $(@bind min_overlap PlutoUI.Slider(0.1:0.1:1,show_value=true,
-					default=1))",v_offset=-50)
-
-# ╔═╡ 4de80b12-59c8-4cee-86d7-d13463fa263a
-eegdata,events = simulate_eeg(;noiselevel,
-							   n_repeats, 
-							   overlap=(min_overlap,0.2),
-multichannel = true,
-	twobytwo = true
-							);
-
-# ╔═╡ 635c697a-771a-4228-bde1-e38e21698905
-let # let enforces local scope, you cannot access variables from here outside this cell
-f,ax,h = lines(eegdata)
-vlines!(events.latency,linestyle=:dash)
-f
-end
-
-# ╔═╡ ec09f589-4d48-4780-b786-d1c9c115238d
-first(events,10)
-
-# ╔═╡ 6bd3bf55-947a-43d9-a367-e816a1c2d9c9
-eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.2, 0.8), sfreq = 100); # channel x timesteps x trials
-
-# ╔═╡ f13f93bf-f9a9-414e-8061-9d27d54e0cc2
-size(eegdata_epochs) # channels x times x trials
-
-# ╔═╡ 8dbd8657-4396-4d32-affb-25387e775ded
-size(eegdata)
-
-# ╔═╡ 2065acc9-0229-487d-9923-3553108bd3c2
-m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
-
-
-# ╔═╡ f6c405a1-e900-461b-9eb3-802348e8f691
-coefs = coef(m_erp)#missing # <-- replace me
-
-# ╔═╡ c3ac0645-e8f5-4d88-8257-1271683d85db
-@check_response(coefs,AbstractArray)
-
-# ╔═╡ a0d28de1-5485-48e1-9309-f3de4549d404
-series(coefs[1,:,:]')
-
-# ╔═╡ 2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
-coefs_df = coeftable(m_erp)#missing # <-- replace me
-
-# ╔═╡ 13f07084-c6e8-44ae-af07-17a2e4ea6ad5
-@check_response(coefs_df,Unfold.AbstractDataFrame)
-
-# ╔═╡ 0253718e-f1bd-4c78-9b53-11314120eb29
-plot_erp(coefs_df)
-
-# ╔═╡ b84ac0d3-832b-4afe-b02a-c328b91b795d
-coefs_df
-
-# ╔═╡ f854a1e7-3f37-4f38-9637-ea4326d6352d
-(;size_eeg=size(eegdata),n_repeats,min_overlap) # display some info parameters
-
-# ╔═╡ 2bde3123-09a5-4faa-84ba-8ef579179511
-question_box(md"""
-Looking at this ERPs: 
-1. Do we have an effect of  `condition`?
-2. What is going on in the baseline? What parameter do you need to change, to decrease this mess?
-""")
-
-# ╔═╡ eae8bcda-5120-47cd-b349-c27551743ada
+# ╔═╡ d02e46db-afec-4a60-95c5-a8436cafe8c4
 begin
-	md"""
-	Bravo! You made it to the end. If you still have time - here are some extra tasks you could do
-	
-	"""
-	
+	f = @formula 0 ~ 1 + sac_amp + stimulation # f = missing # <-- replace me
+	m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
 end
 
-# ╔═╡ f2898827-74d3-4e0c-88f2-02a68bedd9ab
+# ╔═╡ 318a46bf-5a83-4b30-95ab-c61479e589e3
+question_box(md"""
+
+1. Use `coef` on the model. What is the size of the coef-array?
+2. extract the `[1,:,2]` slope coefficients to `my_extracted_coefs`, and plot them using the provied `lines(times,my_extracted_coefs)` command.
+3. When in time do you observe an effect of `continuous`?
+""")
+
+# ╔═╡ cff9c4d3-4066-4cf1-9bd8-fe839e481da3
+my_extracted_coefs = missing # replace me
+
+# ╔═╡ d24b3214-2d0c-476f-892c-4ee65e964793
+@check_response(my_extracted_coefs,AbstractArray)
+
+# ╔═╡ b234037e-367b-4ddb-831d-544f9249132c
+# replace me: code to calculate size of my_extracted_coefs?
+
+# ╔═╡ 5b9fb5a1-56a7-480c-b97e-26772634e5cc
+# lines(times,my_extracted_coefs)
+
+# ╔═╡ 4408a9db-b265-4217-a14d-1700908b76d9
 md"""
-### Under the hood
-Let's inspect the designmatrix (the $X$ in $$y=Xb + e$$)
+# Marginal effects
+With comparatively simple models like we implemented now, we can still try to add toegether all our effects in our heads, and simply plot the raw coefficients.
+
+But there is a trick to make our life much easier: **Marginal effects**.
+
+
+**Marginal effects** relate to **Linear model coefficients** 
+
+in a similar way, as 
+
+**ERPs** relate to **difference curves**
+
+
+You should think of them as being the modelled ERP/EEG signal, evaluated at user-controlled values. What does that mean exactly? Let's do an example:
 """
 
-# ╔═╡ 446e914e-0a40-4c84-8a57-d43c5399d900
-plot_designmatrix(designmatrix(m_erp),sort_data=false)
+# ╔═╡ 5372b339-7279-4094-85c0-ab6b651b1211
+eff = effects(Dict(:sac_amp=>[0,1]),m_erp)
 
-# ╔═╡ 91a3aac1-3f48-4e58-b617-fa353d8948f7
+# ╔═╡ 5c2e68af-5a19-4a6b-8498-3af00be5c538
+md"""
+We now calculate ERPs at two saccade-amplitude values, 0 & 1. Let's visualize them. First the coefficients we already had, then the summed up marginal ERP.
+"""
+
+# ╔═╡ a65afe43-2214-4380-866f-cdc4310662df
+let # temporary cell
+	f = Figure()
+	plot_erp!(f[1,1],coeftable(m_erp),
+					 axis=(;title="coeficientts")
+	)
+	
+	plot_erp!(f[2,1],eff;
+		mapping=(;color=:sac_amp,group=:sac_amp),
+		axis=(;title="marginal effects")
+	)
+	f
+end
+
+# ╔═╡ 66b38321-a4d7-4dc8-bebd-2517d869b640
 question_box(md"""
-1. The designmatrix is currently sorted by trial-number. After you sort it, can you answer the question whether the design is balanced [^1]
+Now it is your turn:
+1. replace the `[0,1]` with a `range` from `0` to `15` in the `effects` call above.
 
-[^1]: All condition-combinations have equal number of trials
+**Hint**: if you get an error when using `[0:15]`, drop the `[]` - `0:15` already counts as an array, and you dont want to stack arrays in arrays.
+""")
+
+# ╔═╡ fee11d0e-5724-4f04-ae26-4fc6c7abb97d
+md"""
+## Typical value
+"""
+
+# ╔═╡ 735e3d67-767c-4cc2-b43e-e839ca0c388f
+md"""
+Marginal effects are particularly strong, if you **do not** want to directly investigate a predictor, but rather keep that predictor constant across your predictor of interest.
+
+E.g. you have the condition `condition`, with levels `bike` and `face` - you also have measured those at different `sac_amp` eye-movement amplitudes. You want to plot the `bike` and `face` ERPs, including `β_cont * mean(sac_amp)`, effectively controlly for potentially different saccade amplitude distributions between your two conditions.
+
+The `mean(sac_amp)` is called the *typical value*  of that predictor.
+
+Let's do it! Here is your task list
+"""
+
+# ╔═╡ f49d3a7a-1a80-4b15-99c1-bcd06ea4801d
+question_box(md"""
+1. Change the formula so it contains the condition too: `@formula 0 ~ 1 + continuous + condition`.
+2. re-calculate the  `effects` with a `Dict` containing only `:condition=>["face","bike"]`.
+3. use  `plot_erp` and modify the `mapping=(;color=:sac_amp)` to rather plot the `stimulation` condition as color.
+""")
+
+# ╔═╡ 36552630-0213-467b-a22e-78c7dc064e69
+# replace me with the correct code: 
+# effects(Dict(:a=>[]),m_erp)
+
+# ╔═╡ edaf68fb-0f9b-43c4-afb4-6f43c26550ab
+# replace me with the correct code: 
+# plot_erp(...;mapping=(;...))
+
+# ╔═╡ 6c802e58-a06f-4098-8d3c-5b704205af72
+md"""
+## All combinations?
+You now learned that omitting a predictor from the `effects` call replaces it with it's *typical value*. What happens now, if we specify multiple predictors?
+"""
+
+# ╔═╡ 4d95d0f3-1382-42f9-a736-fbaaf03b3f78
+question_box(md"""
+Specify the effects call below with both `sac_amp` as well as `stimulation`. Plot the output with `plot_erp`, you could use the mapping attributes `color`, `linestyle` or `layout`, whatever you prefer.
+""")
+
+# ╔═╡ d18d4407-d28e-4b68-a2fd-2d497fb0cd71
+my_tip("plot_erp continuous colors / grouping",
+	md"""
+	When using continuous variables as colors, we often need to specify the `group`ing variable as well: `mapping=(;color=:sac_amp, group=:sac_amp)` 
 	""")
 
-# ╔═╡ b8f865b0-0ea0-4b2b-9505-f3c7e5e337a8
-md"""
-## Task Advanced
-If you reached here - ⚡🐆⚡ - you probably used Unfold before! Here are some tasks you could enjoy:
+# ╔═╡ 529c2c19-bf81-464b-b29b-8ce9422055b9
+# replace me with the correct code: 
+let
+	# eff = effects(Dict(:A=>[]))
+	# plot_erp(eff;mapping = (;))
 
+end
 
-"""
-
-# ╔═╡ b0af7e88-9eac-4842-8586-65d5904d7c61
-question_box(md"""
-1. Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. Can you adapt `plot_erp` to return useful results? You could try `layout=:channel=>nonnumeric`
-2. XXX
+# ╔═╡ 637d3c8f-2207-4dd0-a62c-ff2f56412baf
+answer_box(md"""
+This is one possible way to do it:
+```julia
+eff = effects(Dict(:stimulation=>["bike","face"],:sac_amp=>0:15),m_erp)
+plot_erp(eff;mapping=(;color=:sac_amp,group=:sac_amp,linestyle=:stimulation))
+```
 """)
 
-# ╔═╡ ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
+# ╔═╡ aaba9346-069a-4d68-8681-12e4c68ccee0
 md"""
-# Setup / Bookkeeping / Layout
-Nothing to see here, move along ;-)
+# Setup
+Nothing to see here, move along!
 """
 
-# ╔═╡ 429c3317-df28-45d1-95ee-a77e90609ab8
+# ╔═╡ 2018834c-f200-4410-8357-b41d2c95e734
+FootnotesNumbered() # use numbered footnotes
 
-
-# ╔═╡ 472e5d28-ad91-4358-b174-495d6e5112fa
-
-
-# ╔═╡ d0bd417a-8ab7-46f8-8a98-92b3b7ff5765
+# ╔═╡ f0f25455-b2c7-4980-ac56-01716e9b11e0
 TableOfContents() # add TOC to the side
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2860,59 +2782,39 @@ version = "3.6.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═a49df28b-6587-4051-b777-26a56d339a2e
-# ╠═363cb188-97c7-4ece-b416-08256da0b5f9
-# ╟─1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
-# ╠═4de80b12-59c8-4cee-86d7-d13463fa263a
-# ╟─ab033cea-1eb9-4237-a595-3928cca0a0ca
-# ╟─3cbe1c9d-d3e3-4757-ba8d-2867e37b1dbe
-# ╠═f854a1e7-3f37-4f38-9637-ea4326d6352d
-# ╟─65befddb-2542-473e-8b3b-0b5c5b9fe839
-# ╠═a851ef86-c830-4de3-b485-8997f9e5b81c
-# ╠═9d50b828-fafb-4ca3-b196-fed692476e22
-# ╠═635c697a-771a-4228-bde1-e38e21698905
-# ╟─8d0da37e-25bf-42e0-82cc-72cd24a5c82d
-# ╟─0b009035-d91a-4c46-a762-3ae33e5bae18
-# ╟─ea71ee25-35bf-49bb-a869-db2cfe98c6f3
-# ╟─4a23c228-9494-4a59-8c3f-0b4d1621e322
-# ╠═ec09f589-4d48-4780-b786-d1c9c115238d
-# ╟─12b81ec4-9111-4583-b5ce-1bfe3a7e4f61
-# ╠═6bd3bf55-947a-43d9-a367-e816a1c2d9c9
-# ╠═8dbd8657-4396-4d32-affb-25387e775ded
-# ╠═f13f93bf-f9a9-414e-8061-9d27d54e0cc2
-# ╟─53ad0364-f7ad-4b27-90f8-f4e06bc26c22
-# ╟─70e50157-289c-4d44-85b7-ed9fc3ba9dfb
-# ╟─3c43e8d0-fe44-47cf-8b7e-25e9efabb82f
-# ╟─a643265c-e34f-4a77-939f-addce5d57117
-# ╠═67e82140-5d2d-4abe-9e77-6866cd7104e7
-# ╟─852fbf20-9386-4c11-a000-04a38d2fa9e8
-# ╟─6ae533e8-ce36-48b2-8e4f-88a02e3089f2
-# ╠═2065acc9-0229-487d-9923-3553108bd3c2
-# ╟─e71ad2e4-103c-4165-b0f5-eb7b15d96b97
-# ╟─04a5809a-d1ed-4477-b3e5-5c19f3522d30
-# ╟─fc57a8a1-69b7-4dd0-aa56-8847f16a0253
-# ╠═f6c405a1-e900-461b-9eb3-802348e8f691
-# ╟─c3ac0645-e8f5-4d88-8257-1271683d85db
-# ╠═a0d28de1-5485-48e1-9309-f3de4549d404
-# ╟─35c94ce1-ef0e-4424-9e80-c948ec17e334
-# ╠═2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
-# ╟─13f07084-c6e8-44ae-af07-17a2e4ea6ad5
-# ╟─cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
-# ╠═0253718e-f1bd-4c78-9b53-11314120eb29
-# ╠═b84ac0d3-832b-4afe-b02a-c328b91b795d
-# ╟─ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
-# ╟─2bde3123-09a5-4faa-84ba-8ef579179511
-# ╟─eae8bcda-5120-47cd-b349-c27551743ada
-# ╟─f2898827-74d3-4e0c-88f2-02a68bedd9ab
-# ╠═446e914e-0a40-4c84-8a57-d43c5399d900
-# ╟─91a3aac1-3f48-4e58-b617-fa353d8948f7
-# ╟─b8f865b0-0ea0-4b2b-9505-f3c7e5e337a8
-# ╟─b0af7e88-9eac-4842-8586-65d5904d7c61
-# ╟─ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
-# ╠═429c3317-df28-45d1-95ee-a77e90609ab8
-# ╠═472e5d28-ad91-4358-b174-495d6e5112fa
-# ╠═d18def09-658d-47af-92e6-d729c9f83667
-# ╠═d9912a4c-5d3a-11ee-381e-03ad95d59994
-# ╠═d0bd417a-8ab7-46f8-8a98-92b3b7ff5765
+# ╟─c4f134b5-4a86-44f8-919f-9acc6369fa42
+# ╟─cab90ab1-a940-49ca-bf47-248433c92bdb
+# ╠═8b1f7c94-8a20-4b59-94f3-96feb693cf83
+# ╠═a9345555-dcee-48de-82f2-311cc22c7294
+# ╠═e1b91231-010e-4e66-b314-699cf61fd401
+# ╟─23d27c4d-f988-4f3c-994c-1058d31155ba
+# ╟─630af54c-98b0-4c0c-844b-c0d9e4da4292
+# ╟─443716b4-5067-41fc-a347-14c8d5286ebd
+# ╠═d02e46db-afec-4a60-95c5-a8436cafe8c4
+# ╟─318a46bf-5a83-4b30-95ab-c61479e589e3
+# ╠═cff9c4d3-4066-4cf1-9bd8-fe839e481da3
+# ╟─d24b3214-2d0c-476f-892c-4ee65e964793
+# ╠═b234037e-367b-4ddb-831d-544f9249132c
+# ╠═5b9fb5a1-56a7-480c-b97e-26772634e5cc
+# ╟─4408a9db-b265-4217-a14d-1700908b76d9
+# ╠═5372b339-7279-4094-85c0-ab6b651b1211
+# ╟─5c2e68af-5a19-4a6b-8498-3af00be5c538
+# ╠═a65afe43-2214-4380-866f-cdc4310662df
+# ╟─66b38321-a4d7-4dc8-bebd-2517d869b640
+# ╟─fee11d0e-5724-4f04-ae26-4fc6c7abb97d
+# ╟─735e3d67-767c-4cc2-b43e-e839ca0c388f
+# ╟─f49d3a7a-1a80-4b15-99c1-bcd06ea4801d
+# ╠═36552630-0213-467b-a22e-78c7dc064e69
+# ╠═edaf68fb-0f9b-43c4-afb4-6f43c26550ab
+# ╟─6c802e58-a06f-4098-8d3c-5b704205af72
+# ╟─4d95d0f3-1382-42f9-a736-fbaaf03b3f78
+# ╟─d18d4407-d28e-4b68-a2fd-2d497fb0cd71
+# ╠═529c2c19-bf81-464b-b29b-8ce9422055b9
+# ╟─637d3c8f-2207-4dd0-a62c-ff2f56412baf
+# ╟─aaba9346-069a-4d68-8681-12e4c68ccee0
+# ╠═2018834c-f200-4410-8357-b41d2c95e734
+# ╠═6d194a6a-1fa2-11f0-2597-ff33ceac2429
+# ╠═a5de06d9-87de-434a-b4ed-c8cf60836197
+# ╠═f0f25455-b2c7-4980-ac56-01716e9b11e0
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
