@@ -1,0 +1,29 @@
+project:
+  type: website
+  title: "Unfold.jl Workshop 2025"
+  resources: 
+    - "assets"
+
+website:
+  title: "Unfold.jl Workshop 2025"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: program.qmd
+        text: Program
+      - registration.qmd
+    background: primary
+  page-footer:
+    left: |
+      ![](assets/unistuttgart_logo_englisch.png){width=60%}
+    center: |
+      ![](assets/logo_Unfold.jl.png){width=30%}
+    right: |
+      ![](assets/CHBH-main-landscape.png){width=60%}
+
+format:
+  html:
+    theme: minty
+    css: styles.css
+    toc: true

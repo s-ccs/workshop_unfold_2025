@@ -1,0 +1,13 @@
+---
+title: "Registration"
+---
+
+::: {.callout-note}
+Since our capacity for the practical exercises is limited, we will only be able to accept **~50 participants** for the workshop.
+However, the lectures will also be available via livestream, and everyone is invited to follow along independently.
+:::
+
+To register for the free Unfold.jl workshop, please fill out the form below until **07.05.2025**. 
+We will inform you via email if you got a place and share the Zoom link.
+
+<iframe width="750px" height="580px" src=https://forms.office.com/Pages/ResponsePage.aspx?id=z8oksN7eQUKhXDyX1VPp836-sjS8o81Eqt_rYQKX4NBUNDJXS0E3MUQxQVBMSzlTMzlEVVFBSkxFUy4u&embed=true frameborder="0" marginwidth="0" marginheight="0" style="border: none; max-width:100%; max-height:100vh" allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen> </iframe>
