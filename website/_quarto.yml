@@ -13,6 +13,8 @@ website:
       - href: program.qmd
         text: Program
       - registration.qmd
+      - href: installation.qmd
+        text: Installation
     background: primary
   page-footer:
     left: |
