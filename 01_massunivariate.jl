@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.4
+# v0.20.6
 
 using Markdown
 using InteractiveUtils
@@ -7,7 +7,7 @@ using InteractiveUtils
 # This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
 macro bind(def, element)
     #! format: off
-    quote
+    return quote
         local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
         local el = $(esc(element))
         global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
@@ -45,34 +45,49 @@ md"""
 What follows is some code to get to know `Pluto.jl` a little bit, and implement a some interactive sliders!
 """
 
+# ╔═╡ d2eae77b-07be-405f-ad7c-d9a3c7f28acc
+md"""
+## Pluto 101
+Different to jupyter, Pluto keeps track of what cell depends on what other cell, and **automatically** updates dependant cells!
+"""
+
 # ╔═╡ 1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
 md"""
-Let's start with simulating some EEG-data:
+Let's see that in action - but first, we will simulate some EEG-data:
 """
 
 # ╔═╡ ab033cea-1eb9-4237-a595-3928cca0a0ca
 aside(tip(md"**`n-repeats`** repeats one instance of a 2x5 design (10 events)\
 **`min_overlap`** controls the minimal distance between adjacent events"),v_offset=-170)
 
+# ╔═╡ 65befddb-2542-473e-8b3b-0b5c5b9fe839
+question_box(md"""
+Change the value of `n_repeats` in the cell below to `3`, and save (▶ button or `ctrl+s`).
+
+1) Observe that Pluto automatically updates all dependant cells.
+
+2) What would you think a realistic noise level is?
+""")
+
+# ╔═╡ a851ef86-c830-4de3-b485-8997f9e5b81c
+n_repeats = 1
+
+# ╔═╡ 9d50b828-fafb-4ca3-b196-fed692476e22
+noiselevel = 0
+
 # ╔═╡ 3cbe1c9d-d3e3-4757-ba8d-2867e37b1dbe
 my_tip("Pluto.jl",md"""
 `Pluto.jl` puts the outputs on top of the cell, not below. Your code is the "caption" of the output :)
 """)
 
-# ╔═╡ 65befddb-2542-473e-8b3b-0b5c5b9fe839
-question_box(md"""
-Change the value of `n_repeats` in the cell below to `3`.
+# ╔═╡ 6cb8aed5-7133-4f77-8fe7-44fcb0d4a941
+warning_box(md"""
+Pluto keeps track of your variables, therefore:
 
-1) Observe that Pluto automatically updates all dependant cells.
-
-2) How does the simulated EEG change
+1. Any variable name cannot be defined in more than one cell
+2. Multi-line code needs to be encapsulated in `begin ... end`
+3. Inplace operations (also known as side-effects, mutations), cannot be seen by Pluto; dangerous :)
 """)
-
-# ╔═╡ a851ef86-c830-4de3-b485-8997f9e5b81c
-n_repeats = 10
-
-# ╔═╡ 9d50b828-fafb-4ca3-b196-fed692476e22
-noiselevel = 0
 
 # ╔═╡ 8d0da37e-25bf-42e0-82cc-72cd24a5c82d
 md"""
@@ -123,11 +138,13 @@ Let's run a 2-stage ERP analysis, extracting the intercept (condition = 🚗) an
 # ╔═╡ 70e50157-289c-4d44-85b7-ed9fc3ba9dfb
 md"""
 ### 1. Define a formula
-A formula is a easy to understand, but formal description of your linear model. Some formulas:
+A formula is a easy, succint but also formal description of your linear model. Some example formulas to get you started:
 
 - `@formula(0~1)` - just an intercept (= the mean!)\
 - `@formula(0~1+A)` - intercept + main/simple effect\
+- `@formula(0~1+A+B)` - intercept + main A + main B\
 - `@formula(0~1+A:B)` - intercept + interaction\
+
 - `@formula(0~1+A*B)` - intercept + simple effects + interaction\
 - `@formula(0~0+A)` - no  intercept + main effect\
 """
@@ -137,25 +154,48 @@ aside(md"""
 why does the left side have a `0` and not `ERP~1+A` or something? Just by convention!
 """,v_offset=-150)
 
+# ╔═╡ 033fe720-221a-45f8-b33c-d37aaad20083
+PlutoTeachingTools.protip(
+md"""
+Glad you asked!
+
+in the `fit` command below, you can define a `contrasts` Dictionary, defining your contrasts. Popular options:
+
+```julia
+contrasts = Dict("A"=>EffectsCoding())
+contrasts = Dict("B"=>DummyCoding(base="levelZ"))
+contrasts = Dict("B"=>DummyCoding(levels=["levelZ","levelA","levelX"))
+```
+
+You don't know what contrasts are? No time in this course, but [imho this is the definitive guide](https://doi.org/10.1016/j.jml.2019.104038) to them! And if you want to learn more on the Julia side, [check out this documentation.](https://juliastats.org/StatsModels.jl/stable/contrasts/)
+""",md"""
+Advanced: What about contrasts?					  
+""")
+
 # ╔═╡ a643265c-e34f-4a77-939f-addce5d57117
 question_box(md"""
-Go ahead, define a formula for the intercept and for the `stimulation`.	
+Go ahead, define a formula for the `intercept` and for the `stimulation` main effect.	
 
 `f = @formula ...`
 """)
 
 
 # ╔═╡ 67e82140-5d2d-4abe-9e77-6866cd7104e7
-f = @formula(0~1+stimulation*size) # missing # <-- replace me
+f =  missing; # <-- replace me
 
 # ╔═╡ 852fbf20-9386-4c11-a000-04a38d2fa9e8
-!isa(f,Unfold.FormulaTerm) ? still_missing(md"The Formula `f` is not yet defined") : nothing
+@check_response(f,Unfold.FormulaTerm)
 
 # ╔═╡ 6ae533e8-ce36-48b2-8e4f-88a02e3089f2
 md"""
 ### 2. Run the model
 After you specified the formula, we are ready to run the model on all time-points (and all channels, but we only have one ;)).
 """
+
+# ╔═╡ 2065acc9-0229-487d-9923-3553108bd3c2
+# uncomment once `f` is defined
+#m_erp = fit(UnfoldModel,f,events,eegdata_epochs,times)
+
 
 # ╔═╡ e71ad2e4-103c-4165-b0f5-eb7b15d96b97
 md"""
@@ -175,12 +215,32 @@ question_box(md"Let's start with `coef`, and see what we get. Add the correct co
 **Hint:** you can evoke the help by typing `?coef` in a cell
 ")
 
+# ╔═╡ f6c405a1-e900-461b-9eb3-802348e8f691
+coefs = missing; # <-- replace me
+
+# ╔═╡ c3ac0645-e8f5-4d88-8257-1271683d85db
+@check_response(coefs,AbstractArray)
+
+# ╔═╡ a0d28de1-5485-48e1-9309-f3de4549d404
+# uncomment once coefs is defined
+#series(coefs[1,:,:]')
+
 # ╔═╡ 35c94ce1-ef0e-4424-9e80-c948ec17e334
 question_box(md"Next, define `coefs_df` via `coeftable` to receive a tidy dataframe")
+
+# ╔═╡ 2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
+coefs_df = missing; # <-- replace me
+
+# ╔═╡ 13f07084-c6e8-44ae-af07-17a2e4ea6ad5
+@check_response(coefs_df,Unfold.AbstractDataFrame)
 
 # ╔═╡ cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
 md"""
 🧹Tidy dataframes allow us to plot them using some ggplot-type UnfoldMakie.jl magic (based on `AlgebraOfGraphics`)"""
+
+# ╔═╡ 0253718e-f1bd-4c78-9b53-11314120eb29
+# uncomment once coefs_df is defined
+#plot_erp(coefs_df)
 
 # ╔═╡ ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
 #n_repeats = 2
@@ -191,12 +251,11 @@ PlutoTeachingTools.aside(md"Min. overlap: $(@bind min_overlap PlutoUI.Slider(0.1
 eegdata,events = simulate_eeg(;noiselevel,
 							   n_repeats, 
 							   overlap=(min_overlap,0.2),
-multichannel = true,
-	twobytwo = true
+							   #twobytwo = true
 							);
 
 # ╔═╡ 635c697a-771a-4228-bde1-e38e21698905
-let # let enforces local scope, you cannot access variables from here outside this cell
+let # "let" enforces local scope, you cannot access variables from here outside this cell - but you can then re-use variable names :)
 f,ax,h = lines(eegdata)
 vlines!(events.latency,linestyle=:dash)
 f
@@ -212,32 +271,7 @@ eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.2, 0
 size(eegdata_epochs) # channels x times x trials
 
 # ╔═╡ 8dbd8657-4396-4d32-affb-25387e775ded
-size(eegdata)
-
-# ╔═╡ 2065acc9-0229-487d-9923-3553108bd3c2
-m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
-
-
-# ╔═╡ f6c405a1-e900-461b-9eb3-802348e8f691
-coefs = coef(m_erp)#missing # <-- replace me
-
-# ╔═╡ c3ac0645-e8f5-4d88-8257-1271683d85db
-@check_response(coefs,AbstractArray)
-
-# ╔═╡ a0d28de1-5485-48e1-9309-f3de4549d404
-series(coefs[1,:,:]')
-
-# ╔═╡ 2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
-coefs_df = coeftable(m_erp)#missing # <-- replace me
-
-# ╔═╡ 13f07084-c6e8-44ae-af07-17a2e4ea6ad5
-@check_response(coefs_df,Unfold.AbstractDataFrame)
-
-# ╔═╡ 0253718e-f1bd-4c78-9b53-11314120eb29
-plot_erp(coefs_df)
-
-# ╔═╡ b84ac0d3-832b-4afe-b02a-c328b91b795d
-coefs_df
+size(eegdata) # continuous-time
 
 # ╔═╡ f854a1e7-3f37-4f38-9637-ea4326d6352d
 (;size_eeg=size(eegdata),n_repeats,min_overlap) # display some info parameters
@@ -245,14 +279,26 @@ coefs_df
 # ╔═╡ 2bde3123-09a5-4faa-84ba-8ef579179511
 question_box(md"""
 Looking at this ERPs: 
-1. Do we have an effect of  `condition`?
+1. Do we have an effect of  `stimulation`?
 2. What is going on in the baseline? What parameter do you need to change, to decrease this mess?
 """)
+
+# ╔═╡ 72bd7a31-e267-47fb-8b6b-596753226b90
+	@bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
+
+# ╔═╡ 4aae7a31-523a-4f1e-8e61-a18dcc30bebf
+begin
+finished > 0 ? 	confetti() : nothing
+end
 
 # ╔═╡ eae8bcda-5120-47cd-b349-c27551743ada
 begin
 	md"""
-	Bravo! You made it to the end. If you still have time - here are some extra tasks you could do
+	# Extra Tasks
+	Bravo! You made it to the end!
+	
+	If you still have time - ⚡🐆⚡ - you probably used Unfold before!
+	Here are some tasks you could enjoy:
 	
 	"""
 	
@@ -265,7 +311,8 @@ Let's inspect the designmatrix (the $X$ in $$y=Xb + e$$)
 """
 
 # ╔═╡ 446e914e-0a40-4c84-8a57-d43c5399d900
-plot_designmatrix(designmatrix(m_erp),sort_data=false)
+# uncomment once `m_erp` runs successfully
+#plot_designmatrix(designmatrix(m_erp),sort_data=false)
 
 # ╔═╡ 91a3aac1-3f48-4e58-b617-fa353d8948f7
 question_box(md"""
@@ -274,18 +321,16 @@ question_box(md"""
 [^1]: All condition-combinations have equal number of trials
 	""")
 
-# ╔═╡ b8f865b0-0ea0-4b2b-9505-f3c7e5e337a8
+# ╔═╡ 49eb7204-8486-474c-aa56-1c207f2551e6
 md"""
-## Task Advanced
-If you reached here - ⚡🐆⚡ - you probably used Unfold before! Here are some tasks you could enjoy:
-
-
+## Additional tasks
 """
 
 # ╔═╡ b0af7e88-9eac-4842-8586-65d5904d7c61
 question_box(md"""
+1. Add `twobytwo=true` to the `simulate_eeg` command on top. This will add a second effect `size`. Add it to your formula and re-run your code. Can you observe an interaction?
 1. Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. Can you adapt `plot_erp` to return useful results? You could try `layout=:channel=>nonnumeric`
-2. XXX
+
 """)
 
 # ╔═╡ ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
@@ -293,12 +338,6 @@ md"""
 # Setup / Bookkeeping / Layout
 Nothing to see here, move along ;-)
 """
-
-# ╔═╡ 429c3317-df28-45d1-95ee-a77e90609ab8
-
-
-# ╔═╡ 472e5d28-ad91-4358-b174-495d6e5112fa
-
 
 # ╔═╡ d0bd417a-8ab7-46f8-8a98-92b3b7ff5765
 TableOfContents() # add TOC to the side
@@ -2860,17 +2899,19 @@ version = "3.6.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═a49df28b-6587-4051-b777-26a56d339a2e
-# ╠═363cb188-97c7-4ece-b416-08256da0b5f9
+# ╟─a49df28b-6587-4051-b777-26a56d339a2e
+# ╟─363cb188-97c7-4ece-b416-08256da0b5f9
+# ╠═d2eae77b-07be-405f-ad7c-d9a3c7f28acc
 # ╟─1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
 # ╠═4de80b12-59c8-4cee-86d7-d13463fa263a
 # ╟─ab033cea-1eb9-4237-a595-3928cca0a0ca
-# ╟─3cbe1c9d-d3e3-4757-ba8d-2867e37b1dbe
-# ╠═f854a1e7-3f37-4f38-9637-ea4326d6352d
 # ╟─65befddb-2542-473e-8b3b-0b5c5b9fe839
 # ╠═a851ef86-c830-4de3-b485-8997f9e5b81c
 # ╠═9d50b828-fafb-4ca3-b196-fed692476e22
+# ╠═f854a1e7-3f37-4f38-9637-ea4326d6352d
 # ╠═635c697a-771a-4228-bde1-e38e21698905
+# ╟─3cbe1c9d-d3e3-4757-ba8d-2867e37b1dbe
+# ╟─6cb8aed5-7133-4f77-8fe7-44fcb0d4a941
 # ╟─8d0da37e-25bf-42e0-82cc-72cd24a5c82d
 # ╟─0b009035-d91a-4c46-a762-3ae33e5bae18
 # ╟─ea71ee25-35bf-49bb-a869-db2cfe98c6f3
@@ -2883,6 +2924,7 @@ version = "3.6.0+0"
 # ╟─53ad0364-f7ad-4b27-90f8-f4e06bc26c22
 # ╟─70e50157-289c-4d44-85b7-ed9fc3ba9dfb
 # ╟─3c43e8d0-fe44-47cf-8b7e-25e9efabb82f
+# ╟─033fe720-221a-45f8-b33c-d37aaad20083
 # ╟─a643265c-e34f-4a77-939f-addce5d57117
 # ╠═67e82140-5d2d-4abe-9e77-6866cd7104e7
 # ╟─852fbf20-9386-4c11-a000-04a38d2fa9e8
@@ -2899,18 +2941,17 @@ version = "3.6.0+0"
 # ╟─13f07084-c6e8-44ae-af07-17a2e4ea6ad5
 # ╟─cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
 # ╠═0253718e-f1bd-4c78-9b53-11314120eb29
-# ╠═b84ac0d3-832b-4afe-b02a-c328b91b795d
 # ╟─ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
 # ╟─2bde3123-09a5-4faa-84ba-8ef579179511
+# ╟─72bd7a31-e267-47fb-8b6b-596753226b90
+# ╟─4aae7a31-523a-4f1e-8e61-a18dcc30bebf
 # ╟─eae8bcda-5120-47cd-b349-c27551743ada
 # ╟─f2898827-74d3-4e0c-88f2-02a68bedd9ab
 # ╠═446e914e-0a40-4c84-8a57-d43c5399d900
 # ╟─91a3aac1-3f48-4e58-b617-fa353d8948f7
-# ╟─b8f865b0-0ea0-4b2b-9505-f3c7e5e337a8
+# ╟─49eb7204-8486-474c-aa56-1c207f2551e6
 # ╟─b0af7e88-9eac-4842-8586-65d5904d7c61
 # ╟─ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
-# ╠═429c3317-df28-45d1-95ee-a77e90609ab8
-# ╠═472e5d28-ad91-4358-b174-495d6e5112fa
 # ╠═d18def09-658d-47af-92e6-d729c9f83667
 # ╠═d9912a4c-5d3a-11ee-381e-03ad95d59994
 # ╠═d0bd417a-8ab7-46f8-8a98-92b3b7ff5765

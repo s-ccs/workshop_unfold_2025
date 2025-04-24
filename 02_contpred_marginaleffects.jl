@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.4
+# v0.20.6
 
 using Markdown
 using InteractiveUtils
@@ -36,10 +36,10 @@ We will now expand our analysis by including a continuous predictor, afterwards,
 # ╔═╡ 8b1f7c94-8a20-4b59-94f3-96feb693cf83
 begin
 
-	eegdata,events = simulate_eeg(;noiselevel = 1,
-									   n_repeats = 10,
-		continuouseffect = true,
-										);
+	eegdata,events = simulate_eeg(; noiselevel = 1,
+									n_repeats = 10,
+									continuouseffect = true,
+							 		);
 	eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.2, 0.8), sfreq = 100); # channel x timesteps x trials
 
 end
@@ -49,6 +49,11 @@ min_overlap = 0.5
 
 # ╔═╡ e1b91231-010e-4e66-b314-699cf61fd401
 first(events,3)
+
+# ╔═╡ d607a5ce-a71d-41fb-b9cd-63233c2aa606
+md"""
+As you can see, we now have a new column, `sac_amp` - short for saccade amplitude, the size of the eye-movement we took to come to the current fixation
+"""
 
 # ╔═╡ 23d27c4d-f988-4f3c-994c-1058d31155ba
 md"""
@@ -74,11 +79,16 @@ PlutoTeachingTools.Foldable(md"Want a reminder for the formula syntax?",md"""
 """
 )
 
+# ╔═╡ 241909a7-f7c4-4419-93cb-192840827298
+f = missing; # <-- replace me
+
+# ╔═╡ 331f20b0-9195-4253-b0d3-d9b417ad11c5
+@check_response(f,Unfold.FormulaTerm)
+
 # ╔═╡ d02e46db-afec-4a60-95c5-a8436cafe8c4
-begin
-	f = @formula 0 ~ 1 + sac_amp + stimulation # f = missing # <-- replace me
-	m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
-end
+# uncomment once `f` is defined
+# m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
+
 
 # ╔═╡ 318a46bf-5a83-4b30-95ab-c61479e589e3
 question_box(md"""
@@ -95,9 +105,11 @@ my_extracted_coefs = missing # replace me
 @check_response(my_extracted_coefs,AbstractArray)
 
 # ╔═╡ b234037e-367b-4ddb-831d-544f9249132c
-# replace me: code to calculate size of my_extracted_coefs?
+missing # <-- replace me: code to calculate size of my_extracted_coefs?
+
 
 # ╔═╡ 5b9fb5a1-56a7-480c-b97e-26772634e5cc
+# uncomment me once `my_extracted_coefs` is defined
 # lines(times,my_extracted_coefs)
 
 # ╔═╡ 4408a9db-b265-4217-a14d-1700908b76d9
@@ -119,7 +131,8 @@ You should think of them as being the modelled ERP/EEG signal, evaluated at user
 """
 
 # ╔═╡ 5372b339-7279-4094-85c0-ab6b651b1211
-eff = effects(Dict(:sac_amp=>[0,1]),m_erp)
+# uncomment me, once `m_erp` works
+#eff = effects(Dict(:sac_amp=>[0,1]),m_erp)
 
 # ╔═╡ 5c2e68af-5a19-4a6b-8498-3af00be5c538
 md"""
@@ -173,7 +186,7 @@ question_box(md"""
 
 # ╔═╡ 36552630-0213-467b-a22e-78c7dc064e69
 # replace me with the correct code: 
-# effects(Dict(:a=>[]),m_erp)
+# effects(Dict(:...=>[...]),m_erp)
 
 # ╔═╡ edaf68fb-0f9b-43c4-afb4-6f43c26550ab
 # replace me with the correct code: 
@@ -199,8 +212,8 @@ my_tip("plot_erp continuous colors / grouping",
 # ╔═╡ 529c2c19-bf81-464b-b29b-8ce9422055b9
 # replace me with the correct code: 
 let
-	# eff = effects(Dict(:A=>[]))
-	# plot_erp(eff;mapping = (;))
+	# eff = effects(Dict(:...=>[...]))
+	# plot_erp(eff;mapping = (;...))
 
 end
 
@@ -2787,9 +2800,12 @@ version = "3.6.0+0"
 # ╠═8b1f7c94-8a20-4b59-94f3-96feb693cf83
 # ╠═a9345555-dcee-48de-82f2-311cc22c7294
 # ╠═e1b91231-010e-4e66-b314-699cf61fd401
+# ╟─d607a5ce-a71d-41fb-b9cd-63233c2aa606
 # ╟─23d27c4d-f988-4f3c-994c-1058d31155ba
 # ╟─630af54c-98b0-4c0c-844b-c0d9e4da4292
 # ╟─443716b4-5067-41fc-a347-14c8d5286ebd
+# ╠═241909a7-f7c4-4419-93cb-192840827298
+# ╟─331f20b0-9195-4253-b0d3-d9b417ad11c5
 # ╠═d02e46db-afec-4a60-95c5-a8436cafe8c4
 # ╟─318a46bf-5a83-4b30-95ab-c61479e589e3
 # ╠═cff9c4d3-4066-4cf1-9bd8-fe839e481da3
