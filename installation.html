@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Registration – Unfold.jl Workshop 2025</title>
+<title>Installation guide – Unfold.jl Workshop 2025</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -97,11 +131,11 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Program</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./registration.html" aria-current="page"> 
+    <a class="nav-link" href="./registration.html"> 
 <span class="menu-text">Registration</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./installation.html"> 
+    <a class="nav-link active" href="./installation.html" aria-current="page"> 
 <span class="menu-text">Installation</span></a>
   </li>  
 </ul>
@@ -115,15 +149,31 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#installation" id="toc-installation" class="nav-link active" data-scroll-target="#installation">Installation</a>
+  <ul class="collapse">
+  <li><a href="#step-1-installing-julia" id="toc-step-1-installing-julia" class="nav-link" data-scroll-target="#step-1-installing-julia">Step 1: Installing Julia</a></li>
+  <li><a href="#step-2-run-julia" id="toc-step-2-run-julia" class="nav-link" data-scroll-target="#step-2-run-julia">Step 2: Run Julia</a></li>
+  <li><a href="#step-3-install-pluto" id="toc-step-3-install-pluto" class="nav-link" data-scroll-target="#step-3-install-pluto">Step 3: Install Pluto</a></li>
+  <li><a href="#step-4-run-pluto" id="toc-step-4-run-pluto" class="nav-link" data-scroll-target="#step-4-run-pluto">Step 4: Run Pluto</a></li>
+  </ul></li>
+  <li><a href="#using-the-notebooks" id="toc-using-the-notebooks" class="nav-link" data-scroll-target="#using-the-notebooks">Using the Notebooks</a>
+  <ul class="collapse">
+  <li><a href="#initial-setup" id="toc-initial-setup" class="nav-link" data-scroll-target="#initial-setup">Initial setup</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Registration</h1>
+<h1 class="title">Installation guide</h1>
 </div>
 
 
@@ -140,6 +190,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>To actively participate in the workshop and use the notebooks we provided, you will need to install both Julia and Pluto.jl on your system. The following is a minimal guide on how to do this. You can find more extensive information in the <a href="https://plutojl.org/en/docs/install/">Pluto.jl documentation</a> (which this guide is based on) and also watch their <a href="https://computationalthinking.mit.edu/Fall24/installation/">instruction video</a>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -150,14 +201,50 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Since our capacity for the practical exercises is limited, we will only be able to accept <strong>~50 participants</strong> for the workshop. However, the lectures will also be available via livestream, and everyone is invited to follow along independently.</p>
+<p>Please note that we will not be able to help with installing Julia and/or Pluto during the workshop. If you experience problems please contact us <em>before</em> the day of the workshop.</p>
 </div>
 </div>
-<p>To register for the free Unfold.jl workshop, please fill out the form below until <strong>07.05.2025</strong>. We will inform you via email if you got a place and share the Zoom link.</p>
-<iframe width="750px" height="580px" src="https://forms.office.com/Pages/ResponsePage.aspx?id=z8oksN7eQUKhXDyX1VPp836-sjS8o81Eqt_rYQKX4NBUNDJXS0E3MUQxQVBMSzlTMzlEVVFBSkxFUy4u&amp;embed=true" frameborder="0" marginwidth="0" marginheight="0" style="border: none; max-width:100%; max-height:100vh" allowfullscreen="" webkitallowfullscreen="" mozallowfullscreen="" msallowfullscreen="">
-</iframe>
+<section id="installation" class="level1">
+<h1>Installation</h1>
+<section id="step-1-installing-julia" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-installing-julia">Step 1: Installing Julia</h2>
+<p>In most cases, going to <a href="https://julialang.org/downloads">https://julialang.org/downloads</a> and installing the current stable release is sufficient.</p>
+<p>However, if you plan to use Julia in the future, we recommend installing Julia through a version manager like <code>juliaup</code>. This allows you to easily switch between different Julia versions. You can find more information about <code>juliaup</code> <a href="https://github.com/JuliaLang/juliaup">here</a>.</p>
+</section>
+<section id="step-2-run-julia" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-run-julia">Step 2: Run Julia</h2>
+<p>Make sure that you can run Julia. To do this, open a termminal and type <code>julia</code>. You should then see the below startup message and your terminal should say “julia”.</p>
+<p><img src="./assets/JuliaStartup.png" class="img-fluid" style="width:60.0%"></p>
+</section>
+<section id="step-3-install-pluto" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-install-pluto">Step 3: Install Pluto</h2>
+<p>To install Pluto type</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">Pkg;</span> Pkg.add("Pluto")</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>into the Julia terminal (i.e.&nbsp;after step 2)</p>
+</section>
+<section id="step-4-run-pluto" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-run-pluto">Step 4: Run Pluto</h2>
+<p>To run Pluto.jl, simply type the following in the Julia terminal:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">Pluto;</span> Pluto.run()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will start up a Pluto session and automatically open your browser.</p>
+<p>And then you are all done and ready for the workshop 🎉</p>
+</section>
+</section>
+<section id="using-the-notebooks" class="level1">
+<h1>Using the Notebooks</h1>
+<p>To use any of our notebooks you can simply go to <a href="https://github.com/s-ccs/workshop_unfold_2025">our Github website</a>, choose any of the notebooks, copy its permalink (although the normal link should be fine as well) and paste that into your Pluto instance. No need to download the repo! You can find a short instructional gif below.</p>
+<p><img src="./assets/PlutoScreenRecording.gif" class="img-fluid" style="width:90.0%"></p>
+<section id="initial-setup" class="level2">
+<h2 class="anchored" data-anchor-id="initial-setup">Initial setup</h2>
+<p>As running the notebooks on different systems and at different times might lead to package conflicts and waiting times we kindly ask two more things of you:</p>
+<ol type="1">
+<li>We are providing a “package installation” notebook. This will make sure that everyone will be using the same package versions. Please run this one before any of the other notebooks.</li>
+<li>Initializing the notebooks might take time, as Pluto runs all cells when you click “run notebook”. Please open and initialize each notebook <em>before</em> the workshop.</li>
+</ol>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
