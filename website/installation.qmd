@@ -55,7 +55,7 @@ We are providing a "package installation" notebook. This will make sure that eve
 
 1. Copy this link to the installation notebook: 
 ```julia
-https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/01_massunivariate.jl
+https://github.com/s-ccs/workshop_unfold_2025/blob/5a364e71057edddfa39f423f8abc4ebc44d9297e/00_installation.jl
 ```
 2. Put it in the Pluto.jl box next to **open a notebook**.
 
