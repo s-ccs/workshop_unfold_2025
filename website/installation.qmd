@@ -2,7 +2,7 @@
 title: "Installation guide"
 ---
 
-To actively partake in the workshop and make use of the notebooks provided by us you will need to install both Julia and Pluto.jl on your system. The following is a minimal guide on how to do this. You can find more extensive information in the [Pluto.jl documentation](https://plutojl.org/en/docs/install/) (of which this guide is base on), and also watch their [instruction video](https://computationalthinking.mit.edu/Fall24/installation/).
+To actively participate in the workshop and use the notebooks we provided, you will need to install both Julia and Pluto.jl on your system. The following is a minimal guide on how to do this. You can find more extensive information in the [Pluto.jl documentation](https://plutojl.org/en/docs/install/) (which this guide is based on) and also watch their [instruction video](https://computationalthinking.mit.edu/Fall24/installation/).
 
 ::: {.callout-note}
 Please note that we will not be able to help with installing Julia and/or Pluto during the workshop. If you experience problems please contact us *before* the day of the workshop.
@@ -10,7 +10,7 @@ Please note that we will not be able to help with installing Julia and/or Pluto 
 
 # Step 1: Installing Julia
 
-In most cases, goin to [https://julialang.org/downloads](https://julialang.org/downloads) and installing the current stable release is sufficient.
+In most cases, going to [https://julialang.org/downloads](https://julialang.org/downloads) and installing the current stable release is sufficient.
 
 However, if you plan to use Julia in the future, we recommend installing Julia through a version manager like `juliaup`. This allows you to easily switch between different Julia versions. You can find more information about `juliaup` [here](https://github.com/JuliaLang/juliaup).
 
