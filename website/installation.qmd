@@ -5,7 +5,7 @@ title: "Installation guide"
 To actively participate in the workshop and use the notebooks we provided, you will need to install both Julia and Pluto.jl on your system. The following is a minimal guide on how to do this. You can find more extensive information in the [Pluto.jl documentation](https://plutojl.org/en/docs/install/) (which this guide is based on) and also watch their [instruction video](https://computationalthinking.mit.edu/Fall24/installation/).
 
 ::: {.callout-note}
-Please note that we will not be able to help with installing Julia and/or Pluto during the workshop. If you experience problems please contact us *before* the day of the workshop.
+Please note that we will not be able to help with installing Julia and/or Pluto during the workshop. If you experience problems please contact us *before* the day of the workshop. Best case you explain your issue in our [GitHub discussion](https://github.com/unfoldtoolbox/Unfold.jl/discussions/categories/unfold-jl-workshop-2025), here you can also see problems others had (you will need a GitHub account to make contributions). 
 :::
 
 # Installation
