@@ -53,7 +53,7 @@
     "href": "installation.html#step-5-installing-the-required-packages",
     "title": "Installation guide",
     "section": "Step 5: Installing the required packages",
-    "text": "Step 5: Installing the required packages\nWe are providing a “package installation” notebook. This will make sure that everyone will be using the same package versions. Please run this one before any of the other notebooks.\n\nCopy this link to the installation notebook:\n\nhttps://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/01_massunivariate.jl\n\nPut it in the Pluto.jl box next to open a notebook.\nConfirm that you want to start this notebook!\nGrab a ☕ - it will take 5-15 minutes to install all packages.\nAnd then you are all done and ready for the workshop 🎉"
+    "text": "Step 5: Installing the required packages\nWe are providing a “package installation” notebook. This will make sure that everyone will be using the same package versions. Please run this one before any of the other notebooks.\n\nCopy this link to the installation notebook:\n\nhttps://github.com/s-ccs/workshop_unfold_2025/blob/5a364e71057edddfa39f423f8abc4ebc44d9297e/00_installation.jl\n\nPut it in the Pluto.jl box next to open a notebook.\nConfirm that you want to start this notebook!\nGrab a ☕ - it will take 5-15 minutes to install all packages.\nAnd then you are all done and ready for the workshop 🎉"
   },
   {
     "objectID": "index.html",
