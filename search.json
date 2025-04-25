@@ -25,14 +25,14 @@
     "href": "installation.html#step-1-installing-julia",
     "title": "Installation guide",
     "section": "Step 1: Installing Julia",
-    "text": "Step 1: Installing Julia\nIn most cases, going to https://julialang.org/downloads and installing the current stable release is sufficient.\nHowever, if you plan to use Julia in the future, we recommend installing Julia through a version manager like juliaup. This allows you to easily switch between different Julia versions. You can find more information about juliaup here."
+    "text": "Step 1: Installing Julia\nIn most cases, we recommend installing Julia through the julia-version manager juliaup. This will allow you in the future to easily update and switch between different Julia versions.\nWindows: Windows app store or run winget install --name Julia --id 9NJNWW8PVKMN -e -s msstore in a cmd.exe\nMacOS/Linux: open a terminal and run curl -fsSL https://install.julialang.org | sh\n❌ Something didn’t work? Try following the instructions here. You can also ask questions in our Unfold.jl github-discussion group\nIf all things fail, you can also try to go to https://julialang.org/downloads and install the latest stable release."
   },
   {
     "objectID": "installation.html#step-2-run-julia",
     "href": "installation.html#step-2-run-julia",
     "title": "Installation guide",
     "section": "Step 2: Run Julia",
-    "text": "Step 2: Run Julia\nMake sure that you can run Julia. To do this, open a termminal and type julia. You should then see the below startup message and your terminal should say “julia”."
+    "text": "Step 2: Run Julia\nMake sure that you can run Julia. To do this, open a terminal and type julia. You should then see the below startup message and your terminal should say “julia”."
   },
   {
     "objectID": "installation.html#step-3-install-pluto",
