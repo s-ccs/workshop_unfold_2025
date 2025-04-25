@@ -160,10 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#step-2-run-julia" id="toc-step-2-run-julia" class="nav-link" data-scroll-target="#step-2-run-julia">Step 2: Run Julia</a></li>
   <li><a href="#step-3-install-pluto" id="toc-step-3-install-pluto" class="nav-link" data-scroll-target="#step-3-install-pluto">Step 3: Install Pluto</a></li>
   <li><a href="#step-4-run-pluto" id="toc-step-4-run-pluto" class="nav-link" data-scroll-target="#step-4-run-pluto">Step 4: Run Pluto</a></li>
-  </ul></li>
-  <li><a href="#using-the-notebooks" id="toc-using-the-notebooks" class="nav-link" data-scroll-target="#using-the-notebooks">Using the Notebooks</a>
-  <ul class="collapse">
-  <li><a href="#initial-setup" id="toc-initial-setup" class="nav-link" data-scroll-target="#initial-setup">Initial setup</a></li>
+  <li><a href="#installing-the-required-packages" id="toc-installing-the-required-packages" class="nav-link" data-scroll-target="#installing-the-required-packages">Installing the required packages</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -230,20 +227,15 @@ Note
 <p>To run Pluto.jl, simply type the following in the Julia terminal:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">Pluto;</span> Pluto.run()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This will start up a Pluto session and automatically open your browser.</p>
-<p>And then you are all done and ready for the workshop 🎉</p>
 </section>
-</section>
-<section id="using-the-notebooks" class="level1">
-<h1>Using the Notebooks</h1>
-<p>To use any of our notebooks you can simply go to <a href="https://github.com/s-ccs/workshop_unfold_2025">our Github website</a>, choose any of the notebooks, copy its permalink (although the normal link should be fine as well) and paste that into your Pluto instance. No need to download the repo! You can find a short instructional gif below.</p>
-<p><img src="./assets/PlutoScreenRecording.gif" class="img-fluid" style="width:90.0%"></p>
-<section id="initial-setup" class="level2">
-<h2 class="anchored" data-anchor-id="initial-setup">Initial setup</h2>
-<p>As running the notebooks on different systems and at different times might lead to package conflicts and waiting times we kindly ask two more things of you:</p>
+<section id="installing-the-required-packages" class="level2">
+<h2 class="anchored" data-anchor-id="installing-the-required-packages">Installing the required packages</h2>
+<p>We are providing a “package installation” notebook. This will make sure that everyone will be using the same package versions. Please run this one before any of the other notebooks.</p>
 <ol type="1">
-<li>We are providing a “package installation” notebook. This will make sure that everyone will be using the same package versions. Please run this one before any of the other notebooks.</li>
-<li>Initializing the notebooks might take time, as Pluto runs all cells when you click “run notebook”. Please open and initialize each notebook <em>before</em> the workshop.</li>
+<li><p>Copy this link: <code>https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/01_massunivariate.jl</code> and put it in the Pluto.jl box following <strong>Open a notebook</strong>.</p></li>
+<li><p>Confirm that you want to start this notebook, it will take 3-10minutes to install all packages.</p></li>
 </ol>
+<p>And then you are all done and ready for the workshop 🎉</p>
 
 
 </section>
