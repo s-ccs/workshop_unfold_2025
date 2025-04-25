@@ -49,11 +49,11 @@ import Pluto; Pluto.run()
 
 This will start up a Pluto session and automatically open your browser.
 
-## Installing the required packages
+## Step 5: Installing the required packages
 
 We are providing a "package installation" notebook. This will make sure that everyone will be using the same package versions. Please run this one before any of the other notebooks.
 
-1. Copy this link: 
+1. Copy this link to the installation notebook: 
 ```julia
 https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/01_massunivariate.jl
 ```
