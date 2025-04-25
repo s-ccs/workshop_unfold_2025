@@ -69,6 +69,11 @@ md"""
 # UnfoldBIDS.jl
 """
 
+# ╔═╡ dec797fa-d060-4a9c-9213-cca44ef3cae7
+md"""
+![UnfoldBIDS.jl flowchart](https://github.com/unfoldtoolbox/UnfoldBIDS.jl/blob/main/docs/src/assets/2025UnfoldBIDSFlowChart.png?raw=true)
+"""
+
 # ╔═╡ 3bd92788-c20f-4cb4-ad83-11397a3a508d
 md"""
 # UnfoldMixedModels.jl
@@ -376,6 +381,7 @@ version = "17.4.0+2"
 # ╟─5570743f-7ee0-4109-bc76-257be08895e1
 # ╠═89380ba4-de0e-4b14-8445-14a4ff347a45
 # ╟─f4657c3d-97ca-438a-9cc3-06f222911c79
+# ╟─dec797fa-d060-4a9c-9213-cca44ef3cae7
 # ╟─3bd92788-c20f-4cb4-ad83-11397a3a508d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
