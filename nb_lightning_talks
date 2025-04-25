@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.4
+# v0.20.6
 
 using Markdown
 using InteractiveUtils
@@ -29,6 +29,11 @@ md"""
 # UnfoldBIDS.jl
 """
 
+# ╔═╡ dec797fa-d060-4a9c-9213-cca44ef3cae7
+md"""
+![UnfoldBIDS.jl flowchart](https://github.com/unfoldtoolbox/UnfoldBIDS.jl/blob/main/docs/src/assets/2025UnfoldBIDSFlowChart.png?raw=true)
+"""
+
 # ╔═╡ 3bd92788-c20f-4cb4-ad83-11397a3a508d
 md"""
 # UnfoldMixedModels.jl
@@ -40,4 +45,5 @@ md"""
 # ╟─5417e677-8822-4c20-823d-7f7fdda45fa1
 # ╟─d1d5c7e3-0a8f-4dee-bd90-e97155030857
 # ╟─f4657c3d-97ca-438a-9cc3-06f222911c79
+# ╟─dec797fa-d060-4a9c-9213-cca44ef3cae7
 # ╟─3bd92788-c20f-4cb4-ad83-11397a3a508d
