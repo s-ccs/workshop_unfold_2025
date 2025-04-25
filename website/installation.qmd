@@ -1,0 +1,57 @@
+---
+title: "Installation guide"
+---
+
+To actively participate in the workshop and use the notebooks we provided, you will need to install both Julia and Pluto.jl on your system. The following is a minimal guide on how to do this. You can find more extensive information in the [Pluto.jl documentation](https://plutojl.org/en/docs/install/) (which this guide is based on) and also watch their [instruction video](https://computationalthinking.mit.edu/Fall24/installation/).
+
+::: {.callout-note}
+Please note that we will not be able to help with installing Julia and/or Pluto during the workshop. If you experience problems please contact us *before* the day of the workshop.
+:::
+
+# Installation
+## Step 1: Installing Julia
+
+In most cases, going to [https://julialang.org/downloads](https://julialang.org/downloads) and installing the current stable release is sufficient.
+
+However, if you plan to use Julia in the future, we recommend installing Julia through a version manager like `juliaup`. This allows you to easily switch between different Julia versions. You can find more information about `juliaup` [here](https://github.com/JuliaLang/juliaup).
+
+## Step 2: Run Julia
+
+Make sure that you can run Julia. To do this, open a termminal and type `julia`. You should then see the below startup message and your terminal should say "julia".
+
+![](./assets/JuliaStartup.png){width=60%}
+
+## Step 3: Install Pluto
+
+To install Pluto type
+
+```julia
+import Pkg; Pkg.add("Pluto")
+```
+
+into the Julia terminal (i.e. after step 2)
+
+## Step 4: Run Pluto
+
+To run Pluto.jl, simply type the following in the Julia terminal:
+
+```julia
+import Pluto; Pluto.run()
+```
+
+This will start up a Pluto session and automatically open your browser.
+
+And then you are all done and ready for the workshop 🎉
+
+# Using the Notebooks
+
+To use any of our notebooks you can simply go to [our Github website](https://github.com/s-ccs/workshop_unfold_2025), choose any of the notebooks, copy its permalink (although the normal link should be fine as well) and paste that into your Pluto instance. No need to download the repo! You can find a short instructional gif below.
+
+![](./assets/PlutoScreenRecording.gif){width=90%}
+
+## Initial setup
+
+As running the notebooks on different systems and at different times might lead to package conflicts and waiting times we kindly ask two more things of you:
+
+1. We are providing a "package installation" notebook. This will make sure that everyone will be using the same package versions. Please run this one before any of the other notebooks.
+2. Initializing the notebooks might take time, as Pluto runs all cells when you click "run notebook". Please open and initialize each notebook *before* the workshop.
