@@ -15,7 +15,35 @@ begin
 
     # make plotting look a tad better
     using MakieThemes
+
+	done = "done!"
 end
+
+# ╔═╡ 5f7ea462-7c19-4f7a-8318-1207aa0e07e8
+md"""
+# Unfold-Workshop Package Installation
+The notebooks existance is solely to install the packages once, so that for the exercise you do not need to wait for the installation.
+
+If you receive the message `Installation successful` below, you should be ready for the workshop
+"""
+
+# ╔═╡ d34bc36e-d39a-4de1-a441-6ef72d65a95b
+PlutoTeachingTools.warning_box(md"""
+If you run into problems, please post in the [github discussion forum](https://github.com/unfoldtoolbox/Unfold.jl/discussions/categories/unfold-jl-workshop-2025)
+							   """)
+
+# ╔═╡ 0cd07955-9f3e-4876-bff5-428906ebc17c
+md"""
+## Actual installation
+⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇
+"""
+
+# ╔═╡ 84f2244e-943a-41e8-9ba6-c3f03944ded2
+begin 
+	done
+	PlutoTeachingTools.correct(md"🎉 Installation successful")
+end
+	
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2576,6 +2604,10 @@ version = "3.6.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─5f7ea462-7c19-4f7a-8318-1207aa0e07e8
+# ╟─d34bc36e-d39a-4de1-a441-6ef72d65a95b
+# ╟─0cd07955-9f3e-4876-bff5-428906ebc17c
 # ╠═07b5c518-7d11-482e-a555-455ac55d0664
+# ╟─84f2244e-943a-41e8-9ba6-c3f03944ded2
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
