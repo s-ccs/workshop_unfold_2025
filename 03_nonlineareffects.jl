@@ -43,9 +43,6 @@ md"""
 [CC-By Benedikt Ehinger](www.s-ccs.de) - Unfold.jl Workshop
 """
 
-# ╔═╡ b5087647-2515-4d46-bbcd-0accb95d063c
-
-
 # ╔═╡ 83ca7107-4c44-4ab4-b63e-189eca8a2f52
 begin
 	sfreq = 100;
@@ -55,7 +52,6 @@ begin
 									   continuouseffect=true,
 						);
 	eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.4, 0.8), sfreq = sfreq); # channel x timesteps x trials
-
 end
 
 # ╔═╡ d9c68118-c2dc-4dd9-a193-7d7eb69d81c1
@@ -73,11 +69,14 @@ Change the formula to contain an intercept + `spl(sac_amp,5)`
 # ╔═╡ 989c46c5-db2d-4739-a9b6-3b6b76595683
 f =  missing; # <-- replace me
 
+# ╔═╡ 9fe1d442-2cb9-4a6a-a268-b7f740c685d5
+answer_box(md"`f =  @formula(0~1+spl(sac_amp,5)); `")
+
 # ╔═╡ 322787d7-e199-483f-ae28-ceb54e6881c1
 @check_response(f,Unfold.FormulaTerm)
 
 # ╔═╡ a3c6fe71-2c31-4b19-8133-9a74b471390f
-# uncomment once formula  is defined
+# uncomment once formula is defined
 # m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs) 
 
 # ╔═╡ ec431cde-6d20-40a9-bb63-cfbb79396f2a
@@ -98,7 +97,7 @@ let
 	m_erp_linear = fit(UnfoldModel,[Any=>(@formula(0~1+sac_amp),times)],events,eegdata_epochs) 
 	eff_linear = effects(Dict(:sac_amp=>0:10),m_erp_linear)
 	plot_erp(eff_linear,mapping=(;color=:sac_amp,group=:sac_amp))
-	end
+end
 
 # ╔═╡ 073c8a10-3861-456d-b1b8-ac86d5be163e
 md"""
@@ -135,7 +134,6 @@ Now this is not particularly interesting, because our covariate is well balanced
 """
 
 # ╔═╡ 53708f31-6559-47c1-8e09-17ec93475114
-
 let 
 	 events_outlier = deepcopy(events)
 	 events_outlier.sac_amp[1] = 100
@@ -150,6 +148,15 @@ question_box(md"""
 2. What do you observe now? 
 3. Is this going to be a useful fit? 
 4. What could you do to adress this problem?""")
+
+# ╔═╡ a0e9d5f3-75f1-440a-bc07-7684bc2b2ad0
+answer_box(md"""
+
+```julia
+eff = effects(Dict(:sac_amp=>0:10),m_erp)
+plot_splines(m_erp)
+```
+""")
 
 # ╔═╡ c48cf8e8-ab9d-4b5e-a8b8-e5b269180f75
 md"""
@@ -2720,27 +2727,28 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╟─dbe14b67-d100-4395-83c9-3ca3fed51068
-# ╠═b5087647-2515-4d46-bbcd-0accb95d063c
 # ╠═83ca7107-4c44-4ab4-b63e-189eca8a2f52
 # ╟─d9c68118-c2dc-4dd9-a193-7d7eb69d81c1
 # ╠═af31e83b-f2ff-4947-9eca-bc404b77c4f4
-# ╠═68e74f22-255d-484d-b773-35068973f33c
+# ╟─68e74f22-255d-484d-b773-35068973f33c
 # ╠═989c46c5-db2d-4739-a9b6-3b6b76595683
+# ╟─9fe1d442-2cb9-4a6a-a268-b7f740c685d5
 # ╟─322787d7-e199-483f-ae28-ceb54e6881c1
 # ╠═a3c6fe71-2c31-4b19-8133-9a74b471390f
 # ╠═ec431cde-6d20-40a9-bb63-cfbb79396f2a
-# ╠═e184e6bb-1b72-47c0-a505-154a16b73059
+# ╟─e184e6bb-1b72-47c0-a505-154a16b73059
 # ╠═e8fb5eb1-4dc3-449f-b59d-1c986042c392
 # ╟─073c8a10-3861-456d-b1b8-ac86d5be163e
 # ╟─3a6dd194-38a4-42e3-898d-fb10b5b0155b
 # ╟─681867e2-22ca-4e02-b0d0-3c0a07e3954d
 # ╟─ee931da7-1587-43f6-8a38-7b44a13c2618
-# ╠═a406c967-04e2-4b1c-8f05-324af6e707b8
+# ╟─a406c967-04e2-4b1c-8f05-324af6e707b8
 # ╠═26f4d3c6-93b5-4f77-a0a5-42b8f8315cde
 # ╟─4ac2d1dc-1ab6-45c9-8dcb-8bd336248df2
 # ╟─510494d1-c317-452d-ab4d-93daccf8d6d7
 # ╠═53708f31-6559-47c1-8e09-17ec93475114
 # ╟─252f00df-fe2b-44b7-9ea4-ad721b758c35
+# ╟─a0e9d5f3-75f1-440a-bc07-7684bc2b2ad0
 # ╟─c48cf8e8-ab9d-4b5e-a8b8-e5b269180f75
 # ╠═17c033bd-40b9-474f-866a-e4d9ef513e29
 # ╠═07b5c518-7d11-482e-a555-455ac55d0664
