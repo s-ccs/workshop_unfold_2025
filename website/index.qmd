@@ -21,5 +21,102 @@ __Workshop date__: 09.05.2025; 10:00 - 17:00 CEST
 ## Organizers 🗣️
 The workshop is hosted by the [CHBH](https://www.birmingham.ac.uk/research/centres-institutes/human-brain-health) at the University of Birmingham and jointly organized by [Romy Frömer](https://www.birmingham.ac.uk/staff/profiles/psychology/froemer-romy), [Benedikt Ehinger](https://benediktehinger.de/blog/science/about-me/) and the [Computational Cognitive Science group](https://www.s-ccs.de/) at the University of Stuttgart.
 
+<style>
+  .round-image {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  .full-width-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .full-width-table th, .full-width-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  .full-width-table th {
+    background-color: #f2f2f2;
+  }
+</style>
+
+<table class="full-width-table">
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  <tr>
+    <td style="text-align: center;">
+      <img src=".\assets\Ehinger_Benedikt.jpg" alt="Benedikt Ehinger" class="round-image"><br>
+      Benedikt Ehinger
+    </td>
+    <td>
+    <ul>
+      <li>Speaker</li>
+      <li>Instructor</li>
+      <li>Organisation</li>
+    </ul>
+    </td>
+    <td style="text-align: center;">
+      <img src=".\assets\Romy_image_small.jpg" alt="Romy Frömer" class="round-image"><br>
+      Romy Frömer
+    </td>
+    <td>
+    <ul>
+      <li>Organization</li>
+      <li>Hosting</li>
+    </td>
+    </ul>
+  </tr>
+  <tr>
+    <td style="text-align: center;">
+      <img src=".\assets\Schepers_Judith.jfif" alt="Judith Schepers" class="round-image"><br>
+      Judith Schepers
+    </td>
+    <td>
+    <ul>
+      <li>Website</li>
+      <li>Organisation</li>
+      <li>Tutor</li>
+    </ul>
+    </td>
+    <td style="text-align: center;">
+      <img src=".\assets\ReneSkukies_profile_image.jpg" alt="René Skukies" class="round-image"><br>
+      René Skukies
+    </td>
+    <td>
+    <ul>
+      <li>Website</li>
+      <li>Organisation</li>
+      <li>Tutor</li>
+    </td>
+    </ul>
+  </tr>
+  <tr>
+    <td style="text-align: center;">
+      <img src=".\assets\Martin_profile_image.jpg" alt="Martin Geiger" class="round-image"><br>
+      Martin Geiger
+    </td>
+    <td>
+    <ul>
+      <li>Beta testing</li>
+    </ul>
+    </td>
+    <td style="text-align: center;">
+      <img src=".\assets\Vlad_profile_image.jpg" alt="Vladimir Mikheev" class="round-image"><br>
+      Vladimir Mikheev
+    </td>
+    <td>
+    <ul>
+      <li>Post-production videos</li>
+    </ul>
+    </td>
+  </tr>
+</table>
+
 ## Contact ✉️
 Contact us at: [workshop@unfoldtoolbox.org](mailto:workshop@unfoldtoolbox.org)
