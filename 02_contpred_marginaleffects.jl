@@ -30,18 +30,16 @@ md"""
 
 # ╔═╡ cab90ab1-a940-49ca-bf47-248433c92bdb
 md"""
-We will now expand our analysis by including a continuous predictor, afterwards, we'll introduce the concept of marginal effects
+We will now expand our analysis by including a continuous predictor, afterwards, we'll introduce the concept of marginal effects.
 """
 
 # ╔═╡ 8b1f7c94-8a20-4b59-94f3-96feb693cf83
 begin
-
 	eegdata,events = simulate_eeg(; noiselevel = 1,
 									n_repeats = 10,
 									continuouseffect = true,
 							 		);
 	eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.2, 0.8), sfreq = 100); # channel x timesteps x trials
-
 end
 
 # ╔═╡ a9345555-dcee-48de-82f2-311cc22c7294
@@ -52,7 +50,7 @@ first(events,3)
 
 # ╔═╡ d607a5ce-a71d-41fb-b9cd-63233c2aa606
 md"""
-As you can see, we now have a new column, `sac_amp` - short for saccade amplitude, the size of the eye-movement we took to come to the current fixation
+As you can see, we now have a new column, `sac_amp` - short for saccade amplitude, the size of the eye-movement we took to arrive at the current fixation.
 """
 
 # ╔═╡ 23d27c4d-f988-4f3c-994c-1058d31155ba
@@ -66,14 +64,14 @@ Adding a continuous[^contpred] predictor (e.g. `sac_amp`) to the formula will au
 
 # ╔═╡ 630af54c-98b0-4c0c-844b-c0d9e4da4292
 md"""
-[^contpred]: Julia/StatsModels.jl treats `Float` and `Int` as continuous, `Strings` and `Symbols` are automatically treated as type `Categorical`
+[^contpred]: Julia/StatsModels.jl treats `Float` and `Int` as continuous, `Strings` and `Symbols` are automatically treated as type `Categorical`.
 """
 
 # ╔═╡ 443716b4-5067-41fc-a347-14c8d5286ebd
 PlutoTeachingTools.Foldable(md"Want a reminder for the formula syntax?",md"""
 - `@formula(0~1)` - just an intercept (= the mean!)\
 - `@formula(0~1+A)` - intercept + main/simple effect\
-- `@formula(0~1+A:B)` - intercept + interaction\
+- `@formula(0~1+A&B)` - intercept + interaction\
 - `@formula(0~1+A*B)` - intercept + simple effects + interaction\
 - `@formula(0~0+A)` - no  intercept + main effect\
 """
@@ -89,12 +87,11 @@ f = missing; # <-- replace me
 # uncomment once `f` is defined
 # m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
 
-
 # ╔═╡ 318a46bf-5a83-4b30-95ab-c61479e589e3
 question_box(md"""
 
 1. Use `coef` on the model. What is the size of the coef-array?
-2. extract the `[1,:,2]` slope coefficients to `my_extracted_coefs`, and plot them using the provied `lines(times,my_extracted_coefs)` command.
+2. Extract the `[1,:,2]` slope coefficients to `my_extracted_coefs`, and plot them using the provided `lines(times,my_extracted_coefs)` command.
 3. When in time do you observe an effect of `continuous`?
 """)
 
@@ -107,6 +104,15 @@ my_extracted_coefs = missing # replace me
 # ╔═╡ b234037e-367b-4ddb-831d-544f9249132c
 missing # <-- replace me: code to calculate size of my_extracted_coefs?
 
+# ╔═╡ c3281566-c3d8-4f9a-9fa7-b99cb0210318
+answer_box(md"""
+
+```julia
+1. size(coef(m_erp))
+2. my_extracted_coefs = coef(m_erp)[1,:,2]
+3. size(my_extracted_coefs)
+```
+""")
 
 # ╔═╡ 5b9fb5a1-56a7-480c-b97e-26772634e5cc
 # uncomment me once `my_extracted_coefs` is defined
@@ -115,7 +121,7 @@ missing # <-- replace me: code to calculate size of my_extracted_coefs?
 # ╔═╡ 4408a9db-b265-4217-a14d-1700908b76d9
 md"""
 # Marginal effects
-With comparatively simple models like we implemented now, we can still try to add toegether all our effects in our heads, and simply plot the raw coefficients.
+With comparatively simple models like we implemented now, we can still try to add together all our effects in our heads, and simply plot the raw coefficients.
 
 But there is a trick to make our life much easier: **Marginal effects**.
 
@@ -124,7 +130,7 @@ But there is a trick to make our life much easier: **Marginal effects**.
 
 in a similar way, as 
 
-**ERPs** relate to **difference curves**
+**ERPs** relate to **difference curves**.
 
 
 You should think of them as being the modelled ERP/EEG signal, evaluated at user-controlled values. What does that mean exactly? Let's do an example:
@@ -143,7 +149,7 @@ We now calculate ERPs at two saccade-amplitude values, 0 & 1. Let's visualize th
 let # temporary cell
 	f = Figure()
 	plot_erp!(f[1,1],coeftable(m_erp),
-					 axis=(;title="coeficientts")
+					 axis=(;title="coefficients")
 	)
 	
 	plot_erp!(f[2,1],eff;
@@ -156,9 +162,17 @@ end
 # ╔═╡ 66b38321-a4d7-4dc8-bebd-2517d869b640
 question_box(md"""
 Now it is your turn:
-1. replace the `[0,1]` with a `range` from `0` to `15` in the `effects` call above.
+1. Replace the `[0,1]` with a `range` from `0` to `15` in the `effects` call above.
 
 **Hint**: if you get an error when using `[0:15]`, drop the `[]` - `0:15` already counts as an array, and you dont want to stack arrays in arrays.
+""")
+
+# ╔═╡ 4ebd64ab-43e6-4f91-aca6-54ec46879999
+answer_box(md"""
+
+```julia
+eff = effects(Dict(:sac_amp=>0:15),m_erp)
+```
 """)
 
 # ╔═╡ fee11d0e-5724-4f04-ae26-4fc6c7abb97d
@@ -170,27 +184,43 @@ md"""
 md"""
 Marginal effects are particularly strong, if you **do not** want to directly investigate a predictor, but rather keep that predictor constant across your predictor of interest.
 
-E.g. you have the condition `condition`, with levels `bike` and `face` - you also have measured those at different `sac_amp` eye-movement amplitudes. You want to plot the `bike` and `face` ERPs, including `β_cont * mean(sac_amp)`, effectively controlly for potentially different saccade amplitude distributions between your two conditions.
+E.g. you have the condition `condition`, with levels `bike` and `face` - you also have measured those at different `sac_amp` eye-movement amplitudes. You want to plot the `bike` and `face` ERPs, including `β_cont * mean(sac_amp)`, effectively controlling for potentially different saccade amplitude distributions between your two conditions.
 
 The `mean(sac_amp)` is called the *typical value*  of that predictor.
 
-Let's do it! Here is your task list
+Let's do it! Here is your task list:
 """
 
 # ╔═╡ f49d3a7a-1a80-4b15-99c1-bcd06ea4801d
 question_box(md"""
 1. Change the formula so it contains the condition too: `@formula 0 ~ 1 + continuous + condition`.
-2. re-calculate the  `effects` with a `Dict` containing only `:condition=>["face","bike"]`.
-3. use  `plot_erp` and modify the `mapping=(;color=:sac_amp)` to rather plot the `stimulation` condition as color.
+2. Re-calculate the  `effects` with a `Dict` containing only `:condition=>["face","bike"]`.
+3. Use  `plot_erp` and modify the `mapping=(;color=:sac_amp)` to rather plot the `stimulation` condition as color.
 """)
 
 # ╔═╡ 36552630-0213-467b-a22e-78c7dc064e69
 # replace me with the correct code: 
 # effects(Dict(:...=>[...]),m_erp)
 
+# ╔═╡ 2c5a2fbd-1588-47f6-98fa-039eaa987d91
+answer_box(md"""
+
+```julia
+eff_cond = effects(Dict(:condition=>["face","bike"]),m_erp)
+```
+""")
+
 # ╔═╡ edaf68fb-0f9b-43c4-afb4-6f43c26550ab
 # replace me with the correct code: 
 # plot_erp(...;mapping=(;...))
+
+# ╔═╡ 6f98dd64-8173-45e6-9875-24d7b4a88a0e
+answer_box(md"""
+
+```julia
+plot_erp(eff_cond;mapping=(;color=:condition))
+```
+""")
 
 # ╔═╡ 6c802e58-a06f-4098-8d3c-5b704205af72
 md"""
@@ -214,7 +244,6 @@ my_tip("plot_erp continuous colors / grouping",
 let
 	# eff = effects(Dict(:...=>[...]))
 	# plot_erp(eff;mapping = (;...))
-
 end
 
 # ╔═╡ 637d3c8f-2207-4dd0-a62c-ff2f56412baf
@@ -2811,17 +2840,21 @@ version = "3.6.0+0"
 # ╠═cff9c4d3-4066-4cf1-9bd8-fe839e481da3
 # ╟─d24b3214-2d0c-476f-892c-4ee65e964793
 # ╠═b234037e-367b-4ddb-831d-544f9249132c
+# ╟─c3281566-c3d8-4f9a-9fa7-b99cb0210318
 # ╠═5b9fb5a1-56a7-480c-b97e-26772634e5cc
 # ╟─4408a9db-b265-4217-a14d-1700908b76d9
 # ╠═5372b339-7279-4094-85c0-ab6b651b1211
 # ╟─5c2e68af-5a19-4a6b-8498-3af00be5c538
 # ╠═a65afe43-2214-4380-866f-cdc4310662df
 # ╟─66b38321-a4d7-4dc8-bebd-2517d869b640
+# ╟─4ebd64ab-43e6-4f91-aca6-54ec46879999
 # ╟─fee11d0e-5724-4f04-ae26-4fc6c7abb97d
 # ╟─735e3d67-767c-4cc2-b43e-e839ca0c388f
 # ╟─f49d3a7a-1a80-4b15-99c1-bcd06ea4801d
 # ╠═36552630-0213-467b-a22e-78c7dc064e69
+# ╟─2c5a2fbd-1588-47f6-98fa-039eaa987d91
 # ╠═edaf68fb-0f9b-43c4-afb4-6f43c26550ab
+# ╟─6f98dd64-8173-45e6-9875-24d7b4a88a0e
 # ╟─6c802e58-a06f-4098-8d3c-5b704205af72
 # ╟─4d95d0f3-1382-42f9-a736-fbaaf03b3f78
 # ╟─d18d4407-d28e-4b68-a2fd-2d497fb0cd71

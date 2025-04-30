@@ -48,7 +48,9 @@ What follows is some code to get to know `Pluto.jl` a little bit, and implement 
 # ╔═╡ d2eae77b-07be-405f-ad7c-d9a3c7f28acc
 md"""
 ## Pluto 101
-Different to jupyter, Pluto keeps track of what cell depends on what other cell, and **automatically** updates dependent cells!
+
+Different to Jupyter, Pluto keeps track of what cell depends on what other cell, and **automatically** updates dependent cells!
+
 """
 
 # ╔═╡ 1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
@@ -84,20 +86,19 @@ my_tip("Pluto.jl",md"""
 warning_box(md"""
 Pluto keeps track of your variables, therefore:
 
-1. Any variable name cannot be defined in more than one cell
-2. Multi-line code needs to be encapsulated in `begin ... end`
+1. Any variable name cannot be defined in more than one cell.
+2. Multi-line code needs to be encapsulated in `begin ... end`.
 3. Inplace operations (also known as side-effects, mutations), cannot be seen by Pluto; dangerous :)
 """)
 
 # ╔═╡ 8d0da37e-25bf-42e0-82cc-72cd24a5c82d
 md"""
 ## Sliders
-We can also use Sliders instead of fixing the parameters. 
+We can also use sliders instead of fixing the parameters. 
 
 A slider is defined like this:
 ```julia
-@bind yourvariable PlutoUI.Slider(from:stepsize:to,show_value=true,
-					default=1)
+@bind yourvariable PlutoUI.Slider(from:stepsize:to,show_value=true,default=1)
 ```
 """
 
@@ -105,6 +106,14 @@ A slider is defined like this:
 question_box(md"""
 Now it is your turn
 1. Replace the cell with `n_repeats` above with a slider!
+""")
+
+# ╔═╡ 2c278d2d-11b1-436b-abba-e67910e10ca2
+answer_box(md"""
+
+```julia
+@bind n_repeats PlutoUI.Slider(1:1:10,show_value=true,default=3)
+```
 """)
 
 # ╔═╡ ea71ee25-35bf-49bb-a869-db2cfe98c6f3
@@ -117,9 +126,9 @@ md"""
 ## Experimental Design
 We already started by simulating a design with a 2-level factor `stimulation` (🚲 vs. 😊). 
 
-Later we'll add another 2-level factor `size` (small vs. large)
+Later we'll add another 2-level factor `size` (small vs. large).
 
-And even later we'll add a  `continuous` effect from 0:15 (👀 sacccade amplitude) 
+And even later we'll add a `continuous` effect from 0:15 (👀 sacccade amplitude).
 """
 
 
@@ -138,12 +147,12 @@ Let's run a 2-stage ERP analysis, extracting the intercept (condition = 🚲) an
 # ╔═╡ 70e50157-289c-4d44-85b7-ed9fc3ba9dfb
 md"""
 ### 1. Define a formula
-A formula is a easy, succint but also formal description of your linear model. Some example formulas to get you started:
+A formula is an easy, succint but also formal description of your linear model. Some example formulas to get you started:
 
 - `@formula(0~1)` - just an intercept (= the mean!)\
 - `@formula(0~1+A)` - intercept + main/simple effect\
 - `@formula(0~1+A+B)` - intercept + main A + main B\
-- `@formula(0~1+A:B)` - intercept + interaction\
+- `@formula(0~1+A&B)` - intercept + interaction\
 
 - `@formula(0~1+A*B)` - intercept + simple effects + interaction\
 - `@formula(0~0+A)` - no  intercept + main effect\
@@ -159,12 +168,12 @@ PlutoTeachingTools.protip(
 md"""
 Glad you asked!
 
-in the `fit` command below, you can define a `contrasts` Dictionary, defining your contrasts. Popular options:
+In the `fit` command below, you can define a `contrasts` Dictionary, defining your contrasts. Popular options:
 
 ```julia
 contrasts = Dict("A"=>EffectsCoding())
 contrasts = Dict("B"=>DummyCoding(base="levelZ"))
-contrasts = Dict("B"=>DummyCoding(levels=["levelZ","levelA","levelX"))
+contrasts = Dict("B"=>DummyCoding(levels=["levelZ","levelA","levelX"]))
 ```
 
 You don't know what contrasts are? No time in this course, but [imho this is the definitive guide](https://doi.org/10.1016/j.jml.2019.104038) to them! And if you want to learn more on the Julia side, [check out this documentation.](https://juliastats.org/StatsModels.jl/stable/contrasts/)
@@ -183,6 +192,14 @@ Go ahead, define a formula for the `intercept` and for the `stimulation` main ef
 # ╔═╡ 67e82140-5d2d-4abe-9e77-6866cd7104e7
 f =  missing; # <-- replace me
 
+# ╔═╡ 4f822c2e-1e9b-400d-8738-c7603dcd7072
+answer_box(md"""
+
+```julia
+f = @formula(0~1+stimulation)
+```
+""")
+
 # ╔═╡ 852fbf20-9386-4c11-a000-04a38d2fa9e8
 @check_response(f,Unfold.FormulaTerm)
 
@@ -195,7 +212,6 @@ After you specified the formula, we are ready to run the model on all time-point
 # ╔═╡ 2065acc9-0229-487d-9923-3553108bd3c2
 # uncomment once `f` is defined
 #m_erp = fit(UnfoldModel,f,events,eegdata_epochs,times)
-
 
 # ╔═╡ e71ad2e4-103c-4165-b0f5-eb7b15d96b97
 md"""
@@ -218,6 +234,14 @@ question_box(md"Let's start with `coef`, and see what we get. Add the correct co
 # ╔═╡ f6c405a1-e900-461b-9eb3-802348e8f691
 coefs = missing; # <-- replace me
 
+# ╔═╡ 5155f9d7-9280-4fd7-a9e8-d9f557b16573
+answer_box(md"""
+
+```julia
+coefs = coef(m_erp);
+```
+""")
+
 # ╔═╡ c3ac0645-e8f5-4d88-8257-1271683d85db
 @check_response(coefs,AbstractArray)
 
@@ -230,6 +254,14 @@ question_box(md"Next, define `coefs_df` via `coeftable` to receive a tidy datafr
 
 # ╔═╡ 2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
 coefs_df = missing; # <-- replace me
+
+# ╔═╡ aa7d2d15-c933-4f47-8e7b-4bd4420799c7
+answer_box(md"""
+
+```julia
+coefs_df = coeftable(m_erp); 
+```
+""")
 
 # ╔═╡ 13f07084-c6e8-44ae-af07-17a2e4ea6ad5
 @check_response(coefs_df,Unfold.AbstractDataFrame)
@@ -304,6 +336,11 @@ begin
 	
 end
 
+# ╔═╡ 41c335cc-2a0e-458c-b2ce-0806f0bf692b
+question_box(md"""
+1. Add `twobytwo=true` to the `simulate_eeg` command on top. This will add a second effect `size`. Add it to your formula and re-run your code. Can you observe an interaction?
+""")
+
 # ╔═╡ f2898827-74d3-4e0c-88f2-02a68bedd9ab
 md"""
 ### Under the hood
@@ -316,21 +353,31 @@ Let's inspect the designmatrix (the $X$ in $$y=Xb + e$$)
 
 # ╔═╡ 91a3aac1-3f48-4e58-b617-fa353d8948f7
 question_box(md"""
-1. The designmatrix is currently sorted by trial-number. After you sort it, can you answer the question whether the design is balanced [^1]
+2. The designmatrix is currently sorted by trial-number. After you sort it, can you answer the question whether the design is balanced [^1]?
 
 [^1]: All condition-combinations have equal number of trials
 	""")
 
-# ╔═╡ 49eb7204-8486-474c-aa56-1c207f2551e6
-md"""
-## Additional tasks
-"""
+# ╔═╡ f2b18e0a-7bb7-4a69-adf2-b3555303129f
+answer_box(md"""
+
+```julia
+plot_designmatrix(designmatrix(m_erp),sort_data=true)
+```
+""")
 
 # ╔═╡ b0af7e88-9eac-4842-8586-65d5904d7c61
 question_box(md"""
-1. Add `twobytwo=true` to the `simulate_eeg` command on top. This will add a second effect `size`. Add it to your formula and re-run your code. Can you observe an interaction?
-1. Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. Can you adapt `plot_erp` to return useful results? You could try `layout=:channel=>nonnumeric`
+3. Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. Can you adapt `plot_erp` to return useful results? You could try `layout=:channel=>nonnumeric`.
 
+""")
+
+# ╔═╡ f69faad9-886e-4806-a2e2-9c531f686538
+answer_box(md"""
+
+```julia
+plot_erp(coefs_df,mapping = (; layout=:channel=>nonnumeric))
+```
 """)
 
 # ╔═╡ ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
@@ -2901,7 +2948,7 @@ version = "3.6.0+0"
 # ╔═╡ Cell order:
 # ╟─a49df28b-6587-4051-b777-26a56d339a2e
 # ╟─363cb188-97c7-4ece-b416-08256da0b5f9
-# ╠═d2eae77b-07be-405f-ad7c-d9a3c7f28acc
+# ╟─d2eae77b-07be-405f-ad7c-d9a3c7f28acc
 # ╟─1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
 # ╠═4de80b12-59c8-4cee-86d7-d13463fa263a
 # ╟─ab033cea-1eb9-4237-a595-3928cca0a0ca
@@ -2914,6 +2961,7 @@ version = "3.6.0+0"
 # ╟─6cb8aed5-7133-4f77-8fe7-44fcb0d4a941
 # ╟─8d0da37e-25bf-42e0-82cc-72cd24a5c82d
 # ╟─0b009035-d91a-4c46-a762-3ae33e5bae18
+# ╟─2c278d2d-11b1-436b-abba-e67910e10ca2
 # ╟─ea71ee25-35bf-49bb-a869-db2cfe98c6f3
 # ╟─4a23c228-9494-4a59-8c3f-0b4d1621e322
 # ╠═ec09f589-4d48-4780-b786-d1c9c115238d
@@ -2927,6 +2975,7 @@ version = "3.6.0+0"
 # ╟─033fe720-221a-45f8-b33c-d37aaad20083
 # ╟─a643265c-e34f-4a77-939f-addce5d57117
 # ╠═67e82140-5d2d-4abe-9e77-6866cd7104e7
+# ╟─4f822c2e-1e9b-400d-8738-c7603dcd7072
 # ╟─852fbf20-9386-4c11-a000-04a38d2fa9e8
 # ╟─6ae533e8-ce36-48b2-8e4f-88a02e3089f2
 # ╠═2065acc9-0229-487d-9923-3553108bd3c2
@@ -2934,10 +2983,12 @@ version = "3.6.0+0"
 # ╟─04a5809a-d1ed-4477-b3e5-5c19f3522d30
 # ╟─fc57a8a1-69b7-4dd0-aa56-8847f16a0253
 # ╠═f6c405a1-e900-461b-9eb3-802348e8f691
+# ╟─5155f9d7-9280-4fd7-a9e8-d9f557b16573
 # ╟─c3ac0645-e8f5-4d88-8257-1271683d85db
 # ╠═a0d28de1-5485-48e1-9309-f3de4549d404
 # ╟─35c94ce1-ef0e-4424-9e80-c948ec17e334
 # ╠═2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
+# ╟─aa7d2d15-c933-4f47-8e7b-4bd4420799c7
 # ╟─13f07084-c6e8-44ae-af07-17a2e4ea6ad5
 # ╟─cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
 # ╠═0253718e-f1bd-4c78-9b53-11314120eb29
@@ -2946,11 +2997,13 @@ version = "3.6.0+0"
 # ╟─72bd7a31-e267-47fb-8b6b-596753226b90
 # ╟─4aae7a31-523a-4f1e-8e61-a18dcc30bebf
 # ╟─eae8bcda-5120-47cd-b349-c27551743ada
+# ╟─41c335cc-2a0e-458c-b2ce-0806f0bf692b
 # ╟─f2898827-74d3-4e0c-88f2-02a68bedd9ab
 # ╠═446e914e-0a40-4c84-8a57-d43c5399d900
 # ╟─91a3aac1-3f48-4e58-b617-fa353d8948f7
-# ╟─49eb7204-8486-474c-aa56-1c207f2551e6
+# ╟─f2b18e0a-7bb7-4a69-adf2-b3555303129f
 # ╟─b0af7e88-9eac-4842-8586-65d5904d7c61
+# ╟─f69faad9-886e-4806-a2e2-9c531f686538
 # ╟─ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
 # ╠═d18def09-658d-47af-92e6-d729c9f83667
 # ╠═d9912a4c-5d3a-11ee-381e-03ad95d59994
