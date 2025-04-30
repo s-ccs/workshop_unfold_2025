@@ -42,13 +42,13 @@ md"""
 
 # ╔═╡ 363cb188-97c7-4ece-b416-08256da0b5f9
 md"""
-What follows is some code to get to know `Pluto.jl` a little bit, and implement a some interactive sliders!
+What follows is some code to get to know `Pluto.jl` a little bit, and implement some interactive sliders!
 """
 
 # ╔═╡ d2eae77b-07be-405f-ad7c-d9a3c7f28acc
 md"""
 ## Pluto 101
-Different to jupyter, Pluto keeps track of what cell depends on what other cell, and **automatically** updates dependant cells!
+Different to jupyter, Pluto keeps track of what cell depends on what other cell, and **automatically** updates dependent cells!
 """
 
 # ╔═╡ 1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
@@ -64,7 +64,7 @@ aside(tip(md"**`n-repeats`** repeats one instance of a 2x5 design (10 events)\
 question_box(md"""
 Change the value of `n_repeats` in the cell below to `3`, and save (▶ button or `ctrl+s`).
 
-1) Observe that Pluto automatically updates all dependant cells.
+1) Observe that Pluto automatically updates all dependent cells.
 
 2) What would you think a realistic noise level is?
 """)
@@ -109,7 +109,7 @@ Now it is your turn
 
 # ╔═╡ ea71ee25-35bf-49bb-a869-db2cfe98c6f3
 md"""
-# Task 2: Your first mass univariate rERP anylysis
+# Task 2: Your first mass univariate rERP analysis
 """
 
 # ╔═╡ 4a23c228-9494-4a59-8c3f-0b4d1621e322
@@ -132,7 +132,7 @@ The data are still continuous. For a mass-univariate analysis, we need to epoch 
 # ╔═╡ 53ad0364-f7ad-4b27-90f8-f4e06bc26c22
 md"""
 ## Analyze the data
-Let's run a 2-stage ERP analysis, extracting the intercept (condition = 🚗) and difference of condition (😊 - 🚗).
+Let's run a 2-stage ERP analysis, extracting the intercept (condition = 🚲) and difference of condition (😊 - 🚲).
 """
 
 # ╔═╡ 70e50157-289c-4d44-85b7-ed9fc3ba9dfb
@@ -151,7 +151,7 @@ A formula is a easy, succint but also formal description of your linear model. S
 
 # ╔═╡ 3c43e8d0-fe44-47cf-8b7e-25e9efabb82f
 aside(md"""
-why does the left side have a `0` and not `ERP~1+A` or something? Just by convention!
+Why does the left side have a `0` and not `ERP~1+A` or something? Just by convention!
 """,v_offset=-150)
 
 # ╔═╡ 033fe720-221a-45f8-b33c-d37aaad20083
