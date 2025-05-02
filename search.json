@@ -18,7 +18,7 @@
     "href": "installation.html",
     "title": "Installation guide",
     "section": "",
-    "text": "To actively participate in the workshop and use the notebooks we provided, you will need to install both Julia and Pluto.jl on your system. The following is a minimal guide on how to do this. You can find more extensive information in the Pluto.jl documentation (which this guide is based on) and also watch their instruction video."
+    "text": "To actively participate in the workshop and use the notebooks we provided, you will need to install both Julia and Pluto.jl on your system. The following is a minimal guide on how to do this. You can find more extensive information in the Pluto.jl documentation (which this guide is based on) and also watch their instruction video.\nIn this video, Romy and Ruman show how to install everything using the steps below."
   },
   {
     "objectID": "installation.html#step-1-installing-julia",
