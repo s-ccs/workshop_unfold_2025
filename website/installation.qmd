@@ -8,6 +8,9 @@ To actively participate in the workshop and use the notebooks we provided, you w
 Please note that we will not be able to help with installing Julia and/or Pluto during the workshop. If you experience problems please contact us *before* the day of the workshop. Best case you explain your issue in our [GitHub discussion](https://github.com/unfoldtoolbox/Unfold.jl/discussions/categories/unfold-jl-workshop-2025), here you can also see problems others had (you will need a GitHub account to make contributions). 
 :::
 
+In this video, Romy and Ruman show how to install everything using the steps below.
+{{< video https://www.youtube.com/watch?v=vISEPanHxdc >}}
+
 # Installation
 ## Step 1: Installing Julia
 

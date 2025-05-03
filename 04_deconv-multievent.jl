@@ -45,7 +45,7 @@ In this exercise we will learn to do overlap correction, and we will learn how t
 # ╔═╡ 77833116-54ad-4f7d-b2d9-8cb587d10ffe
 md"""
 ## Simulating data
-As before, we will simulate some data. Spoiler: Now with two events, `stimulus` and `fixation`
+As before, we will simulate some data. Spoiler: Now with two events, `stimulus` and `fixation`.
 """
 
 # ╔═╡ 493e0642-466a-47c0-aac3-a7e16acfaf7a
@@ -53,7 +53,7 @@ question_box(md"""
 We need a temporal expanding basis function. Let's use the `firbasis` for this.
 `firbasis(τ, sfreq)` with 
 
-- `τ`: The timeexpansion window, should capture everything timelocked, think ERP-window
+- `τ`: the timeexpansion window, should capture everything timelocked, think ERP-window
 - `sfreq`: sampling rate, 100 in our case :)
 
 More info via  `?firbasis`
@@ -69,7 +69,7 @@ basis = missing; # replace me!
 answer_box(md"""
 
 ```julia
-basis = firbasis([-0.2,0.8]),100)
+basis = firbasis([-0.2,0.8],100)
 ```
 """)
 
@@ -102,7 +102,6 @@ begin
 									   multievent=true,
 						);
 	eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.4, 0.8), sfreq = sfreq); # channel x timesteps x trials
-
 end
 
 # ╔═╡ d1fe2ef8-82cd-4598-9b1d-6635ca128825
@@ -126,7 +125,7 @@ Add a slider for `min_overlap` & modify the amount of overlap in your simulation
 
 > `@bind yourvariable PlutoUI.Slider(from:stepsize:to,show_value=true)`
 
-**Tipp:** Is your notebook jumping up/down when using the slider? Surpress the console output of the model fit by adding a `;` at the end of the fit-command
+**Tipp:** Is your notebook jumping up/down when using the slider? Suppress the console output of the model fit by adding a `;` at the end of the fit-command
 
 **Advanced:** Investigate what hapens if you replace the amount of jitter (the `0.2`), rather than the `min_overlap` in the `(min_overlap,0.2)` simulation code
 
@@ -137,7 +136,7 @@ Add a slider for `min_overlap` & modify the amount of overlap in your simulation
 answer_box(md"""
 replace the min_overlap definition with
 ```julia
-@bind min_overlap PlutoUI.Slider(0:0.1:1)
+@bind min_overlap PlutoUI.Slider(0:0.1:1,show_value=true)
 ```
 """)
 
@@ -220,6 +219,16 @@ question_box(md"""
 4. Plot it!
 
 Phew! A pretty advanced analysis 👍🏼
+""")
+
+# ╔═╡ 6f629ef5-d839-4e10-b86e-98ef3fe5ea24
+answer_box(md"""
+This is one possible way to do it:
+```julia
+1. eegdata,events = simulate_eeg(;noiselevel = 0, n_repeats = 5, overlap=(min_overlap,0.2), multievent=true, continuouseffect = true);
+2. fixa_f = @formula 0 ~ 1 + stimulation + spl(sac_amp,4)
+3+4. plot_erp(effects(Dict(:stimulation=>["bike","face"],:sac_amp=>0:15),m_erp_twoevts);mapping=(;color=:stimulation,row=:eventname))
+```
 """)
 
 # ╔═╡ fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
@@ -2824,8 +2833,9 @@ version = "3.6.0+0"
 # ╠═9d1a8793-7da0-4140-a7aa-294012b7e295
 # ╟─f50d0e36-4dd2-49ed-94a0-1a1a039d9a50
 # ╟─10453178-d5f6-43cd-9634-094a0c43b10c
-# ╠═ecfc4fe4-a690-43fe-a3b4-07239b6bb935
+# ╟─ecfc4fe4-a690-43fe-a3b4-07239b6bb935
 # ╟─9148b6ec-7135-40a3-a7e4-01e4acc8cee5
+# ╟─6f629ef5-d839-4e10-b86e-98ef3fe5ea24
 # ╠═fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
 # ╠═319203cf-daf6-4a57-bf2e-70e11afbc347
 # ╠═50507a7a-b923-407f-9aad-eeba916a45cb
