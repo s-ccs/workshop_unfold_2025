@@ -36,13 +36,13 @@ include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb
 
 # ╔═╡ a49df28b-6587-4051-b777-26a56d339a2e
 md"""
-# Simulate EEG & understand Pluto.jl
-[CC-By Benedikt Ehinger](www.s-ccs.de) - Unfold.jl Workshop
+# Pluto.jl & Unfold.jl
+[CC-By Benedikt Ehinger](https://www.s-ccs.de) - Unfold.jl Workshop
 """
 
 # ╔═╡ 363cb188-97c7-4ece-b416-08256da0b5f9
 md"""
-What follows is some code to get to know `Pluto.jl` a little bit, and implement some interactive sliders!
+What follows is some code to get to know `Pluto.jl` a little bit, implement some interactive sliders, and then continue on to explore your first Unfold.jl analyses
 """
 
 # ╔═╡ d2eae77b-07be-405f-ad7c-d9a3c7f28acc
@@ -50,7 +50,6 @@ md"""
 ## Pluto 101
 
 Different to Jupyter, Pluto keeps track of what cell depends on what other cell, and **automatically** updates dependent cells!
-
 """
 
 # ╔═╡ 1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
@@ -64,12 +63,16 @@ aside(tip(md"**`n-repeats`** repeats one instance of a 2x5 design (10 events)\
 
 # ╔═╡ 65befddb-2542-473e-8b3b-0b5c5b9fe839
 question_box(md"""
-Change the value of `n_repeats` in the cell below to `3`, and save (▶ button or `ctrl+s`).
+Change the value of `n_repeats` in the cell below to `3`, and save (▶ button or `shift+s`).
 
 1) Observe that Pluto automatically updates all dependent cells.
 
 2) What would you think a realistic noise level is?
 """)
+
+# ╔═╡ d429f512-5e4b-4137-9fd4-f064f098dc57
+aside(PlutoTeachingTools.tip(md"Press `F1` to see all Pluto shortcuts :)
+"),v_offset=-175)
 
 # ╔═╡ a851ef86-c830-4de3-b485-8997f9e5b81c
 n_repeats = 1
@@ -86,9 +89,9 @@ my_tip("Pluto.jl",md"""
 warning_box(md"""
 Pluto keeps track of your variables, therefore:
 
-1. Any variable name cannot be defined in more than one cell.
-2. Multi-line code needs to be encapsulated in `begin ... end`.
-3. Inplace operations (also known as side-effects, mutations), cannot be seen by Pluto; dangerous :)
+1. Any variable name **cannot** be **defined in more than one cell**.
+2. **Multi-line code** needs to be encapsulated in `begin ... end`.
+3. **Inplace** operations (also known as side-effects, mutations), cannot be seen by Pluto; dangerous :)
 """)
 
 # ╔═╡ 8d0da37e-25bf-42e0-82cc-72cd24a5c82d
@@ -106,6 +109,7 @@ A slider is defined like this:
 question_box(md"""
 Now it is your turn
 1. Replace the cell with `n_repeats` above with a slider!
+2. Choose at least 5 repetitions (depending on your noise level), you might want to revisit this slider later.
 """)
 
 # ╔═╡ 2c278d2d-11b1-436b-abba-e67910e10ca2
@@ -118,19 +122,22 @@ answer_box(md"""
 
 # ╔═╡ ea71ee25-35bf-49bb-a869-db2cfe98c6f3
 md"""
-# Task 2: Your first mass univariate rERP analysis
+# Mass univariate rERP analysis
 """
 
 # ╔═╡ 4a23c228-9494-4a59-8c3f-0b4d1621e322
 md"""
 ## Experimental Design
-We already started by simulating a design with a 2-level factor `stimulation` (🚲 vs. 😊). 
+We already started by simulating a **single-subject** design with a **2-level** factor `stimulation` (🚲 vs. 😊). 
 
-Later we'll add another 2-level factor `size` (small vs. large).
-
-And even later we'll add a `continuous` effect from 0:15 (👀 sacccade amplitude).
+In the other exercises, we'll add a `continuous` effect from 0:15 (👀 sacccade amplitude).
 """
 
+
+# ╔═╡ 5efdb07f-bff6-40bc-b25c-09b9b03c634e
+PlutoTeachingTools.aside(md"""
+The event table describes the experimental design (think `EEG.event`, `raw.annotations`). Each row is one event, `latency` describes the onset in samples. `stimulation` (or other columns) describe the conditions/covariates of that event.
+""",v_offset = -200)
 
 # ╔═╡ 12b81ec4-9111-4583-b5ce-1bfe3a7e4f61
 md"""
@@ -141,13 +148,13 @@ The data are still continuous. For a mass-univariate analysis, we need to epoch 
 # ╔═╡ 53ad0364-f7ad-4b27-90f8-f4e06bc26c22
 md"""
 ## Analyze the data
-Let's run a 2-stage ERP analysis, extracting the intercept (condition = 🚲) and difference of condition (😊 - 🚲).
+Let's run a single-subject ERP analysis, extracting the intercept (condition = 🚲) and difference of condition (😊 - 🚲).
 """
 
 # ╔═╡ 70e50157-289c-4d44-85b7-ed9fc3ba9dfb
 md"""
 ### 1. Define a formula
-A formula is an easy, succint but also formal description of your linear model. Some example formulas to get you started:
+A formula is an easy, succint, but also formal description of your linear model. Some example formulas to get you started:
 
 - `@formula(0~1)` - just an intercept (= the mean!)\
 - `@formula(0~1+A)` - intercept + main/simple effect\
@@ -213,6 +220,15 @@ After you specified the formula, we are ready to run the model on all time-point
 # uncomment once `f` is defined
 #m_erp = fit(UnfoldModel,f,events,eegdata_epochs,times)
 
+# ╔═╡ f6457cbd-f164-4dcf-9dcf-de5b3f53fad4
+PlutoTeachingTools.protip(md"""
+In case you are wondering why `typeof(eegdata_epochs)` is not only `Float64`, but also contains `Missing`:
+
+When epoching an event, the event-window might overlap with a region of data that does not have any data (e.g. the beginning/end of the recording, or data marked as artefactual). In most EEG libraries, such trials are then removed from further analysis (e.g. eeglab, mne). In `Unfold.jl`, we have (almost) full support to handle missings, that is, also "partial"-trials are used in the average!
+
+This can be especially advantageous in population with lot's of blinks, movements etc. where each cleaned artefact removes a whole trial, like infants.
+""","Advanced: Why does `data` have `Missing`?")
+
 # ╔═╡ e71ad2e4-103c-4165-b0f5-eb7b15d96b97
 md"""
 ### 3. Extract the coefficients
@@ -226,10 +242,10 @@ There are two main ways to extract coeffients:
 """
 
 # ╔═╡ fc57a8a1-69b7-4dd0-aa56-8847f16a0253
-question_box(md"Let's start with `coef`, and see what we get. Add the correct command using `coef` and `m_erp` in the following cell.
+question_box(md"""Let's start with `coef`, and see what we get. Add the correct command using `coef` and `m_erp` in the following cell.
 
-**Hint:** you can evoke the help by typing `?coef` in a cell
-")
+**Hint:** you can evoke the help by typing `?coef` in a cell to automatically open the "Live Docs" of Pluto.jl - or click the button on the lower right!"""
+)
 
 # ╔═╡ f6c405a1-e900-461b-9eb3-802348e8f691
 coefs = missing; # <-- replace me
@@ -248,6 +264,11 @@ coefs = coef(m_erp);
 # ╔═╡ a0d28de1-5485-48e1-9309-f3de4549d404
 # uncomment once coefs is defined
 #series(coefs[1,:,:]')
+
+# ╔═╡ dbbee49f-ccd0-40ce-b14e-ac8bd67d8908
+hint(md"""
+Cannot recognize anything? Try putting the `n_repeats` to >10 and the `noiselevel` lower.
+""")
 
 # ╔═╡ 35c94ce1-ef0e-4424-9e80-c948ec17e334
 question_box(md"Next, define `coefs_df` via `coeftable` to receive a tidy dataframe")
@@ -277,7 +298,7 @@ md"""
 # ╔═╡ ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
 #n_repeats = 2
 PlutoTeachingTools.aside(md"Min. overlap: $(@bind min_overlap PlutoUI.Slider(0.1:0.1:1,show_value=true,
-					default=1))",v_offset=-50)
+					default=0.5))",v_offset=-50)
 
 # ╔═╡ 4de80b12-59c8-4cee-86d7-d13463fa263a
 eegdata,events = simulate_eeg(;noiselevel,
@@ -315,6 +336,12 @@ Looking at this ERPs:
 2. What is going on in the baseline? What parameter do you need to change, to decrease this mess?
 """)
 
+# ╔═╡ a69ed114-3539-40b0-b049-d8806dad7fb8
+answer_box(md"""
+1. Yes! `stimulation` shows an effect at ~170ms
+2. We are seeing here the overlap effect in action. Try changing the `min_overlap` slider to remove this mess :)
+""")
+
 # ╔═╡ 72bd7a31-e267-47fb-8b6b-596753226b90
 	@bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
 
@@ -336,14 +363,26 @@ begin
 	
 end
 
+# ╔═╡ 62cd895c-b663-4e66-bea1-bf5c79a6026c
+md"""
+## 2x2 designs
+"""
+
 # ╔═╡ 41c335cc-2a0e-458c-b2ce-0806f0bf692b
 question_box(md"""
-1. Add `twobytwo=true` to the `simulate_eeg` command on top. This will add a second effect `size`. Add it to your formula and re-run your code. Can you observe an interaction?
+Add `twobytwo=true` to the `simulate_eeg` command on top. This will add a second effect `size`. Add it to your formula (including an interaction) and re-run your code. Can you observe an interaction?
+""")
+
+# ╔═╡ 31b4cfbc-ae6a-4c44-9abf-416ee5a8ced0
+answer_box(md"""
+The formula should be: `0~1+stimulation*size`
+		   
+And yes, there seems to be an interaction!
 """)
 
 # ╔═╡ f2898827-74d3-4e0c-88f2-02a68bedd9ab
 md"""
-### Under the hood
+## Under the hood
 Let's inspect the designmatrix (the $X$ in $$y=Xb + e$$)
 """
 
@@ -353,30 +392,39 @@ Let's inspect the designmatrix (the $X$ in $$y=Xb + e$$)
 
 # ╔═╡ 91a3aac1-3f48-4e58-b617-fa353d8948f7
 question_box(md"""
-2. The designmatrix is currently sorted by trial-number. After you sort it, can you answer the question whether the design is balanced [^1]?
+The designmatrix is currently sorted by trial-number. After you sort it, can you answer the question whether the design is balanced [^1]?
 
 [^1]: All condition-combinations have equal number of trials
 	""")
 
 # ╔═╡ f2b18e0a-7bb7-4a69-adf2-b3555303129f
 answer_box(md"""
-
+The design is indeed balanced, you can see that each simle-effect has the same amount of trials.
 ```julia
 plot_designmatrix(designmatrix(m_erp),sort_data=true)
 ```
 """)
 
+# ╔═╡ ca86bfa1-16e7-414d-ba01-a7691c74d7d5
+md"""
+## Multichannel!
+"""
+
 # ╔═╡ b0af7e88-9eac-4842-8586-65d5904d7c61
 question_box(md"""
-3. Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. Can you adapt `plot_erp` to return useful results? You could try `layout=:channel=>nonnumeric`.
+Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. 
+			 
+You need to either adapt your other code to support multi-channel, or accept that some codecells will throw errors ;-)
+			 
+Can you adapt `plot_erp` to return useful results? You could try `mapping=(;layout=:channel=>nonnumeric`).
 
 """)
 
 # ╔═╡ f69faad9-886e-4806-a2e2-9c531f686538
 answer_box(md"""
-
+An alternative solution could be to use a butterfly plot:
 ```julia
-plot_erp(coefs_df,mapping = (; layout=:channel=>nonnumeric))
+plot_erp(coefs_df,mapping = (; group=:channel, color=:channel,layout=:coefname))
 ```
 """)
 
@@ -2948,11 +2996,12 @@ version = "3.6.0+0"
 # ╔═╡ Cell order:
 # ╟─a49df28b-6587-4051-b777-26a56d339a2e
 # ╟─363cb188-97c7-4ece-b416-08256da0b5f9
-# ╟─d2eae77b-07be-405f-ad7c-d9a3c7f28acc
+# ╠═d2eae77b-07be-405f-ad7c-d9a3c7f28acc
 # ╟─1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
 # ╠═4de80b12-59c8-4cee-86d7-d13463fa263a
 # ╟─ab033cea-1eb9-4237-a595-3928cca0a0ca
 # ╟─65befddb-2542-473e-8b3b-0b5c5b9fe839
+# ╟─d429f512-5e4b-4137-9fd4-f064f098dc57
 # ╠═a851ef86-c830-4de3-b485-8997f9e5b81c
 # ╠═9d50b828-fafb-4ca3-b196-fed692476e22
 # ╠═f854a1e7-3f37-4f38-9637-ea4326d6352d
@@ -2965,6 +3014,7 @@ version = "3.6.0+0"
 # ╟─ea71ee25-35bf-49bb-a869-db2cfe98c6f3
 # ╟─4a23c228-9494-4a59-8c3f-0b4d1621e322
 # ╠═ec09f589-4d48-4780-b786-d1c9c115238d
+# ╟─5efdb07f-bff6-40bc-b25c-09b9b03c634e
 # ╟─12b81ec4-9111-4583-b5ce-1bfe3a7e4f61
 # ╠═6bd3bf55-947a-43d9-a367-e816a1c2d9c9
 # ╠═8dbd8657-4396-4d32-affb-25387e775ded
@@ -2979,6 +3029,7 @@ version = "3.6.0+0"
 # ╟─852fbf20-9386-4c11-a000-04a38d2fa9e8
 # ╟─6ae533e8-ce36-48b2-8e4f-88a02e3089f2
 # ╠═2065acc9-0229-487d-9923-3553108bd3c2
+# ╟─f6457cbd-f164-4dcf-9dcf-de5b3f53fad4
 # ╟─e71ad2e4-103c-4165-b0f5-eb7b15d96b97
 # ╟─04a5809a-d1ed-4477-b3e5-5c19f3522d30
 # ╟─fc57a8a1-69b7-4dd0-aa56-8847f16a0253
@@ -2986,6 +3037,7 @@ version = "3.6.0+0"
 # ╟─5155f9d7-9280-4fd7-a9e8-d9f557b16573
 # ╟─c3ac0645-e8f5-4d88-8257-1271683d85db
 # ╠═a0d28de1-5485-48e1-9309-f3de4549d404
+# ╟─dbbee49f-ccd0-40ce-b14e-ac8bd67d8908
 # ╟─35c94ce1-ef0e-4424-9e80-c948ec17e334
 # ╠═2fe64ff7-9d9e-47f2-8c26-4d5d27bd66cb
 # ╟─aa7d2d15-c933-4f47-8e7b-4bd4420799c7
@@ -2994,14 +3046,18 @@ version = "3.6.0+0"
 # ╠═0253718e-f1bd-4c78-9b53-11314120eb29
 # ╟─ba8a1905-97ba-46ae-aff3-d99aee4c1f0f
 # ╟─2bde3123-09a5-4faa-84ba-8ef579179511
+# ╟─a69ed114-3539-40b0-b049-d8806dad7fb8
 # ╟─72bd7a31-e267-47fb-8b6b-596753226b90
 # ╟─4aae7a31-523a-4f1e-8e61-a18dcc30bebf
 # ╟─eae8bcda-5120-47cd-b349-c27551743ada
+# ╟─62cd895c-b663-4e66-bea1-bf5c79a6026c
 # ╟─41c335cc-2a0e-458c-b2ce-0806f0bf692b
+# ╟─31b4cfbc-ae6a-4c44-9abf-416ee5a8ced0
 # ╟─f2898827-74d3-4e0c-88f2-02a68bedd9ab
 # ╠═446e914e-0a40-4c84-8a57-d43c5399d900
 # ╟─91a3aac1-3f48-4e58-b617-fa353d8948f7
 # ╟─f2b18e0a-7bb7-4a69-adf2-b3555303129f
+# ╟─ca86bfa1-16e7-414d-ba01-a7691c74d7d5
 # ╟─b0af7e88-9eac-4842-8586-65d5904d7c61
 # ╟─f69faad9-886e-4806-a2e2-9c531f686538
 # ╟─ef78ffb1-f2f0-4937-80dc-e7b1c8271bb2
