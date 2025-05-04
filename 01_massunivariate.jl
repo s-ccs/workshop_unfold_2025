@@ -31,7 +31,7 @@ end
 
 # ╔═╡ d18def09-658d-47af-92e6-d729c9f83667
 # load some PlutoUI + simulate_eeg utilities - externalized it to have the same functions in all worksheets
-include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/c28514362442bfc3f5075c225c2b26de17c62860/unfoldworkshop-utilities.jl"));
+include(download("https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/workshop_utils_shared.jl"))
 
 
 # ╔═╡ a49df28b-6587-4051-b777-26a56d339a2e
@@ -3005,7 +3005,7 @@ version = "3.6.0+0"
 # ╔═╡ Cell order:
 # ╟─a49df28b-6587-4051-b777-26a56d339a2e
 # ╟─363cb188-97c7-4ece-b416-08256da0b5f9
-# ╠═d2eae77b-07be-405f-ad7c-d9a3c7f28acc
+# ╟─d2eae77b-07be-405f-ad7c-d9a3c7f28acc
 # ╟─1e5244f9-91db-4f7c-bdf0-eb98d9efe0b1
 # ╠═4de80b12-59c8-4cee-86d7-d13463fa263a
 # ╟─ab033cea-1eb9-4237-a595-3928cca0a0ca
