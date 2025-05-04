@@ -4,6 +4,18 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    #! format: off
+    return quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+    #! format: on
+end
+
 # ╔═╡ 6d194a6a-1fa2-11f0-2597-ff33ceac2429
 begin
 	using Unfold # Formulas, fit, coefs, coeftable
@@ -19,7 +31,7 @@ end
 
 # ╔═╡ a5de06d9-87de-434a-b4ed-c8cf60836197
 # load some PlutoUI + simulate_eeg utilities - externalized it to have the same functions in all worksheets
-include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/558d97de8a7f335336108ebed22b1cfb95cf051a/unfoldworkshop-utilities.jl"));
+include(download("https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/workshop_utils_shared.jl"))
 
 
 # ╔═╡ c4f134b5-4a86-44f8-919f-9acc6369fa42
@@ -41,9 +53,6 @@ begin
 							 		);
 	eegdata_epochs, times = Unfold.epoch(data = eegdata, tbl = events, τ = (-0.2, 0.8), sfreq = 100); # channel x timesteps x trials
 end
-
-# ╔═╡ a9345555-dcee-48de-82f2-311cc22c7294
-min_overlap = 0.5
 
 # ╔═╡ e1b91231-010e-4e66-b314-699cf61fd401
 first(events,3)
@@ -83,6 +92,14 @@ f = missing; # <-- replace me
 # ╔═╡ 331f20b0-9195-4253-b0d3-d9b417ad11c5
 @check_response(f,Unfold.FormulaTerm)
 
+# ╔═╡ f9b616c6-4e2e-4c45-949b-48f965a41b3a
+answer_box(md"""
+Because `sac_amp` is already a float, we can directly add it to the formula:
+```julia
+@formula(0~1+sac_amp)
+```
+""")
+
 # ╔═╡ d02e46db-afec-4a60-95c5-a8436cafe8c4
 # uncomment once `f` is defined
 # m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
@@ -91,7 +108,7 @@ f = missing; # <-- replace me
 question_box(md"""
 
 1. Use `coef` on the model. What is the size of the coef-array?
-2. Extract the `[1,:,2]` slope coefficients to `my_extracted_coefs`, and plot them using the provided `lines(times,my_extracted_coefs)` command.
+2. Extract the `[1,:,2]` slope coefficients to the variable `my_extracted_coefs`, and plot them using the provided `lines(times,my_extracted_coefs)` command.
 3. When in time do you observe an effect of `continuous`?
 """)
 
@@ -104,19 +121,19 @@ my_extracted_coefs = missing # replace me
 # ╔═╡ b234037e-367b-4ddb-831d-544f9249132c
 missing # <-- replace me: code to calculate size of my_extracted_coefs?
 
-# ╔═╡ c3281566-c3d8-4f9a-9fa7-b99cb0210318
-answer_box(md"""
-
-```julia
-1. size(coef(m_erp))
-2. my_extracted_coefs = coef(m_erp)[1,:,2]
-3. size(my_extracted_coefs)
-```
-""")
-
 # ╔═╡ 5b9fb5a1-56a7-480c-b97e-26772634e5cc
 # uncomment me once `my_extracted_coefs` is defined
 # lines(times,my_extracted_coefs)
+
+# ╔═╡ c3281566-c3d8-4f9a-9fa7-b99cb0210318
+answer_box(md"""
+The `coef` array has size `1 channel x length(times) x 2` - except if you added the `stimulation` to the formula as well, then it should be `... x 3`, three coefficients.
+		   
+```julia
+1. size(coef(m_erp))
+2. my_extracted_coefs = coef(m_erp)[1,:,2]
+```
+""")
 
 # ╔═╡ 4408a9db-b265-4217-a14d-1700908b76d9
 md"""
@@ -193,8 +210,8 @@ Let's do it! Here is your task list:
 
 # ╔═╡ f49d3a7a-1a80-4b15-99c1-bcd06ea4801d
 question_box(md"""
-1. Change the formula so it contains the condition too: `@formula 0 ~ 1 + continuous + condition`.
-2. Re-calculate the  `effects` with a `Dict` containing only `:condition=>["face","bike"]`.
+1. Change the formula so it contains the condition too: `@formula 0 ~ 1 + stimulation + sac_amp`.
+2. Re-calculate the  `effects` with a `Dict` containing only `:stimulation=>["face","bike"]`.
 3. Use  `plot_erp` and modify the `mapping=(;color=:sac_amp)` to rather plot the `stimulation` condition as color.
 """)
 
@@ -204,7 +221,7 @@ question_box(md"""
 
 # ╔═╡ 2c5a2fbd-1588-47f6-98fa-039eaa987d91
 answer_box(md"""
-
+Remember that we want to marginalize over `sac_amp`, therefore we dont add it to the effects call:
 ```julia
 eff_cond = effects(Dict(:condition=>["face","bike"]),m_erp)
 ```
@@ -216,7 +233,7 @@ eff_cond = effects(Dict(:condition=>["face","bike"]),m_erp)
 
 # ╔═╡ 6f98dd64-8173-45e6-9875-24d7b4a88a0e
 answer_box(md"""
-
+This should work: 
 ```julia
 plot_erp(eff_cond;mapping=(;color=:condition))
 ```
@@ -225,7 +242,9 @@ plot_erp(eff_cond;mapping=(;color=:condition))
 # ╔═╡ 6c802e58-a06f-4098-8d3c-5b704205af72
 md"""
 ## All combinations?
-You now learned that omitting a predictor from the `effects` call replaces it with it's *typical value*. What happens now, if we specify multiple predictors?
+You now learned that omitting a predictor from the `effects` call replaces it with it's *typical value*. 
+
+But what happens, if we specify marginals of **multiple predictors**?
 """
 
 # ╔═╡ 4d95d0f3-1382-42f9-a736-fbaaf03b3f78
@@ -255,6 +274,22 @@ plot_erp(eff;mapping=(;color=:sac_amp,group=:sac_amp,linestyle=:stimulation))
 ```
 """)
 
+# ╔═╡ 98074520-414d-4bea-9058-13f79ed84bab
+@bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
+
+# ╔═╡ 7b6f648f-7d34-4a2b-b278-368ab065eac8
+if finished>0
+       md"""
+![meme](https://github.com/s-ccs/workshop_unfold_2025/blob/9e6636d6385c7fbb2c88d88e495c9722b48fdd08/img/meme_wrestling.jpg?raw=true)
+"""
+end
+
+# ╔═╡ 7ff352bc-722a-4bd9-bdfc-9b3fb26df3f4
+#=md"""
+# Extra Tasks
+If you still have time - ⚡🐆⚡ - you probably used Unfold before! Here are some tasks you could enjoy:
+"""=#
+
 # ╔═╡ aaba9346-069a-4d68-8681-12e4c68ccee0
 md"""
 # Setup
@@ -263,6 +298,9 @@ Nothing to see here, move along!
 
 # ╔═╡ 2018834c-f200-4410-8357-b41d2c95e734
 FootnotesNumbered() # use numbered footnotes
+
+# ╔═╡ a9345555-dcee-48de-82f2-311cc22c7294
+min_overlap = 0.5
 
 # ╔═╡ f0f25455-b2c7-4980-ac56-01716e9b11e0
 TableOfContents() # add TOC to the side
@@ -2836,7 +2874,6 @@ version = "3.6.0+0"
 # ╟─c4f134b5-4a86-44f8-919f-9acc6369fa42
 # ╟─cab90ab1-a940-49ca-bf47-248433c92bdb
 # ╠═8b1f7c94-8a20-4b59-94f3-96feb693cf83
-# ╠═a9345555-dcee-48de-82f2-311cc22c7294
 # ╠═e1b91231-010e-4e66-b314-699cf61fd401
 # ╟─d607a5ce-a71d-41fb-b9cd-63233c2aa606
 # ╟─23d27c4d-f988-4f3c-994c-1058d31155ba
@@ -2844,13 +2881,14 @@ version = "3.6.0+0"
 # ╟─443716b4-5067-41fc-a347-14c8d5286ebd
 # ╠═241909a7-f7c4-4419-93cb-192840827298
 # ╟─331f20b0-9195-4253-b0d3-d9b417ad11c5
+# ╟─f9b616c6-4e2e-4c45-949b-48f965a41b3a
 # ╠═d02e46db-afec-4a60-95c5-a8436cafe8c4
 # ╟─318a46bf-5a83-4b30-95ab-c61479e589e3
 # ╠═cff9c4d3-4066-4cf1-9bd8-fe839e481da3
 # ╟─d24b3214-2d0c-476f-892c-4ee65e964793
 # ╠═b234037e-367b-4ddb-831d-544f9249132c
-# ╟─c3281566-c3d8-4f9a-9fa7-b99cb0210318
 # ╠═5b9fb5a1-56a7-480c-b97e-26772634e5cc
+# ╟─c3281566-c3d8-4f9a-9fa7-b99cb0210318
 # ╟─4408a9db-b265-4217-a14d-1700908b76d9
 # ╠═5372b339-7279-4094-85c0-ab6b651b1211
 # ╟─5c2e68af-5a19-4a6b-8498-3af00be5c538
@@ -2869,9 +2907,13 @@ version = "3.6.0+0"
 # ╟─d18d4407-d28e-4b68-a2fd-2d497fb0cd71
 # ╠═529c2c19-bf81-464b-b29b-8ce9422055b9
 # ╟─637d3c8f-2207-4dd0-a62c-ff2f56412baf
+# ╟─98074520-414d-4bea-9058-13f79ed84bab
+# ╟─7b6f648f-7d34-4a2b-b278-368ab065eac8
+# ╟─7ff352bc-722a-4bd9-bdfc-9b3fb26df3f4
 # ╟─aaba9346-069a-4d68-8681-12e4c68ccee0
 # ╠═2018834c-f200-4410-8357-b41d2c95e734
 # ╠═6d194a6a-1fa2-11f0-2597-ff33ceac2429
+# ╠═a9345555-dcee-48de-82f2-311cc22c7294
 # ╠═a5de06d9-87de-434a-b4ed-c8cf60836197
 # ╠═f0f25455-b2c7-4980-ac56-01716e9b11e0
 # ╟─00000000-0000-0000-0000-000000000001

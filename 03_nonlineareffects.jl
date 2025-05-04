@@ -34,7 +34,7 @@ end
 
 # ╔═╡ 0cfd65ae-2016-11f0-17d2-196bfbdf916e
 # load some PlutoUI + simulate_eeg utilities - externalized it to have the same functions in all worksheets
-include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/1671c91a2edc3e39bf17128b80fa95622e897576/unfoldworkshop-utilities.jl"));
+include(download("https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/workshop_utils_shared.jl"))
 
 
 # ╔═╡ dbe14b67-d100-4395-83c9-3ca3fed51068
@@ -126,7 +126,10 @@ question_box(md"Plot the internals of the spline using `plot_splines(model)`")
 # fill me with content :)
 
 # ╔═╡ 4ac2d1dc-1ab6-45c9-8dcb-8bd336248df2
-answer_box(md"`plot_splines(m_erp)`")
+answer_box(md"""
+Not a trick question:
+`plot_splines(m_erp)`
+Should definitely work :)""")
 
 # ╔═╡ 510494d1-c317-452d-ab4d-93daccf8d6d7
 md"""
@@ -156,7 +159,22 @@ answer_box(md"""
 eff = effects(Dict(:sac_amp=>0:10),m_erp)
 plot_splines(m_erp)
 ```
+2. You should observe that the splines are now covering a lot of ground without any actual data to fit the coefficients properly
+3. Whether the fit will be useful depends a lot on the reason for the outlier
+4. An adhoc solution is to use winsorization on the independent variable before fitting. Not ideal though!
+		   
 """)
+
+# ╔═╡ 382feefd-4d48-4056-a643-9d3ca50f47cc
+@bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
+
+# ╔═╡ 227753e9-8c1e-475c-a6bb-37600e7d7cfe
+if finished > 0
+HTML("""
+	 Treat yourself - a beautiful 1h lecture on splines for graphics design - same splines, but very different application! <br>
+	 <iframe width="560" height="315" src="https://www.youtube.com/embed/jvPPXbo87ds?si=8WCPRJapfShpTaTQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+	 """)
+end
 
 # ╔═╡ c48cf8e8-ab9d-4b5e-a8b8-e5b269180f75
 md"""
@@ -426,12 +444,6 @@ version = "0.5.0"
 uuid = "8bf52ea8-c179-5cab-976a-9e18b702a9bc"
 version = "1.11.0"
 
-[[deps.CRlibm]]
-deps = ["CRlibm_jll"]
-git-tree-sha1 = "66188d9d103b92b6cd705214242e27f5737a1e5e"
-uuid = "96374032-68de-5a5b-8d9e-752f78720389"
-version = "1.0.2"
-
 [[deps.CRlibm_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "e329286945d0cfc04456972ea732551869af1cfc"
@@ -549,9 +561,9 @@ uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.13.0"
 
 [[deps.Combinatorics]]
-git-tree-sha1 = "8010b6bb3388abe68d95743dcbea77650bb2eddf"
+git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
 uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-version = "1.0.3"
+version = "1.0.2"
 
 [[deps.CommonSubexpressions]]
 deps = ["MacroTools"]
@@ -1145,9 +1157,9 @@ version = "0.10.5"
 
 [[deps.ImageFiltering]]
 deps = ["CatIndices", "ComputationalResources", "DataStructures", "FFTViews", "FFTW", "ImageBase", "ImageCore", "LinearAlgebra", "OffsetArrays", "PrecompileTools", "Reexport", "SparseArrays", "StaticArrays", "Statistics", "TiledIteration"]
-git-tree-sha1 = "eea3a5095c0c5f143e62773164ab11f67e43c4bb"
+git-tree-sha1 = "33cb509839cc4011beb45bde2316e64344b0f92b"
 uuid = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
-version = "0.7.10"
+version = "0.7.9"
 
 [[deps.ImageIO]]
 deps = ["FileIO", "IndirectArrays", "JpegTurbo", "LazyModules", "Netpbm", "OpenEXR", "PNGFiles", "QOI", "Sixel", "TiffImages", "UUIDs", "WebP"]
@@ -1220,25 +1232,22 @@ weakdeps = ["Unitful"]
     InterpolationsUnitfulExt = "Unitful"
 
 [[deps.IntervalArithmetic]]
-deps = ["CRlibm", "MacroTools", "OpenBLASConsistentFPCSR_jll", "RoundingEmulator"]
-git-tree-sha1 = "5a25f4cb7f1702407c4cb7a95b983f278457da16"
+deps = ["CRlibm_jll", "LinearAlgebra", "MacroTools", "OpenBLASConsistentFPCSR_jll", "RoundingEmulator"]
+git-tree-sha1 = "2c337f943879911c74bb62c927b65b9546552316"
 uuid = "d1acc4aa-44c8-5952-acd4-ba5d80a2a253"
-version = "0.22.33"
-weakdeps = ["DiffRules", "ForwardDiff", "IntervalSets", "LinearAlgebra", "Random", "RecipesBase", "SparseArrays"]
+version = "0.22.29"
+weakdeps = ["DiffRules", "ForwardDiff", "IntervalSets", "RecipesBase"]
 
     [deps.IntervalArithmetic.extensions]
     IntervalArithmeticDiffRulesExt = "DiffRules"
     IntervalArithmeticForwardDiffExt = "ForwardDiff"
     IntervalArithmeticIntervalSetsExt = "IntervalSets"
-    IntervalArithmeticLinearAlgebraExt = "LinearAlgebra"
-    IntervalArithmeticRandomExt = "Random"
     IntervalArithmeticRecipesBaseExt = "RecipesBase"
-    IntervalArithmeticSparseArraysExt = "SparseArrays"
 
 [[deps.IntervalSets]]
-git-tree-sha1 = "5fbb102dcb8b1a858111ae81d56682376130517d"
+git-tree-sha1 = "dba9ddf07f77f60450fe5d2e2beb9854d9a49bd0"
 uuid = "8197267c-284f-5f27-9208-e0e47529a953"
-version = "0.7.11"
+version = "0.7.10"
 weakdeps = ["Random", "RecipesBase", "Statistics"]
 
     [deps.IntervalSets.extensions]
@@ -1334,9 +1343,9 @@ version = "3.1.1+0"
 
 [[deps.JuliaInterpreter]]
 deps = ["CodeTracking", "InteractiveUtils", "Random", "UUIDs"]
-git-tree-sha1 = "ad08bbc177bc329888d21a94b37beb6aa919273a"
+git-tree-sha1 = "c47892541d03e5dc63467f8964c9f2b415dfe718"
 uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
-version = "0.10.2"
+version = "0.9.46"
 
 [[deps.KernelDensity]]
 deps = ["Distributions", "DocStringExtensions", "FFTW", "Interpolations", "StatsBase"]
@@ -1358,9 +1367,9 @@ version = "4.0.1+0"
 
 [[deps.LLVMOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "eb62a3deb62fc6d8822c0c4bef73e4412419c5d8"
+git-tree-sha1 = "78211fb6cbc872f77cad3fc0b6cf647d923f4929"
 uuid = "1d63c593-3942-5779-bab2-d838dc0a180e"
-version = "18.1.8+0"
+version = "18.1.7+0"
 
 [[deps.LZO_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1503,9 +1512,9 @@ version = "1.11.0"
 
 [[deps.LoweredCodeUtils]]
 deps = ["JuliaInterpreter"]
-git-tree-sha1 = "4ef1c538614e3ec30cb6383b9eb0326a5c3a9763"
+git-tree-sha1 = "39240b5f66956acfa462d7fe12efe08e26d6d70d"
 uuid = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
-version = "3.3.0"
+version = "3.2.2"
 
 [[deps.Lz4_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1778,9 +1787,9 @@ version = "5.0.7+2"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "9216a80ff3682833ac4b733caa8c00390620ba5d"
+git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.5.0+0"
+version = "3.0.16+0"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
@@ -1854,9 +1863,9 @@ version = "0.12.3"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "7d2f8f21da5db6a806faf7b9b292296da42b2810"
+git-tree-sha1 = "44f6c1f38f77cafef9450ff93946c53bd9ca16ff"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.8.3"
+version = "2.8.2"
 
 [[deps.Peaks]]
 deps = ["Compat", "RecipesBase"]
@@ -2082,9 +2091,9 @@ version = "1.3.1"
 
 [[deps.Revise]]
 deps = ["CodeTracking", "FileWatching", "JuliaInterpreter", "LibGit2", "LoweredCodeUtils", "OrderedCollections", "REPL", "Requires", "UUIDs", "Unicode"]
-git-tree-sha1 = "cedc9f9013f7beabd8a9c6d2e22c0ca7c5c2a8ed"
+git-tree-sha1 = "4e58145c98094ab2405b8fca034e21bde6c06c1c"
 uuid = "295af30f-e4ad-537b-8983-00126c2a3abe"
-version = "3.7.6"
+version = "3.7.5"
 weakdeps = ["Distributed"]
 
     [deps.Revise.extensions]
@@ -2307,9 +2316,9 @@ version = "0.34.4"
 
 [[deps.StatsFuns]]
 deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
-git-tree-sha1 = "8e45cecc66f3b42633b8ce14d431e8e57a3e242e"
+git-tree-sha1 = "35b09e80be285516e52c9054792c884b9216ae3c"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "1.5.0"
+version = "1.4.0"
 weakdeps = ["ChainRulesCore", "InverseFunctions"]
 
     [deps.StatsFuns.extensions]
@@ -2524,9 +2533,9 @@ version = "0.8.4"
 
 [[deps.UnfoldMakie]]
 deps = ["AlgebraOfGraphics", "BSplineKit", "CategoricalArrays", "ColorSchemes", "ColorTypes", "Colors", "CoordinateTransformations", "DataFrames", "DataStructures", "DocStringExtensions", "GeometryBasics", "GridLayoutBase", "ImageFiltering", "Interpolations", "LinearAlgebra", "Makie", "MakieThemes", "Random", "SparseArrays", "StaticArrays", "Statistics", "TopoPlots", "Unfold"]
-git-tree-sha1 = "52acc236d912df0d19d29991127a194e49259b4c"
+git-tree-sha1 = "df31e368f89414e92ab770972017281bc9dd3453"
 uuid = "69a5ce3b-64fb-4f22-ae69-36dd4416af2a"
-version = "0.5.18"
+version = "0.5.17"
 
     [deps.UnfoldMakie.extensions]
     UnfoldMakiePyMNEExt = "PyMNE"
@@ -2758,6 +2767,8 @@ version = "3.6.0+0"
 # ╠═53708f31-6559-47c1-8e09-17ec93475114
 # ╟─252f00df-fe2b-44b7-9ea4-ad721b758c35
 # ╟─a0e9d5f3-75f1-440a-bc07-7684bc2b2ad0
+# ╟─382feefd-4d48-4056-a643-9d3ca50f47cc
+# ╟─227753e9-8c1e-475c-a6bb-37600e7d7cfe
 # ╟─c48cf8e8-ab9d-4b5e-a8b8-e5b269180f75
 # ╠═17c033bd-40b9-474f-866a-e4d9ef513e29
 # ╠═07b5c518-7d11-482e-a555-455ac55d0664

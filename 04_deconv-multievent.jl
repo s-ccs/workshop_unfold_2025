@@ -31,7 +31,7 @@ end
 
 # ╔═╡ 50507a7a-b923-407f-9aad-eeba916a45cb
 # load some PlutoUI + simulate_eeg utilities - externalized it to have the same functions in all worksheets
-include(download("https://gist.githubusercontent.com/behinger/74c603c6294e0ee5cb90fd38cd207c3d/raw/1671c91a2edc3e39bf17128b80fa95622e897576/unfoldworkshop-utilities.jl"));
+include(download("https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/refs/heads/main/workshop_utils_shared.jl"))
 
 
 # ╔═╡ 4472ffca-1fab-11f0-3eba-f5039b973838
@@ -138,6 +138,9 @@ replace the min_overlap definition with
 ```julia
 @bind min_overlap PlutoUI.Slider(0:0.1:1,show_value=true)
 ```
+
+1. You should see little effect of the `min_overlap` value on the overlap-corrected result, but a strong one on the normal "ERP" one.
+2. If there is no overlap, there should be no difference between the the models - neat!
 """)
 
 # ╔═╡ 3d18b6f2-ceca-4c4a-8ab8-4436cf9284a5
@@ -209,6 +212,13 @@ $(@bind q_stimfix PlutoUI.Radio(["Stimulus","Fixation", "Both"]))
 # ╔═╡ ecfc4fe4-a690-43fe-a3b4-07239b6bb935
 isnothing(q_stimfix) ? nothing : q_stimfix == "Stimulus" ? correct() : PlutoTeachingTools.keep_working(md"Look closely!")
 
+# ╔═╡ 5b62056c-ccca-434e-85a2-213643e9e485
+md"""
+# Extra tasks
+🚤 super fast! Here, take an extra task:
+## Overlap and non-linear effects
+"""
+
 # ╔═╡ 9148b6ec-7135-40a3-a7e4-01e4acc8cee5
 question_box(md"""
 **Advanced:** We want to also simulate & analyse non-linear effects in addition!
@@ -230,6 +240,67 @@ This is one possible way to do it:
 3+4. plot_erp(effects(Dict(:stimulation=>["bike","face"],:sac_amp=>0:15),m_erp_twoevts);mapping=(;color=:stimulation,row=:eventname))
 ```
 """)
+
+# ╔═╡ 6b86e13a-c01b-4938-adf2-cb7c0172ad78
+	@bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
+
+# ╔═╡ 3fbf1ad9-3487-45b2-bf9d-e1a968a32fa4
+if finished >0
+md"""
+#### You did it! 
+	
+Congratulations - You unlocked a secret: You can now activate the Rainbow Cursor to celebrate!
+"""
+end
+
+# ╔═╡ c1747b4d-5828-462a-9a70-d5aac9b00d73
+if finished  > 0
+		@bind rainbow PlutoUI.Radio(["Add rainbow cursor!", "Add Unfold fanboy cursor!","Remove all cursors again 😢"])
+else
+	rainbow = nothing
+end
+
+# ╔═╡ f6bc7d8a-bd84-46c1-b5f8-8e8e40adf848
+if "Add rainbow cursor!" ==  rainbow
+HTML("""
+<script>
+	 			 const {
+rainbowCursor : rainbowCursor
+} = await import("https://unpkg.com/cursor-effects@latest/dist/esm.js");
+
+	try{window.cursor_rainbow.destroy()}catch(error){;}
+	let cursor_rainbow = new rainbowCursor({length: 70,
+  size: 5,});
+	window.cursor_rainbow = cursor_rainbow
+	
+</script>
+""")
+elseif "Add Unfold fanboy cursor!" == rainbow
+HTML("""
+<script>
+	 			 const {
+textFlag : textFlag
+} = await import("https://unpkg.com/cursor-effects@latest/dist/esm.js");
+
+	try{window.cursor_unfold.destroy()}catch(error){;}
+	let cursor_unfold = new textFlag({text:"Unfold Rocks!!"});
+	window.cursor_unfold = cursor_unfold
+	
+</script>
+""")
+		 
+else
+HTML("""
+<script>
+	 try {
+    window.cursor_unfold.destroy()
+	 }catch(error){;}
+	 
+	window.cursor_rainbow.destroy()
+	
+</script>
+""")
+end
 
 # ╔═╡ fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
 md"""
@@ -2834,11 +2905,16 @@ version = "3.6.0+0"
 # ╟─f50d0e36-4dd2-49ed-94a0-1a1a039d9a50
 # ╟─10453178-d5f6-43cd-9634-094a0c43b10c
 # ╟─ecfc4fe4-a690-43fe-a3b4-07239b6bb935
+# ╟─6b86e13a-c01b-4938-adf2-cb7c0172ad78
+# ╟─3fbf1ad9-3487-45b2-bf9d-e1a968a32fa4
+# ╟─c1747b4d-5828-462a-9a70-d5aac9b00d73
+# ╟─5b62056c-ccca-434e-85a2-213643e9e485
 # ╟─9148b6ec-7135-40a3-a7e4-01e4acc8cee5
 # ╟─6f629ef5-d839-4e10-b86e-98ef3fe5ea24
-# ╠═fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
+# ╟─fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
 # ╠═319203cf-daf6-4a57-bf2e-70e11afbc347
 # ╠═50507a7a-b923-407f-9aad-eeba916a45cb
 # ╠═84c511a4-8a92-46c1-8ef5-0f129f750b77
+# ╟─f6bc7d8a-bd84-46c1-b5f8-8e8e40adf848
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
