@@ -127,8 +127,6 @@ Add a slider for `min_overlap` & modify the amount of overlap in your simulation
 
 **Tipp:** Is your notebook jumping up/down when using the slider? Suppress the console output of the model fit by adding a `;` at the end of the fit-command
 
-**Advanced:** Investigate what hapens if you replace the amount of jitter (the `0.2`), rather than the `min_overlap` in the `(min_overlap,0.2)` simulation code
-
 """
 )
 
@@ -212,10 +210,43 @@ $(@bind q_stimfix PlutoUI.Radio(["Stimulus","Fixation", "Both"]))
 # ╔═╡ ecfc4fe4-a690-43fe-a3b4-07239b6bb935
 isnothing(q_stimfix) ? nothing : q_stimfix == "Stimulus" ? correct() : PlutoTeachingTools.keep_working(md"Look closely!")
 
+# ╔═╡ 6b86e13a-c01b-4938-adf2-cb7c0172ad78
+	@bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
+
+# ╔═╡ 3fbf1ad9-3487-45b2-bf9d-e1a968a32fa4
+if finished >0
+md"""
+#### You did it! 
+	
+Congratulations - You unlocked a secret: You can now activate the Rainbow Cursor to celebrate!
+"""
+end
+
+# ╔═╡ c1747b4d-5828-462a-9a70-d5aac9b00d73
+if finished  > 0
+		@bind rainbow PlutoUI.Radio(["Add rainbow cursor!", "Add Unfold fanboy cursor!","Remove all cursors again 😢"])
+else
+	rainbow = nothing
+end
+
 # ╔═╡ 5b62056c-ccca-434e-85a2-213643e9e485
 md"""
 # Extra tasks
 🚤 super fast! Here, take an extra task:
+"""
+
+# ╔═╡ 31385201-413d-4b67-88f4-08e08c7a424e
+md"""
+## Varying the variability of overlap
+"""
+
+# ╔═╡ 2044b55c-f615-4348-be84-c91a7612e8e7
+question_box(md"""
+Investigate what hapens if you replace the amount of jitter (the `0.2`), rather than the `min_overlap` in the `(min_overlap,0.2)` simulation code
+			 """)
+
+# ╔═╡ ecf16fd1-cdca-43dc-9ffc-c35a94693db8
+md"""
 ## Overlap and non-linear effects
 """
 
@@ -241,24 +272,14 @@ This is one possible way to do it:
 ```
 """)
 
-# ╔═╡ 6b86e13a-c01b-4938-adf2-cb7c0172ad78
-	@bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
-
-# ╔═╡ 3fbf1ad9-3487-45b2-bf9d-e1a968a32fa4
-if finished >0
+# ╔═╡ fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
 md"""
-#### You did it! 
-	
-Congratulations - You unlocked a secret: You can now activate the Rainbow Cursor to celebrate!
+# Setup
+Nothing to see here, move along!
 """
-end
 
-# ╔═╡ c1747b4d-5828-462a-9a70-d5aac9b00d73
-if finished  > 0
-		@bind rainbow PlutoUI.Radio(["Add rainbow cursor!", "Add Unfold fanboy cursor!","Remove all cursors again 😢"])
-else
-	rainbow = nothing
-end
+# ╔═╡ 84c511a4-8a92-46c1-8ef5-0f129f750b77
+TableOfContents()
 
 # ╔═╡ f6bc7d8a-bd84-46c1-b5f8-8e8e40adf848
 if "Add rainbow cursor!" ==  rainbow
@@ -301,15 +322,6 @@ HTML("""
 </script>
 """)
 end
-
-# ╔═╡ fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
-md"""
-# Setup
-Nothing to see here, move along!
-"""
-
-# ╔═╡ 84c511a4-8a92-46c1-8ef5-0f129f750b77
-TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2909,6 +2921,9 @@ version = "3.6.0+0"
 # ╟─3fbf1ad9-3487-45b2-bf9d-e1a968a32fa4
 # ╟─c1747b4d-5828-462a-9a70-d5aac9b00d73
 # ╟─5b62056c-ccca-434e-85a2-213643e9e485
+# ╟─31385201-413d-4b67-88f4-08e08c7a424e
+# ╟─2044b55c-f615-4348-be84-c91a7612e8e7
+# ╟─ecf16fd1-cdca-43dc-9ffc-c35a94693db8
 # ╟─9148b6ec-7135-40a3-a7e4-01e4acc8cee5
 # ╟─6f629ef5-d839-4e10-b86e-98ef3fe5ea24
 # ╟─fe23f8cd-cde1-4e91-b5e6-56c6d42763fd
