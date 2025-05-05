@@ -74,7 +74,7 @@ The workshop is hosted by the [CHBH](https://www.birmingham.ac.uk/research/centr
   </tr>
   <tr>
     <td style="text-align: center;">
-      <img src=".\assets\jschepers_profile_image_square.jpg" alt="Judith Schepers" class="round-image"><br>
+      <img src=".\assets\jschepers_profile_image.jpg" alt="Judith Schepers" class="round-image"><br>
       Judith Schepers
     </td>
     <td>
