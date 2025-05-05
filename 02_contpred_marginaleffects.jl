@@ -223,7 +223,7 @@ question_box(md"""
 answer_box(md"""
 Remember that we want to marginalize over `sac_amp`, therefore we dont add it to the effects call:
 ```julia
-eff_cond = effects(Dict(:condition=>["face","bike"]),m_erp)
+eff_cond = effects(Dict(:stimulation=>["face","bike"]),m_erp)
 ```
 """)
 
