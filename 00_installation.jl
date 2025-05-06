@@ -22,7 +22,7 @@ end
 # ╔═╡ 5f7ea462-7c19-4f7a-8318-1207aa0e07e8
 md"""
 # Unfold-Workshop Package Installation
-The notebooks existance is solely to install the packages once, so that for the exercise you do not need to wait for the installation.
+The notebooks existance is solely to install the packages once, so that for the exercise you do not need to wait for the installation. Afterwards you can close this notebook.
 
 If you receive the message `Installation successful` below, you should be ready for the workshop
 """
@@ -41,7 +41,7 @@ md"""
 # ╔═╡ 84f2244e-943a-41e8-9ba6-c3f03944ded2
 begin 
 	done
-	PlutoTeachingTools.correct(md"🎉 Installation successful")
+	PlutoTeachingTools.correct(md"🎉 Installation successful - you can stop this notebook now; we'll have dedicated exercise notebooks you will run at the workshop.")
 end
 	
 
