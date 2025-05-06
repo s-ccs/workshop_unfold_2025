@@ -2,7 +2,7 @@
 title: "Workshop program"
 ---
 
-::: {.callout-note}
+::: callout-note
 Please note that the program is preliminary and might be subject to change, especially the exact schedule.
 :::
 
@@ -13,19 +13,20 @@ All times are in Central European Summer Time (CEST).
 | 10:00 - 10:10 | Welcome                                                                            |
 | 10:10 - 10:30 | Introduction to Julia & Unfold.jl                                                  |
 | 10:30 - 11:30 | Mass univariate linear models                                                      |
-| 11:30 - 11:45 | Break ☕                                                                            |
+| 11:30 - 11:45 | ☕ Break                                                                            |
 | 11:45 - 12:45 | Continuous predictors & marginal effects                                           |
-| 12:45 - 13:45 | Lunch break 🥙                                                                     |
-| 13:45 - 14:45 | Non-linear effects                                                                 |
-| 14:45 - 15:00 | Break ☕                                                                            |
-| 15:00 - 16:00 | Overlap correction & multiple event types                                          |
-| 16:00 - 16:15 | Break ☕                                                                            |
-| 16:15 - 16:45 | Lightning talks: UnfoldMakie.jl, UnfoldSim.jl, UnfoldBIDS.jl, UnfoldMixedModels.jl |
-| 16:45 - 17:00 | Wrap-up                                                                            |
+| 12:45 - 13:45 | 🥙 Lunch break                                                                      |
+| 13:45 - 14:30 | Non-linear effects                                                                 |
+| 14:30 - 14:45 | ☕ Break                                                                            |
+| 14:45 - 15:45 | Overlap correction & multiple event types                                          |
+| 15:45 - 16:00 | ☕ Break                                                                            |
+| 16:00 - 16:30 | Lightning talks: UnfoldMakie.jl, UnfoldSim.jl, UnfoldBIDS.jl, UnfoldMixedModels.jl |
+| 16:30 - 16:45 | Wrap-up                                                                            |
 
 : {.hover .striped}
 
----
+------------------------------------------------------------------------
+
 ::: {style="font-size: 80%; text-align: right;"}
-Each lesson consists of a lecture (~ 30min) and a subsequent exercise (~30min).
+Each lesson consists of a lecture (\~ 30min) and a subsequent exercise (\~30min).
 :::
