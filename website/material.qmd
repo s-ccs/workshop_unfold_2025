@@ -1,0 +1,34 @@
+---
+title: "Material"
+---
+
+Here you can find the direct links to all the material we provide during the workshop. After the workshop, we will also link to all recorded lectures here. For a guide on how to install Julia/Pluto and how to use the notebooks, please see our [installation page](installation.qmd).
+
+::: {.callout-note}
+If you have questions or run into problems, please post in the [github discussion forum](https://github.com/unfoldtoolbox/Unfold.jl/discussions/categories/unfold-jl-workshop-2025)
+:::
+
+# Notebook links
+## 01 Mass-univariate
+```default
+https://github.com/s-ccs/workshop_unfold_2025/blob/main/01_massunivariate.jl
+```
+
+## 02 Continuous predictors & marginalized effects
+```default
+https://github.com/s-ccs/workshop_unfold_2025/blob/main/02_contpred_marginaleffects.jl
+```
+
+## 03 Non-linear effects
+```default
+https://github.com/s-ccs/workshop_unfold_2025/blob/main/03_nonlineareffects.jl
+```
+
+## 04 Multi-event deconvolution
+```default
+https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
+```
+
+# Lecture videos
+
+TBA
