@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Workshop program – Unfold.jl Workshop 2025</title>
+<title>Material – Unfold.jl Workshop 2025</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -94,7 +129,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./program.html" aria-current="page"> 
+    <a class="nav-link" href="./program.html"> 
 <span class="menu-text">Program</span></a>
   </li>  
   <li class="nav-item">
@@ -106,7 +141,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Installation</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./material.html"> 
+    <a class="nav-link active" href="./material.html" aria-current="page"> 
 <span class="menu-text">Material</span></a>
   </li>  
 </ul>
@@ -120,15 +155,28 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#notebook-links" id="toc-notebook-links" class="nav-link active" data-scroll-target="#notebook-links">Notebook links</a>
+  <ul class="collapse">
+  <li><a href="#mass-univariate" id="toc-mass-univariate" class="nav-link" data-scroll-target="#mass-univariate">01 Mass-univariate</a></li>
+  <li><a href="#continuous-predictors-marginalized-effects" id="toc-continuous-predictors-marginalized-effects" class="nav-link" data-scroll-target="#continuous-predictors-marginalized-effects">02 Continuous predictors &amp; marginalized effects</a></li>
+  <li><a href="#non-linear-effects" id="toc-non-linear-effects" class="nav-link" data-scroll-target="#non-linear-effects">03 Non-linear effects</a></li>
+  <li><a href="#multi-event-deconvolution" id="toc-multi-event-deconvolution" class="nav-link" data-scroll-target="#multi-event-deconvolution">04 Multi-event deconvolution</a></li>
+  </ul></li>
+  <li><a href="#lecture-videos" id="toc-lecture-videos" class="nav-link" data-scroll-target="#lecture-videos">Lecture videos</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Workshop program</h1>
+<h1 class="title">Material</h1>
 </div>
 
 
@@ -145,6 +193,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>Here you can find the direct links to all the material we provide during the workshop. After the workshop, we will also link to all recorded lectures here. For a guide on how to install Julia/Pluto and how to use the notebooks, please see our <a href="./installation.html">installation page</a>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -155,78 +204,34 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Please note that the program is preliminary and might be subject to change, especially the exact schedule.</p>
+<p>If you have questions or run into problems, please post in the <a href="https://github.com/unfoldtoolbox/Unfold.jl/discussions/categories/unfold-jl-workshop-2025">github discussion forum</a></p>
 </div>
 </div>
-<p>All times are in Central European Summer Time (CEST).</p>
-<table class="table-hover table-striped caption-top table">
-<colgroup>
-<col style="width: 15%">
-<col style="width: 84%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Time</th>
-<th>Event</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>10:00 - 10:10</td>
-<td>Welcome</td>
-</tr>
-<tr class="even">
-<td>10:10 - 10:30</td>
-<td>Introduction to Julia &amp; Unfold.jl</td>
-</tr>
-<tr class="odd">
-<td>10:30 - 11:30</td>
-<td>Mass univariate linear models</td>
-</tr>
-<tr class="even">
-<td>11:30 - 11:45</td>
-<td>Break ☕</td>
-</tr>
-<tr class="odd">
-<td>11:45 - 12:45</td>
-<td>Continuous predictors &amp; marginal effects</td>
-</tr>
-<tr class="even">
-<td>12:45 - 13:45</td>
-<td>Lunch break 🥙</td>
-</tr>
-<tr class="odd">
-<td>13:45 - 14:45</td>
-<td>Non-linear effects</td>
-</tr>
-<tr class="even">
-<td>14:45 - 15:00</td>
-<td>Break ☕</td>
-</tr>
-<tr class="odd">
-<td>15:00 - 16:00</td>
-<td>Overlap correction &amp; multiple event types</td>
-</tr>
-<tr class="even">
-<td>16:00 - 16:15</td>
-<td>Break ☕</td>
-</tr>
-<tr class="odd">
-<td>16:15 - 16:45</td>
-<td>Lightning talks: UnfoldMakie.jl, UnfoldSim.jl, UnfoldBIDS.jl, UnfoldMixedModels.jl</td>
-</tr>
-<tr class="even">
-<td>16:45 - 17:00</td>
-<td>Wrap-up</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<div style="font-size: 80%; text-align: right;">
-<p>Each lesson consists of a lecture (~ 30min) and a subsequent exercise (~30min).</p>
-</div>
+<section id="notebook-links" class="level1">
+<h1>Notebook links</h1>
+<section id="mass-univariate" class="level2">
+<h2 class="anchored" data-anchor-id="mass-univariate">01 Mass-univariate</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>https://github.com/s-ccs/workshop_unfold_2025/blob/main/01_massunivariate.jl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="continuous-predictors-marginalized-effects" class="level2">
+<h2 class="anchored" data-anchor-id="continuous-predictors-marginalized-effects">02 Continuous predictors &amp; marginalized effects</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>https://github.com/s-ccs/workshop_unfold_2025/blob/main/02_contpred_marginaleffects.jl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="non-linear-effects" class="level2">
+<h2 class="anchored" data-anchor-id="non-linear-effects">03 Non-linear effects</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>https://github.com/s-ccs/workshop_unfold_2025/blob/main/03_nonlineareffects.jl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="multi-event-deconvolution" class="level2">
+<h2 class="anchored" data-anchor-id="multi-event-deconvolution">04 Multi-event deconvolution</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="lecture-videos" class="level1">
+<h1>Lecture videos</h1>
+<p>TBA</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
