@@ -223,10 +223,10 @@ md"""
 
 # ╔═╡ bf386b1f-f7ca-4cef-8f25-7d021a2c402e
 begin
-    f4 = Figure(size = (1200, 800))
+    custom_figure = Figure(size = (1200, 800))
 
     # Assigning subplots using t1, t2, t3, and t4
-    t1, t2, t3, t4 = f4[1, 1], f4[1, 2], f4[2, 1], f4[2, 2]
+    t1, t2, t3, t4 = custom_figure[1, 1], custom_figure[1, 2], custom_figure[2, 1], custom_figure[2, 2]
 
     # 1. Basic Topoplot
     plot_topoplot!(t1, dat_raw[:, 50, 1]; positions, axis = (; xlabel = "50 ms"))
@@ -261,7 +261,7 @@ begin
                    visual = (; colormap = :roma, contours = false),
                    colorbar = (; vertical = false, width = 180, label = "Voltage estimate"))
 
-    f4  # Display the final figure
+    custom_figure  # Display the final figure
 end
 
 # ╔═╡ 59e77bf8-839e-4d73-995f-d8dec72a52ef
@@ -2812,7 +2812,7 @@ version = "3.6.0+0"
 # ╠═1f9271fd-c23d-456f-b4bd-63fef832eff0
 # ╟─12baf0e1-fce3-4645-8cd8-9cdbd60fd9c3
 # ╟─8ca0bbae-47c8-4585-bd48-35aeda5f35a3
-# ╟─bf386b1f-f7ca-4cef-8f25-7d021a2c402e
+# ╠═bf386b1f-f7ca-4cef-8f25-7d021a2c402e
 # ╟─59e77bf8-839e-4d73-995f-d8dec72a52ef
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
