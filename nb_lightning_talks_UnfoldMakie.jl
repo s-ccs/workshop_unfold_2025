@@ -48,7 +48,7 @@ md"""
 
 # ╔═╡ 149330eb-f92a-4ae3-a4f5-c7568caad6d1
 html"""
-<iframe width="680" height="677" src="https://www.youtube.com/embed/JxS5E-kZc2s" title="Funny Cats Compilation (Most Popular) Part 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="680" height="677" src="https://youtu.be/SuOxl3B9M1U" title="UM.jl lightning talk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 """
 
 # ╔═╡ ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
