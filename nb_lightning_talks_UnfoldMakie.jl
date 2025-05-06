@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.6
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -16,13 +16,11 @@ macro bind(def, element)
     #! format: on
 end
 
-# ╔═╡ 41cb283a-a727-406c-918f-24e7e84822a9
-using PlutoUI
-
 # ╔═╡ 94d8d50d-a9bc-4825-82c8-b719439a2158
 begin 
 	using UnfoldMakie, CairoMakie, MakieThemes, UnfoldSim, StatsModels
-	using Unfold, Observables, TopoPlots, DataFrames
+	using Unfold, TopoPlots, DataFrames, PlutoUI
+	import StatsModels.coeftable, Unfold.effects
 
 	dat, positions = UnfoldMakie.example_data("TopoPlots.jl");
 	dat_raw, _ = TopoPlots.example_data();
@@ -42,11 +40,6 @@ md"""
 # Lightning talks ⚡ - Beyond Unfold.jl
 """
 
-# ╔═╡ 72cbb089-ecef-4c3d-b403-79228a23404d
-md"""
-## Unfold-family packages overview
-"""
-
 # ╔═╡ 5417e677-8822-4c20-823d-7f7fdda45fa1
 md"""
 # UnfoldMakie.jl
@@ -55,7 +48,7 @@ md"""
 
 # ╔═╡ 149330eb-f92a-4ae3-a4f5-c7568caad6d1
 html"""
-<iframe width="680" height="677" src="https://www.youtube.com/embed/JxS5E-kZc2s" title="Funny Cats Compilation (Most Popular) Part 1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="680" height="677" src="https://www.youtube.com/embed/SuOxl3B9M1U" title="UM.jl lightning talk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 """
 
 # ╔═╡ ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
@@ -67,7 +60,7 @@ A Julia package for ERP plotting.
 Built on top of:
 * **_Unfold.jl_** - Performing rERP analysis
 * **_Makie.jl_** - High-performance visualization for creating interactive, customizable 2D and 3D plots and animations
-* **_AlgebraOfGraphics.jl_** (AoG) - Mapping data to visual elements
+* **_AlgebraOfGraphics.jl_** (AoG) - Mapping data to visual elements, similar to ggplot
 """
 
 # ╔═╡ 2bc27bcf-3453-4de9-9058-7855af330bcb
@@ -89,7 +82,7 @@ md"""
 md"""
 🧠 Most EEG researchers use MATLAB tools
 
-🐢💸 But MATLAB can be slow, expensive and not so versitile
+🐢💸 But MATLAB is expensive, slow for plotting, and challenging for development
 
 """
 
@@ -104,54 +97,56 @@ md"""
 ### Data and packages
 """
 
+# ╔═╡ f845f097-4457-4c09-8d9e-bbce8de5395f
+md"""
+### Easy mapping
+
+Here we will make our figure more complex step by step.
+"""
+
+# ╔═╡ c78fc16e-ff64-44ca-968c-4da949552bee
+first(results, 4)
+
+# ╔═╡ e52eb446-bd2d-465e-8abb-7806448d8ba4
+# default version
+plot_erp(results)
+
+# ╔═╡ fc519351-da2f-45e0-aff5-36efb04c869f
+# adding additional plot information
+begin
+	plot_erp(
+	    results,
+	    mapping = (; color = :coefname => "Conditions"), # add legend title
+	    axis = (; xlabel = "Time [s]"), # add x labels
+		stderror = true, # add standard errors
+		significance = significancevalues, # add significance lines
+	)
+end
+
+# ╔═╡ 9adf7983-1f80-47ba-8c6a-0c139241b580
+# mapping and faceting
+begin
+	plot_erp(results,
+	    mapping = (; col = :coefname, color = :coefname), 
+	)
+end
+# instead of ´col´ you can also use ´row´, ´linestyle´
+
 # ╔═╡ b939c7c7-f55f-408f-83b7-70084406170e
 md"""
 ### Fast rendering ⚡
 """
 
 # ╔═╡ a75eb514-efff-4449-bf73-02dd4e1de70c
-@bind current_time PlutoUI.Slider(1:50, show_value=true, default=4)
+@bind time_point PlutoUI.Slider(1:50, show_value=true, default=4)
 
 # ╔═╡ 47c31314-388a-411e-b808-e2fef4e06d56
 begin
     ### Example data
-    timestamps = 1:100  # Example time points
+    timestamps = 1:100
     
     ### Create a figure
-    
-    ### Create an observable for the data (to bind it to the slider)
-    #dat_obs = Observable(dat_raw[:, 1, 1])  # Initial data slice for the topoplot
-    	
-    ### Plot the initial topoplot
-    plot_topoplot(dat_raw[:, current_time, 1], positions = positions)
-
-    #dat_obs[] = dat_raw[:, current_time, 1]
-end
-
-
-
-# ╔═╡ f845f097-4457-4c09-8d9e-bbce8de5395f
-md"""
-### Easy mapping
-"""
-
-# ╔═╡ fc519351-da2f-45e0-aff5-36efb04c869f
-begin
-	plot_erp(
-	    results,
-	    mapping = (; color = :coefname => "Conditions"),
-	    axis = (; xlabel = "Time [s]"),
-	)
-end
-
-# ╔═╡ 9adf7983-1f80-47ba-8c6a-0c139241b580
-begin
-	plot_erp(results,
-	    mapping = (; col = :coefname, color = :coefname => "Conditions"),
-	    axis = (; xlabel = "Time [s]"),
-	    stderror = true,
-		significance = significancevalues,
-	)
+    plot_topoplot(dat_raw[:, time_point, 1], positions = positions, axis = (; xlabel = "Time [$time_point ms]"))
 end
 
 # ╔═╡ 7b66a975-7436-41ed-bb97-2fab7fead3c3
@@ -162,88 +157,62 @@ md"""
 # ╔═╡ e1b85210-df3a-484a-a7b7-e10079c310ee
 md"""
 Simple combination
-- **Create figure**: A figure `f2` is created with size `(900, 600)`.
+- **Create figure**: A figure `f_comb` is created with size `(900, 600)`.
 - **Append 3 plots**: Three plots are added using `!`(`plot_erp!` and `plot_butterfly!`) with appropiate data and styling.
-- **Display figure**: The figure `f2` is displayed at the end.
+- **Display figure**: The figure `f_comb` is displayed at the end.
 """
 
 # ╔═╡ 69eb22de-5ee1-4bbb-bb5e-56f6ea9976be
 begin 
-	f2 = Figure(size = (900, 600))
+	f_comb = Figure(size = (900, 600))
 	with_theme(theme_ggthemr(:fresh)) do
-	    plot_erp!(f2[1, 1], StatsModels.coeftable(uf_deconv), mapping = (; color = :coefname => "Conditions"))
+	    plot_erp!(f_comb[1, 1], coeftable(uf_deconv), mapping = (; color = :coefname))
 	    plot_erp!(
-	        f2[1, 2],
-	        Unfold.effects(Dict(:condition => ["car", "face"]), uf_deconv),
-	        mapping = (; color = :condition => "Conditions"),
+	        f_comb[1, 2],
+	        effects(Dict(:condition => ["car", "face"]), uf_deconv),
+	        mapping = (; color = :condition),
 	    )
-	    plot_butterfly!(f2[2, 1:2], dat; positions = positions,
+	    plot_butterfly!(f_comb[2, 1], dat; positions = positions,
 	        topo_attributes = (; label_scatter = (; markersize = 5)),
 	        topo_axis = (; height = Relative(0.5), width = Relative(0.5)))
 	end
-	f2
+	f_comb
 end
 
-# ╔═╡ c9330906-bc37-4f17-900a-d56225870c14
-md"""
-More advanced plot
-- **Assign each subplot to a specific variable* for readability**
-- **Set superlables**
-"""
-
-# ╔═╡ 240fcfc2-489d-4ba3-b981-a04f6fa703e1
-begin 
-    f3 = Figure(size = (1200, 800))  # Adjusting figure size for 4 plots
-    
-    # Assigning subplots using ga, gb, gc, and gd
-    ga, gb, gc, gd = f3[1, 1], f3[1, 2], f3[2, 1], f3[2, 2]
-
-    # Applying the theme
-    with_theme(theme_ggthemr(:fresh)) do
-        # Plot ERP on the first subplot (ga)
-        plot_erp!(ga, StatsModels.coeftable(uf_deconv), 
-                  mapping = (; color = :coefname => "Conditions"),
-                  axis = (; xlabel = "Time [ms]"))
-        
-        # Plot Effects on the second subplot (gb)
-        plot_erp!(gb, Unfold.effects(Dict(:condition => ["car", "face"]), uf_deconv), 
-                  mapping = (; color = :condition => "Conditions"),
-                  axis = (; xlabel = "Time [ms]"))
-        
-        # Plot Butterfly on the third subplot (gc)
-        plot_butterfly!(gc, dat; positions = positions,
-                        topo_attributes = (; label_scatter = (; markersize = 5)),
-                        topo_axis = (; height = Relative(0.5), width = Relative(0.5)),
-                        axis = (; xlabel = "Time [ms]"))
-        
-        # Plot Topoplot on the fourth subplot (gd)
-        plot_topoplot!(gd, dat_raw[:, 340, 1]; 
+# ╔═╡ 561ea077-c578-45b3-a87a-9f6a846d3772
+# you can add a new plot to existing figure
+begin
+	plot_topoplot!(f_comb[2,2], dat_raw[:, 340, 1]; 
                        positions = positions,
                        axis = (; xlabel = "[340 ms]"))
-    end
-    
-    # Adding Labels for Subplots
-    for (label, layout) in zip(["A", "B", "C", "D"], [ga, gb, gc, gd])
-        Label(
-            layout[1, 1, TopLeft()],
-            label,
-            fontsize = 26,
-            font = :bold,
-            padding = (20, 20, 22, 0),
-            halign = :right,
-        )
-    end
-    
-    f3  # Display the final figure
+	f_comb
 end
 
+# ╔═╡ 1f9271fd-c23d-456f-b4bd-63fef832eff0
+# Adding Labels for Subplots
+begin
+	for (label, layout) in 
+		zip(
+			["A", "B", "C", "D"], [f_comb[1, 1], f_comb[1, 2], f_comb[2, 1], f_comb[2, 2]]
+		)
+		Label(
+			layout[1, 1, TopLeft()],
+			label,
+			fontsize = 26,
+			font = :bold,
+			padding = (20, 20, 22, 0),
+			halign = :right,
+		)
+	end
+	f_comb
+end
 
 # ╔═╡ 12baf0e1-fce3-4645-8cd8-9cdbd60fd9c3
 md"""
 !!! hint "Hint"
-    `(label_scatter = false,)` and `(; label_scatter = false)` are both correct ways to pass named arguments in Julia. 
+    In UnfoldMakie `(label_scatter = false,)` and `(; label_scatter = false)` are both correct ways to create a NamedTuple, which is used as named arguments. 
 
-    only `label_scatter = false` will cause an error.
+    only `(label_scatter = false)` will cause an error.
 """
 
 
@@ -254,10 +223,10 @@ md"""
 
 # ╔═╡ bf386b1f-f7ca-4cef-8f25-7d021a2c402e
 begin
-    f4 = Figure(size = (1200, 800))
+    custom_figure = Figure(size = (1200, 800))
 
     # Assigning subplots using t1, t2, t3, and t4
-    t1, t2, t3, t4 = f4[1, 1], f4[1, 2], f4[2, 1], f4[2, 2]
+    t1, t2, t3, t4 = custom_figure[1, 1], custom_figure[1, 2], custom_figure[2, 1], custom_figure[2, 2]
 
     # 1. Basic Topoplot
     plot_topoplot!(t1, dat_raw[:, 50, 1]; positions, axis = (; xlabel = "50 ms"))
@@ -292,46 +261,25 @@ begin
                    visual = (; colormap = :roma, contours = false),
                    colorbar = (; vertical = false, width = 180, label = "Voltage estimate"))
 
-    f4  # Display the final figure
+    custom_figure  # Display the final figure
 end
 
-# ╔═╡ d1d5c7e3-0a8f-4dee-bd90-e97155030857
+# ╔═╡ 59e77bf8-839e-4d73-995f-d8dec72a52ef
 md"""
-# UnfoldSim.jl
-"""
+### Conclusion
+UM.jl is:
 
-# ╔═╡ 5d715226-4a1e-4f22-a92b-09a7199f79dd
-md"""
-## Test slide
-"""
+⚙️ Highly customizable
 
-# ╔═╡ fc0166fb-1615-4671-be07-ef98777ff51a
-html"""
-<details>
-    <summary> A secret </summary>
-    <p> Pluto is fun </p>
-</details>
-"""
+⚡ Fast
 
-# ╔═╡ 5570743f-7ee0-4109-bc76-257be08895e1
-@bind x PlutoUI.Slider(1:100, default = 42)
+🧑‍💻 Easy to use
 
-# ╔═╡ 89380ba4-de0e-4b14-8445-14a4ff347a45
-print(x)
+Want to know more? 📚 Check out our documentation!
 
-# ╔═╡ f4657c3d-97ca-438a-9cc3-06f222911c79
-md"""
-# UnfoldBIDS.jl
-"""
+Something unclear? 🤔 Write an issue, and we'll try to clarify it!
 
-# ╔═╡ dec797fa-d060-4a9c-9213-cca44ef3cae7
-md"""
-![UnfoldBIDS.jl flowchart](https://github.com/unfoldtoolbox/UnfoldBIDS.jl/blob/main/docs/src/assets/2025UnfoldBIDSFlowChart.png?raw=true)
-"""
-
-# ╔═╡ 3bd92788-c20f-4cb4-ad83-11397a3a508d
-md"""
-# UnfoldMixedModels.jl
+Found a bug or have suggestions? 🐞 Write an issue and we'll address it!
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -340,7 +288,6 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 MakieThemes = "e296ed71-da82-5faf-88ab-0034a9761098"
-Observables = "510215fc-4207-5dde-b226-833fc4488ee2"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 StatsModels = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
 TopoPlots = "2bdbdf9c-dbd8-403f-947b-1a4e0dd41a7a"
@@ -352,7 +299,6 @@ UnfoldSim = "ed8ae6d2-84d3-44c6-ab46-0baf21700804"
 CairoMakie = "~0.13.4"
 DataFrames = "~1.7.0"
 MakieThemes = "~0.1.4"
-Observables = "~0.5.5"
 PlutoUI = "~0.7.62"
 StatsModels = "~0.7.4"
 TopoPlots = "~0.2.2"
@@ -367,7 +313,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "51e5eff2ae6244585c7e171f6abfaf5b4fe54a1f"
+project_hash = "c646bd267d202e51a348194edd309be8ca3b178f"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "e2478490447631aedba0823d4d7a80b2cc8cdb32"
@@ -2842,10 +2788,8 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╟─c01fdaf6-212c-11f0-0b98-599553f76a76
-# ╠═41cb283a-a727-406c-918f-24e7e84822a9
-# ╟─72cbb089-ecef-4c3d-b403-79228a23404d
 # ╟─5417e677-8822-4c20-823d-7f7fdda45fa1
-# ╟─149330eb-f92a-4ae3-a4f5-c7568caad6d1
+# ╠═149330eb-f92a-4ae3-a4f5-c7568caad6d1
 # ╟─ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
 # ╟─2bc27bcf-3453-4de9-9058-7855af330bcb
 # ╟─648e17da-d1ae-4733-8ac6-6b2102b07e7f
@@ -2853,27 +2797,22 @@ version = "3.6.0+0"
 # ╟─2c34cc63-8bb3-4e73-b8c5-d8002bbb317a
 # ╟─da755221-0b2c-47ea-94c0-bb90fca4b7a8
 # ╠═94d8d50d-a9bc-4825-82c8-b719439a2158
-# ╟─b939c7c7-f55f-408f-83b7-70084406170e
-# ╠═a75eb514-efff-4449-bf73-02dd4e1de70c
-# ╠═47c31314-388a-411e-b808-e2fef4e06d56
 # ╟─f845f097-4457-4c09-8d9e-bbce8de5395f
+# ╠═c78fc16e-ff64-44ca-968c-4da949552bee
+# ╠═e52eb446-bd2d-465e-8abb-7806448d8ba4
 # ╠═fc519351-da2f-45e0-aff5-36efb04c869f
 # ╠═9adf7983-1f80-47ba-8c6a-0c139241b580
+# ╟─b939c7c7-f55f-408f-83b7-70084406170e
+# ╠═a75eb514-efff-4449-bf73-02dd4e1de70c
+# ╟─47c31314-388a-411e-b808-e2fef4e06d56
 # ╟─7b66a975-7436-41ed-bb97-2fab7fead3c3
 # ╟─e1b85210-df3a-484a-a7b7-e10079c310ee
 # ╠═69eb22de-5ee1-4bbb-bb5e-56f6ea9976be
-# ╟─c9330906-bc37-4f17-900a-d56225870c14
-# ╠═240fcfc2-489d-4ba3-b981-a04f6fa703e1
+# ╠═561ea077-c578-45b3-a87a-9f6a846d3772
+# ╠═1f9271fd-c23d-456f-b4bd-63fef832eff0
 # ╟─12baf0e1-fce3-4645-8cd8-9cdbd60fd9c3
 # ╟─8ca0bbae-47c8-4585-bd48-35aeda5f35a3
 # ╠═bf386b1f-f7ca-4cef-8f25-7d021a2c402e
-# ╟─d1d5c7e3-0a8f-4dee-bd90-e97155030857
-# ╟─5d715226-4a1e-4f22-a92b-09a7199f79dd
-# ╟─fc0166fb-1615-4671-be07-ef98777ff51a
-# ╠═5570743f-7ee0-4109-bc76-257be08895e1
-# ╟─89380ba4-de0e-4b14-8445-14a4ff347a45
-# ╟─f4657c3d-97ca-438a-9cc3-06f222911c79
-# ╟─dec797fa-d060-4a9c-9213-cca44ef3cae7
-# ╟─3bd92788-c20f-4cb4-ad83-11397a3a508d
+# ╟─59e77bf8-839e-4d73-995f-d8dec72a52ef
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
