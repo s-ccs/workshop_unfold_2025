@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.6
+# v0.20.8
 
 using Markdown
 using InteractiveUtils
@@ -48,7 +48,7 @@ md"""
 
 # ╔═╡ 149330eb-f92a-4ae3-a4f5-c7568caad6d1
 html"""
-<iframe width="680" height="677" src="https://youtu.be/SuOxl3B9M1U" title="UM.jl lightning talk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="680" height="677" src="https://www.youtube.com/embed/SuOxl3B9M1U" title="UM.jl lightning talk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 """
 
 # ╔═╡ ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
@@ -2789,7 +2789,7 @@ version = "3.6.0+0"
 # ╔═╡ Cell order:
 # ╟─c01fdaf6-212c-11f0-0b98-599553f76a76
 # ╟─5417e677-8822-4c20-823d-7f7fdda45fa1
-# ╟─149330eb-f92a-4ae3-a4f5-c7568caad6d1
+# ╠═149330eb-f92a-4ae3-a4f5-c7568caad6d1
 # ╟─ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
 # ╟─2bc27bcf-3453-4de9-9058-7855af330bcb
 # ╟─648e17da-d1ae-4733-8ac6-6b2102b07e7f
