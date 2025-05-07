@@ -58,12 +58,28 @@ md"""
 
 # ╔═╡ 54748650-f6d4-47bf-9015-493681d89641
 begin
-	basisfunction = firbasis(τ=(-0.2,.8),sfreq=1024)
+	sfreq = 1024
+	basisfunction = firbasis(τ=(-0.2,.8),sfreq=sfreq)
 	f  = @formula 0~1
 	bfDict = ["stimulus"=>(f,basisfunction)]
 	UnfoldBIDS.rename_to_latency(data_df, :sample) # Unfold expects a :latency collumn in your events; if your event latency is named differently you can use this function as remedy
 	
-	resultsAll = run_unfold(data_df, bfDict; eventcolumn="trial_type");
+	resultsAll = run_unfold(data_df, bfDict; eventcolumn="trial_type", channels=["Pz"]);
+end
+
+# ╔═╡ e6862eb9-fff0-4747-a633-df803e110ab4
+begin
+	function res_and_filter_data!(raw; sfreq=100, l_freq=0.5)
+	  raw.load_data()
+		
+	  # Filter data
+	  raw.filter(l_freq, nothing)
+	
+	end
+	
+	for row in eachrow(data_df)
+	  res_and_filter_data!(row.raw; sfreq, l_freq=0.5)
+	end
 end
 
 # ╔═╡ fce7215e-e5fb-4b8f-a18b-902a3d8b3bfc
@@ -79,7 +95,7 @@ end
 
 # ╔═╡ 0fd5373f-fb13-40c0-8ff0-a78d5f9eaed8
 begin
-	mean_df = combine(groupby(tidy_df, [:time, :coefname, :channel]), :estimate => mean)
+	mean_df = combine(groupby(tidy_df, [:time, :coefname]), :estimate => mean)
 	
 end
 
@@ -90,8 +106,8 @@ md"""
 
 # ╔═╡ 740c058d-3c32-4694-80f9-6fbdef271f34
 begin
-	plt = data(@rsubset(mean_df, :channel==24)) * mapping(:time, :estimate_mean) * visual(Lines)
-	draw(plt, axis=(yticklabelsvisible=false,))
+	plt = data(mean_df) * mapping(:time, :estimate_mean) * visual(Lines)
+	draw(plt, axis=(yticklabelsvisible=true,))
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2150,6 +2166,7 @@ version = "3.6.0+0"
 # ╟─a4821be2-9529-431b-90c4-4e176d1bbc61
 # ╠═f09292b7-2183-4a97-9a9d-119e4562edea
 # ╟─6412394a-652f-449a-85f5-e2fde01c5f28
+# ╠═e6862eb9-fff0-4747-a633-df803e110ab4
 # ╠═54748650-f6d4-47bf-9015-493681d89641
 # ╟─fce7215e-e5fb-4b8f-a18b-902a3d8b3bfc
 # ╠═41695a7d-dcaa-48eb-a297-7e4bfaa94a69
