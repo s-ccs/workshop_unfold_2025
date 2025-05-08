@@ -23,7 +23,7 @@ begin
 	using Random # for shuffle function
 	using StableRNGs # for RNGs
 	using CairoMakie # for plotting
-	using PlutoUI
+	using PlutoUI # for interactive elements
 end
 
 # ╔═╡ f9531e67-c8e0-4f1f-b87a-cfbef28543d4
@@ -32,23 +32,35 @@ md"""
 The EEG simulation toolbox
 """
 
+# ╔═╡ 3ed34ef4-d555-4e7f-a295-c075b2a7df2f
+md"""
+# Overview
+"""
+
 # ╔═╡ 3ce1d1b8-390e-46e5-b621-130260b24df6
 md"""
-## Why simulate EEG data?
+### Why simulate EEG data?
 - Power analyses
 - Test preprocessing & analysis pipelines
 - Validate statistical methods
-- Identify limitations of traditional analysis approaches
+- Identify limitations of analysis approaches
+- As example data for an EEG workshop ;)
 """
 
 # ╔═╡ 6729e2d4-b7b3-4d3d-9fed-5aed23f0b8b6
 md"""
-## Key features of UnfoldSim.jl
+### Key features of UnfoldSim.jl
 - **Continuous or epoched** data with potentially **overlapping** signals
 - **Multi-subject** & complex experimental designs
 - **Multi-channel** via EEG-forward models
 - **Modularity:** Choose existing or implement new designs, components, onset distributions or noise types
 """
+
+# ╔═╡ a39f4091-0163-4706-b4e3-bc93825cccb7
+html"""
+<div style="text-align: center;">
+<img src=https://github.com/unfoldtoolbox/UnfoldSim.jl/blob/assets/docs/src/assets/UnfoldSim_features_animation.gif?raw=true style="width: 500px; height:auto;">
+</div>"""
 
 # ╔═╡ 06b5c95e-db0b-4d26-bf5e-5871327e4262
 md"""
@@ -131,10 +143,10 @@ $(@bind offset PlutoUI.Slider(0:50:150, default = 100, show_value = true))
 """
 
 # ╔═╡ 15a09b42-9e63-4362-8040-cdb776d25201
-onset = UniformOnset(; width = 100, offset = offset);
+onset = UniformOnset(; width = 100, offset = offset); # offset = 100 samples
 
 # ╔═╡ 1d0d1609-990e-4213-8a53-c29b80c448b1
-onset_samples = UnfoldSim.simulate_interonset_distances(StableRNG(1), onset, design)
+onset_samples = UnfoldSim.simulate_interonset_distances(StableRNG(1), onset, design);
 
 # ╔═╡ 1497719c-250c-42ca-a36a-1b47a2edc3f4
 begin
@@ -156,7 +168,7 @@ md"Noise level"
 @bind noiselevel PlutoUI.Slider(0:2:10, default = 2, show_value = true)
 
 # ╔═╡ a479c54b-bf76-4216-95be-d14b1e5b8280
-noise = PinkNoise(; noiselevel = noiselevel);
+noise = PinkNoise(; noiselevel = noiselevel); # noiselevel = 2
 
 # ╔═╡ ef83a000-d4a0-45cf-a2ca-dcabbc852fe6
 noise_samples = simulate_noise(StableRNG(1), noise, 1000);
@@ -209,6 +221,30 @@ begin
 	ylims!(ax_sim, -20, 40)
 	axislegend("Event onset"; unique = true)
 	current_figure()
+end
+
+# ╔═╡ 4fa434b5-f5bf-41ff-9177-18a99febd07d
+md"""
+# Conclusion
+
+### Learn more 🔎
+- Explore [our documentation](https://unfoldtoolbox.github.io/UnfoldSim.jl/stable/) for more usage examples.
+- Or read our [JOSS paper](https://doi.org/10.21105/joss.06641).
+
+### Upcoming features 🔜
+- Event sequences e.g. S-C-R, Stimulus-Fixation
+- Onset formulas (i.e. inter-onset distances depending on the design)
+- Sequential sampling models e.g. DDM
+- ...and many more
+
+"""
+
+# ╔═╡ e2165703-2cb3-4976-8ad4-de85ded39eb3
+begin
+	text = """UnfoldSim.jl lightning talk by Judith Schepers"""
+	html_command = """<div style="text-align: right; font-size: 0.8em; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
+    $text </div>"""
+	HTML(html_command)
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2393,8 +2429,10 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╟─f9531e67-c8e0-4f1f-b87a-cfbef28543d4
+# ╟─3ed34ef4-d555-4e7f-a295-c075b2a7df2f
 # ╟─3ce1d1b8-390e-46e5-b621-130260b24df6
 # ╟─6729e2d4-b7b3-4d3d-9fed-5aed23f0b8b6
+# ╟─a39f4091-0163-4706-b4e3-bc93825cccb7
 # ╟─06b5c95e-db0b-4d26-bf5e-5871327e4262
 # ╟─ffe0a1b7-0da3-4801-a902-359f575d3458
 # ╠═64ace1ed-e3ba-4e04-afc7-d11e9eee6d74
@@ -2417,6 +2455,8 @@ version = "3.6.0+0"
 # ╟─8183a9f9-e87f-4edb-919d-04f38d7db8a2
 # ╟─5139bc11-6295-4b63-af79-6566ddfb8b3d
 # ╟─56985401-59d7-49de-97a3-f65b88b108eb
+# ╟─4fa434b5-f5bf-41ff-9177-18a99febd07d
 # ╟─3f620832-2a76-11f0-1af0-33381b01354b
+# ╟─e2165703-2cb3-4976-8ad4-de85ded39eb3
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
