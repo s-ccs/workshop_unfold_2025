@@ -156,7 +156,6 @@ question_box(md"""
 answer_box(md"""
 
 ```julia
-eff = effects(Dict(:sac_amp=>0:10),m_erp)
 plot_splines(m_erp)
 ```
 2. You should observe that the splines are now covering a lot of ground without any actual data to fit the coefficients properly

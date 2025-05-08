@@ -154,7 +154,7 @@ Let's run a single-subject ERP analysis, extracting the intercept (condition = �
 # ╔═╡ 70e50157-289c-4d44-85b7-ed9fc3ba9dfb
 md"""
 ### 1. Define a formula
-A formula is an easy, succint, but also formal description of your linear model. Some example formulas to get you started:
+A formula is an easy, succinct, but also formal description of your linear model. Some example formulas to get you started:
 
 - `@formula(0~1)` - just an intercept (= the mean!)\
 - `@formula(0~1+A)` - intercept + main/simple effect\
@@ -338,7 +338,7 @@ Looking at this ERPs:
 
 # ╔═╡ a69ed114-3539-40b0-b049-d8806dad7fb8
 answer_box(md"""
-1. Yes! `stimulation` shows an effect at ~170ms
+1. Yes! `stimulation` shows an effect at ~170ms.
 2. We are seeing here the overlap effect in action. Try changing the `min_overlap` slider to remove this mess :)
 """)
 
@@ -399,7 +399,7 @@ The designmatrix is currently sorted by trial-number. After you sort it, can you
 
 # ╔═╡ f2b18e0a-7bb7-4a69-adf2-b3555303129f
 answer_box(md"""
-The design is indeed balanced, you can see that each simle-effect has the same amount of trials.
+The design is indeed balanced, you can see that each simple-effect has the same amount of trials.
 ```julia
 plot_designmatrix(designmatrix(m_erp),sort_data=true)
 ```
@@ -414,7 +414,7 @@ md"""
 question_box(md"""
 Add `multichannel`  to the `simulate_eeg` command above. This will simulate data based on 20 channels. 
 			 
-You need to either adapt your other code to support multi-channel, or accept that some codecells will throw errors ;-)
+You need to either adapt your other code to support multi-channel, or accept that some code cells will throw errors ;-)
 			 
 Can you adapt `plot_erp` to return useful results? You could try `mapping=(;layout=:channel=>nonnumeric`).
 

@@ -235,7 +235,7 @@ eff_cond = effects(Dict(:stimulation=>["face","bike"]),m_erp)
 answer_box(md"""
 This should work: 
 ```julia
-plot_erp(eff_cond;mapping=(;color=:condition))
+plot_erp(eff_cond;mapping=(;color=:stimulation))
 ```
 """)
 
