@@ -32,14 +32,9 @@ md"""
 The EEG simulation toolbox
 """
 
-# ╔═╡ 3ed34ef4-d555-4e7f-a295-c075b2a7df2f
-md"""
-# Overview
-"""
-
 # ╔═╡ 3ce1d1b8-390e-46e5-b621-130260b24df6
 md"""
-### Why simulate EEG data?
+# Why simulate EEG data?
 - Power analyses
 - Test preprocessing & analysis pipelines
 - Validate statistical methods
@@ -49,7 +44,7 @@ md"""
 
 # ╔═╡ 6729e2d4-b7b3-4d3d-9fed-5aed23f0b8b6
 md"""
-### Key features of UnfoldSim.jl
+# Key features of UnfoldSim.jl
 - **Continuous or epoched** data with potentially **overlapping** signals
 - **Multi-subject** & complex experimental designs
 - **Multi-channel** via EEG-forward models
@@ -2429,7 +2424,6 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╟─f9531e67-c8e0-4f1f-b87a-cfbef28543d4
-# ╟─3ed34ef4-d555-4e7f-a295-c075b2a7df2f
 # ╟─3ce1d1b8-390e-46e5-b621-130260b24df6
 # ╟─6729e2d4-b7b3-4d3d-9fed-5aed23f0b8b6
 # ╟─a39f4091-0163-4706-b4e3-bc93825cccb7
