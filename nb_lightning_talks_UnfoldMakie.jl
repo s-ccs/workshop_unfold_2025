@@ -25,22 +25,13 @@ end
 
 # ╔═╡ c01fdaf6-212c-11f0-0b98-599553f76a76
 md"""
-# Lightning talks ⚡ - Beyond Unfold.jl
+# Lightning talk ⚡ - UnfoldMakie.jl
 """
-
-# ╔═╡ 5417e677-8822-4c20-823d-7f7fdda45fa1
-md"""
-# UnfoldMakie.jl
-"""
-
 
 # ╔═╡ f3a168b7-6f07-491b-9072-a9544e233ce3
 md"""
 Slides & Toolbox: **Vladimir Mikheev** & Benedikt Ehinger
 """
-
-# ╔═╡ 2846aa9a-bf03-4f23-8a52-11eaed5d7cd2
-
 
 # ╔═╡ 149330eb-f92a-4ae3-a4f5-c7568caad6d1
 html"""
@@ -140,7 +131,7 @@ plot_erp(results,
 
 # ╔═╡ 6dbbb028-5046-48b8-bece-20daae2d0b17
 md"""
-## plot_erp + uncertainty / significance
+## `plot_erp` - uncertainty / significance
 Support is there, as long as column `stderror` exists
 """
 
@@ -152,7 +143,7 @@ plot_erp(results,
 
 # ╔═╡ e94eb743-e002-46a2-a6f1-68276a9542a2
 md"""
-## `plot_erp` - Fast exploration
+## `plot_erp` - fast exploration
 rERP are complex, we need to be able to quickly explore different views of the same dataset
 """
 
@@ -166,21 +157,11 @@ md"""
 ## MakieLayout 👑 - Combining plots made easy
 """
 
-# ╔═╡ e1b85210-df3a-484a-a7b7-e10079c310ee
-md"""
-Simple combination
-- **Create figure**: A figure `f_comb` is created with size `(900, 600)`.
-- **Append 3 plots**: Three plots are added using `!`(`plot_erp!` and `plot_butterfly!`) with appropiate data and styling.
-- **Display figure**: The figure `f_comb` is displayed at the end.
-"""
-
 # ╔═╡ 69eb22de-5ee1-4bbb-bb5e-56f6ea9976be
 begin 
 	eff = effects(Dict(:condition => ["car", "face"]), uf_deconv)
-
 	
-	f = Figure(size = (900, 600))
-	
+	f = Figure()
 	
 	plot_erp!(      f[1, 1], results, mapping = (; color = :coefname))
 	
@@ -198,7 +179,7 @@ end
 
 # ╔═╡ 0b0a7be4-4f2b-4cae-8a7e-29f9a8e26b6d
 md"""
-## MakieLayout - add to existing layouts!
+## MakieLayout 👑 - add to existing layouts!
 """
 
 # ╔═╡ 561ea077-c578-45b3-a87a-9f6a846d3772
@@ -217,7 +198,7 @@ end
 
 # ╔═╡ 0b6b409b-3f77-4fd1-b5b6-c618ead4c603
 md"""
-## MakieLayout - Subfigure-labels can be easy!
+## MakieLayout 👑 - subfigure-labels can be easy!
 """
 
 # ╔═╡ 1f9271fd-c23d-456f-b4bd-63fef832eff0
@@ -238,7 +219,7 @@ end
 
 # ╔═╡ 8ca0bbae-47c8-4585-bd48-35aeda5f35a3
 md"""
-### Flexible Customization🌟 
+## Flexible Customization🌟 
 Makie allows for efficient and logical modification of **many** parameters
 """
 
@@ -287,8 +268,8 @@ end
 
 # ╔═╡ 59e77bf8-839e-4d73-995f-d8dec72a52ef
 md"""
-### Conclusion
-UM.jl is:
+## Conclusion
+UnfoldMakie.jl is:
 
 - ⚙️ Highly customizable
 
@@ -2814,9 +2795,7 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╟─c01fdaf6-212c-11f0-0b98-599553f76a76
-# ╟─5417e677-8822-4c20-823d-7f7fdda45fa1
 # ╟─f3a168b7-6f07-491b-9072-a9544e233ce3
-# ╟─2846aa9a-bf03-4f23-8a52-11eaed5d7cd2
 # ╟─149330eb-f92a-4ae3-a4f5-c7568caad6d1
 # ╟─ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
 # ╟─2bc27bcf-3453-4de9-9058-7855af330bcb
@@ -2837,7 +2816,6 @@ version = "3.6.0+0"
 # ╟─e94eb743-e002-46a2-a6f1-68276a9542a2
 # ╠═9adf7983-1f80-47ba-8c6a-0c139241b580
 # ╟─7b66a975-7436-41ed-bb97-2fab7fead3c3
-# ╟─e1b85210-df3a-484a-a7b7-e10079c310ee
 # ╠═69eb22de-5ee1-4bbb-bb5e-56f6ea9976be
 # ╟─0b0a7be4-4f2b-4cae-8a7e-29f9a8e26b6d
 # ╠═561ea077-c578-45b3-a87a-9f6a846d3772
@@ -2845,8 +2823,8 @@ version = "3.6.0+0"
 # ╠═1f9271fd-c23d-456f-b4bd-63fef832eff0
 # ╟─8ca0bbae-47c8-4585-bd48-35aeda5f35a3
 # ╟─bf386b1f-f7ca-4cef-8f25-7d021a2c402e
-# ╠═59e77bf8-839e-4d73-995f-d8dec72a52ef
-# ╠═fc74c4e5-01ee-4840-85e9-ea8cff581e90
+# ╟─59e77bf8-839e-4d73-995f-d8dec72a52ef
+# ╟─fc74c4e5-01ee-4840-85e9-ea8cff581e90
 # ╠═94d8d50d-a9bc-4825-82c8-b719439a2158
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

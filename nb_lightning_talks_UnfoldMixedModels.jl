@@ -20,14 +20,13 @@ end
 using SwarmMakie
 
 # ╔═╡ 2789e7ef-1571-4a47-b343-2b8485c78e7f
-	using UnfoldMixedModels
+using UnfoldMixedModels
 
 # ╔═╡ 290ff8b5-6579-4786-84e7-3407b2e8fcd7
 using UnfoldStats # hat-tip to Judith Schepers!
 
 # ╔═╡ 3ecea8b3-73f2-4b7b-814a-542dd0232d7c
-# other tools we developed, check em out!
-using ClusterDepth,MixedModelsPermutations 
+using ClusterDepth,MixedModelsPermutations # other tools we developed :)
 
 # ╔═╡ 592b60e0-fb97-4c89-aa2e-f4806786028c
 begin
@@ -62,6 +61,11 @@ using CategoricalArrays
 # ╔═╡ ec5b3848-2aa7-11f0-0ba0-95072a5a4b7b
 md"""
 # Lightning talk ⚡ UnfoldMixedModels.jl
+"""
+
+# ╔═╡ 518f364b-85c1-4fe5-8bb5-6a33e2120028
+md"""
+Slides & Toolbox: Benedikt Ehinger
 """
 
 # ╔═╡ 58962381-1b1e-4464-b6d3-147115d5d423
@@ -184,12 +188,11 @@ evts
 
 # ╔═╡ 39ca2d14-4d54-493d-b10e-5201d628f1cb
 # ╠═╡ show_logs = false
-f_lmm = @formula(0~1+cont+(1+cont|item)+(1+cont|subject))
-
+f_lmm = @formula(0~1+cont+(1+cont|item)+(1+cont|subject));
 
 # ╔═╡ 036982f3-673e-4f65-b392-9110d7a5858b
 # ╠═╡ show_logs = false
-m_lmm = fit(UnfoldModel,f_lmm,evts,data,times)
+m_lmm = fit(UnfoldModel,f_lmm,evts,data,times);
 
 # ╔═╡ 64e34904-a336-4734-9ca3-6fcfa6f2403e
 plot_erp( coeftable(m_lmm),
@@ -209,10 +212,10 @@ begin
 end
 
 # ╔═╡ d7f9cc69-f891-4c2e-be71-a9f2fbe33a24
-	pvalues = vcat((likelihoodratiotest(data,m_lmm_0,m_lmm)|>pvalue)...)
+	pvalues = likelihoodratiotest(data,m_lmm_0,m_lmm) |> pvalue;
 
 # ╔═╡ 02a32ebe-1a26-4edc-a982-c699075f459c
-	scatter(times,pvalues;axis=(;yscale=log10,ylabel="p-value",xlabel="time"))
+	scatter(times,vcat(pvalues...);axis=(;yscale=log10,ylabel="p-value",xlabel="time"))
 
 
 # ╔═╡ 62565204-6031-4895-af8c-17f585c4205f
@@ -222,17 +225,25 @@ md"""
 
 # ╔═╡ 2cd05a7c-a7c6-41ce-89f9-3c3005604296
 danger(md"""
-We are already deep in uncharted territory. The following methods are **active research**. Absolutely **no waranty** - code will change -  papers are 🐌 coming
+We are now deep in uncharted territory. The following methods are **active research**. **No waranty** - code will change -  papers are 🐌 coming
 """)
 
 # ╔═╡ 768b2dc1-a025-460d-889d-6213bcb4a1d3
 rng = MersenneTwister(1);
 
 # ╔═╡ fb71d1fb-b72f-4ee5-8ace-5d0ec77bd5f7
-pvalues_mcc=pvalue(rng,m_lmm,data,2;n_permutations=100,clusterforming_threshold=1.8)
+pvalues_mcc=pvalue(rng,m_lmm,data,2;n_permutations=100,clusterforming_threshold=1.8);
+
+# ╔═╡ 914c1214-eb5d-43b1-98b4-5cb73206f873
+pvalues_mcc
 
 # ╔═╡ 89e0b24b-e2da-4597-ad4b-5e5f62ccf77e
-scatter(times,pvalues_mcc[1,:])
+let
+	f,ax,h = scatter(times,pvalues_mcc[1,:],label="permutation corrected")#,axis=(;yscale=log10))
+	scatter!(times,vcat(pvalues...),label="likelihood ratio test")
+	Legend(f[0,1],ax,orientation=:horizontal)
+	f
+end
 
 # ╔═╡ 8af2a5d0-e44c-426f-bc80-4895b14be69e
 md"""
@@ -242,8 +253,8 @@ md"""
 """
 
 # ╔═╡ 0a11ace9-88d6-4df5-8c77-60b9a6d345f3
-warning(md""""More research is needed"™ - contact me if interested!
-"""
+PlutoTeachingTools.warning(md""""More research is needed"™ - contact me if interested!
+""")
 
 # ╔═╡ bc25131c-1ae5-4e5f-911d-0dee59749912
 md"""
@@ -2969,6 +2980,7 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╟─ec5b3848-2aa7-11f0-0ba0-95072a5a4b7b
+# ╟─518f364b-85c1-4fe5-8bb5-6a33e2120028
 # ╟─58962381-1b1e-4464-b6d3-147115d5d423
 # ╟─ff949ccd-b0da-4a6a-94de-c81d9bc125aa
 # ╟─4ba67ea1-8186-4a90-848e-1b77a25585d5
@@ -2983,7 +2995,7 @@ version = "3.6.0+0"
 # ╟─ce64aa76-c2df-4c4d-a80a-36d88cef611f
 # ╠═2789e7ef-1571-4a47-b343-2b8485c78e7f
 # ╠═d8f6335e-a47d-4340-9d57-def15284ffaa
-# ╠═f6afc96f-e407-44ca-a1f5-d74323962b36
+# ╟─f6afc96f-e407-44ca-a1f5-d74323962b36
 # ╟─f7a3acf4-7131-4467-9950-1a3cfc43f725
 # ╠═39ca2d14-4d54-493d-b10e-5201d628f1cb
 # ╠═036982f3-673e-4f65-b392-9110d7a5858b
@@ -2997,9 +3009,10 @@ version = "3.6.0+0"
 # ╠═290ff8b5-6579-4786-84e7-3407b2e8fcd7
 # ╠═3ecea8b3-73f2-4b7b-814a-542dd0232d7c
 # ╠═fb71d1fb-b72f-4ee5-8ace-5d0ec77bd5f7
-# ╠═768b2dc1-a025-460d-889d-6213bcb4a1d3
+# ╠═914c1214-eb5d-43b1-98b4-5cb73206f873
+# ╟─768b2dc1-a025-460d-889d-6213bcb4a1d3
 # ╠═89e0b24b-e2da-4597-ad4b-5e5f62ccf77e
-# ╠═8af2a5d0-e44c-426f-bc80-4895b14be69e
+# ╟─8af2a5d0-e44c-426f-bc80-4895b14be69e
 # ╠═0a11ace9-88d6-4df5-8c77-60b9a6d345f3
 # ╟─bc25131c-1ae5-4e5f-911d-0dee59749912
 # ╠═592b60e0-fb97-4c89-aa2e-f4806786028c
