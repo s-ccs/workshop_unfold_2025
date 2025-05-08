@@ -61,18 +61,13 @@ using CategoricalArrays
 
 # ╔═╡ ec5b3848-2aa7-11f0-0ba0-95072a5a4b7b
 md"""
-# Lightning talks ⚡ - Beyond Unfold.jl
-
-# UnfoldMixedModels.jl
+# Lightning talk ⚡ UnfoldMixedModels.jl
 """
 
 # ╔═╡ 58962381-1b1e-4464-b6d3-147115d5d423
 md"""
-# Why LMMs?
+# Why Linear Mixed Models?
 """
-
-# ╔═╡ 7cb76ec7-0e06-4bb5-99e4-d076b5d17fbf
-PlutoTeachingTools.warning_box(md"""Repeatedly measuring the same item **introduces a dependency** - we will show this now:""")
 
 # ╔═╡ 4ba67ea1-8186-4a90-848e-1b77a25585d5
 md"""
@@ -90,7 +85,7 @@ md"""
 # ╔═╡ f23d6cfb-b613-41e4-a7bd-ff9ce8284bf3
 # ╠═╡ show_logs = false
 #form_analysis = @formula(y~1+condition + (1+condition|subject))
-formula_analysis = @formula(y~1+condition + (1+condition|subject) + (1+condition|item))
+formula_analysis = @formula(y~1+condition + (1+condition|subject) + (1+condition|item));
 
 # ╔═╡ d71b7260-21eb-4a4f-939f-039d310b53d1
 	begin
@@ -112,17 +107,19 @@ formula_analysis = @formula(y~1+condition + (1+condition|subject) + (1+condition
 
 	d_avg = groupby(d_sim,[:subject,:condition])|>x->combine(x,:y=>mean)
 	
-	
-	"(This hidden cell simulates the data - ignore me ;)"
-	end
+	end;
 
 # ╔═╡ ff949ccd-b0da-4a6a-94de-c81d9bc125aa
 md"""
-Basic dataset: Two level `condition` variable with $nsub subjects, $nitem items and thus in total $(2*nsub*nitem*ntrials) trials.
+Basic dataset: Two level `condition` :🚲 vs. 🧐
 
---- wait, what the heck is an item?
+(with $nsub subjects, $nitem items, $ntrials repetitions; in total $(2*nsub*nitem*ntrials) trials)
 
-**Items** are typically the different idividual stimuli you use, different faces, different words, different sounds.
+> --- wait, what the heck is an item?
+
+**Items** are typically the different individual stimuli you use, different faces, different words, different sounds.
+
+Potential Face-Stimuli: 👨🏼👩🏼‍🦰🤶🏼👩🏼‍🌾👩🏼‍🏭👨🏼‍🚒🙍🏼‍♀️🧚🏼‍♂️👨🏼‍✈️ - do each evoke the same ERP? No!
 """
 
 # ╔═╡ 301514eb-3197-42ae-83a1-0e95faadd413
@@ -133,11 +130,18 @@ begin
 	ix = d_avg.condition.=="C1"
 	diff_values = d_avg.y_mean[ix] .- d_avg.y_mean[.!ix]
 	pval_2stage = pvalue(OneSampleTTest(diff_values))
-	"2-Stage T-Test: p = $(round(pval_2stage,sigdigits=2))"
+	
+	HTML(html(html"""<style>
+	#largetable table td {
+		font-size: 1.5em !important;
+	}
+</style><div id="largetable">""")*html(md"""
+	|||
+	|---|---|
+	|2-stage t-test: p = | $(round(pval_2stage,sigdigits=2)) $(pval_2stage<=0.05 ? "✓" : "❎")|
+	|LMM: p = |$(round(coeftable(m_analysis).cols[4][2],sigdigits=2)) $(coeftable(m_analysis).cols[4][2]<=0.05 ? "✓" : "❎")|
+	""")*html(html"""</div>"""))
 end
-
-# ╔═╡ 2cae03ce-e5a4-44be-ae7f-365d87dc64db
-"LMM: p = $(round(coeftable(m_analysis).cols[4][2],sigdigits=2))"
 
 # ╔═╡ 77a7ace8-9689-44b4-9a08-8147177e25a4
 md"""
@@ -146,15 +150,15 @@ md"""
 """
 
 # ╔═╡ d43ba68b-7873-414e-8c06-61e46a2234e3
-danger(md"**Again:** Repeatedly measuring the same item introduces a dependency!")
+danger(md"Repeatedly measuring the same item introduces a dependency!")
 
 # ╔═╡ 472775cc-7521-415a-bd0e-00464c978071
 md"""
 Besides the item-effects modelling, LMMs have **other benefits**:
 
-- Missing data & unbalanced designs handled efficiently
-- All linear modeling features, but repeated measures! (continuous + categorical effects)
-- Make your analysis more fancy
+- Missing data & unbalanced designs ✔
+- All linear modeling features, but with repeated measures!
+- Make your analysis more fancy 😉
 """
 
 # ╔═╡ ce64aa76-c2df-4c4d-a80a-36d88cef611f
@@ -167,25 +171,30 @@ begin
 data, evts = UnfoldSim.predef_eeg(10; return_epoched = true) # simulate 10 subjects
 data = reshape(data, 1, size(data, 1), :) # concatenate the data into a long EEG
 times = range(0, length = size(data, 2), step = 1 / 100) 
-
+rename!(evts,:continuous=>:cont,:condition=>:cond)
 end;
 
 # ╔═╡ f6afc96f-e407-44ca-a1f5-d74323962b36
 md"""
-`size(data)` = **1** ch x **45** timepoints x **1000** trials
+`size(eeg-data)` = **1** ch x **45** timepoints x **1000** trials
 """
+
+# ╔═╡ f7a3acf4-7131-4467-9950-1a3cfc43f725
+evts
 
 # ╔═╡ 39ca2d14-4d54-493d-b10e-5201d628f1cb
 # ╠═╡ show_logs = false
-f_lmm = @formula(0~1+condition+continuous+zerocorr(1+condition+continuous|item)+zerocorr(1+condition+continuous|subject))
-#f_lmm =  @formula 0 ~ 1 + condition * continuous + zerocorr(1 + condition * continuous | subject);
+f_lmm = @formula(0~1+cont+(1+cont|item)+(1+cont|subject))
+
 
 # ╔═╡ 036982f3-673e-4f65-b392-9110d7a5858b
 # ╠═╡ show_logs = false
 m_lmm = fit(UnfoldModel,f_lmm,evts,data,times)
 
 # ╔═╡ 64e34904-a336-4734-9ca3-6fcfa6f2403e
-plot_erp(coeftable(m_lmm),mapping=(;col=:group),layout=(;show_legend=false))
+plot_erp( coeftable(m_lmm),
+		  mapping=(;col=:group),
+		  layout=(;show_legend=false))
 
 # ╔═╡ b285ab15-eec6-4422-8eec-9291a5368e86
 md"""
@@ -195,15 +204,16 @@ md"""
 # ╔═╡ bb271a40-0a4d-4032-9273-8bd5ad372778
 # ╠═╡ show_logs = false
 begin
-	# null model without condition
-	f_0 = @formula(0~1+continuous+zerocorr(1+condition+continuous|item)+zerocorr(1+condition+continuous|subject))
-	
+	f_0 = @formula(0~1+(1+cont|item)+(1+cont|subject))
 	m_lmm_0 = fit(UnfoldModel,f_0,evts,data,times)
-	
-	pvalues = vcat((likelihoodratiotest(data,m_lmm_0,m_lmm)|>pvalue)...)
-	
-	scatter(times,pvalues;axis=(;yscale=log10,ylabel="p-value",xlabel="time"))
 end
+
+# ╔═╡ d7f9cc69-f891-4c2e-be71-a9f2fbe33a24
+	pvalues = vcat((likelihoodratiotest(data,m_lmm_0,m_lmm)|>pvalue)...)
+
+# ╔═╡ 02a32ebe-1a26-4edc-a982-c699075f459c
+	scatter(times,pvalues;axis=(;yscale=log10,ylabel="p-value",xlabel="time"))
+
 
 # ╔═╡ 62565204-6031-4895-af8c-17f585c4205f
 md"""
@@ -212,27 +222,27 @@ md"""
 
 # ╔═╡ 2cd05a7c-a7c6-41ce-89f9-3c3005604296
 danger(md"""
-We are already deep in uncharted territory. The following methods are **active research**. Absolutely **no waranty** - papers are 🐌 coming
+We are already deep in uncharted territory. The following methods are **active research**. Absolutely **no waranty** - code will change -  papers are 🐌 coming
 """)
 
+# ╔═╡ 768b2dc1-a025-460d-889d-6213bcb4a1d3
+rng = MersenneTwister(1);
+
 # ╔═╡ fb71d1fb-b72f-4ee5-8ace-5d0ec77bd5f7
-pvalues_mcc = pvalue( # danger - this interface will change likely to be more user friendly
-    MersenneTwister(1),
-    m_lmm,
-    data,
-    2; # which coefficient
-    n_permutations = 100,
-    clusterforming_threshold = 1.8,
-)
+pvalues_mcc=pvalue(rng,m_lmm,data,2;n_permutations=100,clusterforming_threshold=1.8)
 
 # ╔═╡ 89e0b24b-e2da-4597-ad4b-5e5f62ccf77e
 scatter(times,pvalues_mcc[1,:])
 
-# ╔═╡ 0a11ace9-88d6-4df5-8c77-60b9a6d345f3
+# ╔═╡ 8af2a5d0-e44c-426f-bc80-4895b14be69e
 md"""
-Permutations are slooooow! But allow for efficient cluster-corrections!
+# Conclusions
+- LMMs can be **super** important
+- Fitting mass-univariate LMMs in Unfold: ⚡🐆⚡
+"""
 
-"More research is needed"™ - contact me if interested!
+# ╔═╡ 0a11ace9-88d6-4df5-8c77-60b9a6d345f3
+warning(md""""More research is needed"™ - contact me if interested!
 """
 
 # ╔═╡ bc25131c-1ae5-4e5f-911d-0dee59749912
@@ -2961,33 +2971,36 @@ version = "3.6.0+0"
 # ╟─ec5b3848-2aa7-11f0-0ba0-95072a5a4b7b
 # ╟─58962381-1b1e-4464-b6d3-147115d5d423
 # ╟─ff949ccd-b0da-4a6a-94de-c81d9bc125aa
-# ╟─7cb76ec7-0e06-4bb5-99e4-d076b5d17fbf
 # ╟─4ba67ea1-8186-4a90-848e-1b77a25585d5
 # ╟─301514eb-3197-42ae-83a1-0e95faadd413
+# ╟─496d24a5-8e29-41f8-926b-6f41b2500cd0
 # ╟─56340884-cf55-4eb0-b1dc-0d6f4525a7ba
 # ╟─d71b7260-21eb-4a4f-939f-039d310b53d1
-# ╠═496d24a5-8e29-41f8-926b-6f41b2500cd0
-# ╠═f23d6cfb-b613-41e4-a7bd-ff9ce8284bf3
-# ╠═2cae03ce-e5a4-44be-ae7f-365d87dc64db
+# ╟─f23d6cfb-b613-41e4-a7bd-ff9ce8284bf3
 # ╟─77a7ace8-9689-44b4-9a08-8147177e25a4
 # ╟─d43ba68b-7873-414e-8c06-61e46a2234e3
 # ╟─472775cc-7521-415a-bd0e-00464c978071
 # ╟─ce64aa76-c2df-4c4d-a80a-36d88cef611f
 # ╠═2789e7ef-1571-4a47-b343-2b8485c78e7f
 # ╠═d8f6335e-a47d-4340-9d57-def15284ffaa
-# ╟─f6afc96f-e407-44ca-a1f5-d74323962b36
+# ╠═f6afc96f-e407-44ca-a1f5-d74323962b36
+# ╟─f7a3acf4-7131-4467-9950-1a3cfc43f725
 # ╠═39ca2d14-4d54-493d-b10e-5201d628f1cb
 # ╠═036982f3-673e-4f65-b392-9110d7a5858b
 # ╠═64e34904-a336-4734-9ca3-6fcfa6f2403e
 # ╟─b285ab15-eec6-4422-8eec-9291a5368e86
 # ╠═bb271a40-0a4d-4032-9273-8bd5ad372778
+# ╠═d7f9cc69-f891-4c2e-be71-a9f2fbe33a24
+# ╟─02a32ebe-1a26-4edc-a982-c699075f459c
 # ╟─62565204-6031-4895-af8c-17f585c4205f
 # ╟─2cd05a7c-a7c6-41ce-89f9-3c3005604296
 # ╠═290ff8b5-6579-4786-84e7-3407b2e8fcd7
 # ╠═3ecea8b3-73f2-4b7b-814a-542dd0232d7c
 # ╠═fb71d1fb-b72f-4ee5-8ace-5d0ec77bd5f7
+# ╠═768b2dc1-a025-460d-889d-6213bcb4a1d3
 # ╠═89e0b24b-e2da-4597-ad4b-5e5f62ccf77e
-# ╟─0a11ace9-88d6-4df5-8c77-60b9a6d345f3
+# ╠═8af2a5d0-e44c-426f-bc80-4895b14be69e
+# ╠═0a11ace9-88d6-4df5-8c77-60b9a6d345f3
 # ╟─bc25131c-1ae5-4e5f-911d-0dee59749912
 # ╠═592b60e0-fb97-4c89-aa2e-f4806786028c
 # ╠═dc644a89-b395-4256-83f7-383b9c9affb0

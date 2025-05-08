@@ -1,20 +1,8 @@
 ### A Pluto.jl notebook ###
-# v0.20.8
+# v0.20.6
 
 using Markdown
 using InteractiveUtils
-
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    #! format: off
-    return quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-    #! format: on
-end
 
 # ╔═╡ 94d8d50d-a9bc-4825-82c8-b719439a2158
 begin 
@@ -46,26 +34,36 @@ md"""
 """
 
 
+# ╔═╡ f3a168b7-6f07-491b-9072-a9544e233ce3
+md"""
+Slides & Toolbox: **Vladimir Mikheev** & Benedikt Ehinger
+"""
+
+# ╔═╡ 2846aa9a-bf03-4f23-8a52-11eaed5d7cd2
+
+
 # ╔═╡ 149330eb-f92a-4ae3-a4f5-c7568caad6d1
 html"""
 <iframe width="680" height="677" src="https://www.youtube.com/embed/SuOxl3B9M1U" title="UM.jl lightning talk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-"""
+""";
 
 # ╔═╡ ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
 md"""
-### 🔍 What is UnfoldMakie?
+## 🔍 What is UnfoldMakie?
 
-A Julia package for ERP plotting.
+A Julia package for (r)ERP plotting.
 
 Built on top of:
-* **_Unfold.jl_** - Performing rERP analysis
+* **_Unfold.jl_** 
 * **_Makie.jl_** - High-performance visualization for creating interactive, customizable 2D and 3D plots and animations
-* **_AlgebraOfGraphics.jl_** (AoG) - Mapping data to visual elements, similar to ggplot
+* **_AlgebraOfGraphics.jl_** (AoG) - Mapping data to visual elements (similar to ggplot)
 """
 
 # ╔═╡ 2bc27bcf-3453-4de9-9058-7855af330bcb
 md"""
-### Why UnfoldMakie.jl?
+## Why UnfoldMakie.jl?
+Regression models are complex, visualization helps.
+
 * ⏩ Fast, declarative plotting
 * 🖌️ Grammar-of-Graphics style mapping
 * 🧩 Easy multi-plot layouts with Makie
@@ -75,15 +73,8 @@ md"""
 
 # ╔═╡ 648e17da-d1ae-4733-8ac6-6b2102b07e7f
 md"""
-### Other tools on the market
-"""
-
-# ╔═╡ c9bb4057-2d59-4ea6-bbf2-307084818133
-md"""
-🧠 Most EEG researchers use MATLAB tools
-
-🐢💸 But MATLAB is expensive, slow for plotting, and challenging for development
-
+## Other tools on the market
+*Mikheev et al. 2024*
 """
 
 # ╔═╡ 2c34cc63-8bb3-4e73-b8c5-d8002bbb317a
@@ -92,66 +83,87 @@ md"""
 ![](https://raw.githubusercontent.com/s-ccs/workshop_unfold_2025/547bc4cd27b0b88f18349f8223298a9f9de9b18d/img/EEG_tools.jpg)
 """
 
-# ╔═╡ da755221-0b2c-47ea-94c0-bb90fca4b7a8
+# ╔═╡ c9bb4057-2d59-4ea6-bbf2-307084818133
 md"""
-### Data and packages
+=> 🧠 Most EEG researchers use MATLAB tools
+
+=> 🐢💸 But MATLAB is expensive, slow for plotting, and challenging for development
+
 """
 
 # ╔═╡ f845f097-4457-4c09-8d9e-bbce8de5395f
 md"""
-### Easy mapping
+## Plotting **rERPs** in UnfoldMakie.jl
+"""
 
-Here we will make our figure more complex step by step.
+# ╔═╡ 56b57b4d-0423-4731-9d03-e7f95810f18a
+md"""
+### The data we want to visualize
+a `results` 🧹 DataFrame, output from `coeftable(uf)`
 """
 
 # ╔═╡ c78fc16e-ff64-44ca-968c-4da949552bee
 first(results, 4)
 
-# ╔═╡ e52eb446-bd2d-465e-8abb-7806448d8ba4
-# default version
-plot_erp(results)
-
-# ╔═╡ fc519351-da2f-45e0-aff5-36efb04c869f
-# adding additional plot information
-begin
-	plot_erp(
-	    results,
-	    mapping = (; color = :coefname => "Conditions"), # add legend title
-	    axis = (; xlabel = "Time [s]"), # add x labels
-		stderror = true, # add standard errors
-		significance = significancevalues, # add significance lines
-	)
-end
-
-# ╔═╡ 9adf7983-1f80-47ba-8c6a-0c139241b580
-# mapping and faceting
-begin
-	plot_erp(results,
-	    mapping = (; col = :coefname, color = :coefname), 
-	)
-end
-# instead of ´col´ you can also use ´row´, ´linestyle´
-
-# ╔═╡ b939c7c7-f55f-408f-83b7-70084406170e
+# ╔═╡ e3e82c37-da96-4dd9-8e6f-740af535d450
 md"""
-### Fast rendering ⚡
+## `plot_erp`
+by default, `plot_erp` recognizes many columns automatically in the tidy DataFrame
 """
 
-# ╔═╡ a75eb514-efff-4449-bf73-02dd4e1de70c
-@bind time_point PlutoUI.Slider(1:50, show_value=true, default=4)
+# ╔═╡ e52eb446-bd2d-465e-8abb-7806448d8ba4
+plot_erp(results)
 
-# ╔═╡ 47c31314-388a-411e-b808-e2fef4e06d56
-begin
-    ### Example data
-    timestamps = 1:100
-    
-    ### Create a figure
-    plot_topoplot(dat_raw[:, time_point, 1], positions = positions, axis = (; xlabel = "Time [$time_point ms]"))
-end
+# ╔═╡ 946e9b93-983a-4d88-9b7f-b123a3cccd73
+md"""
+## `plot_erp`
+The "real" command would rather be something like:
+"""
+
+# ╔═╡ 645c098c-b47e-44fc-b224-25c1b48937cc
+plot_erp(results,
+	 mapping = (;x=:time,y=:estimate, color = :coefname)
+)
+
+# ╔═╡ 9be54c44-bac5-437e-8d70-ad1ff8711825
+md"""
+## `plot_erp` - modifying details
+Modifying details, like labels, or legend titles etc. is **intuitive**
+"""
+
+# ╔═╡ 55ce6a62-7f7b-4d71-bf6b-a282f3a26d18
+plot_erp(results,
+	 mapping = (; color = :coefname => "Conditions"), # add legend title
+	 axis = (; xlabel = "Time [s]"), # add x labels
+)
+
+
+# ╔═╡ 6dbbb028-5046-48b8-bece-20daae2d0b17
+md"""
+## plot_erp + uncertainty / significance
+Support is there, as long as column `stderror` exists
+"""
+
+# ╔═╡ fc519351-da2f-45e0-aff5-36efb04c869f
+plot_erp(results,
+	stderror = true, # add standard errors
+	significance = significancevalues, # add significance lines
+)
+
+# ╔═╡ e94eb743-e002-46a2-a6f1-68276a9542a2
+md"""
+## `plot_erp` - Fast exploration
+rERP are complex, we need to be able to quickly explore different views of the same dataset
+"""
+
+# ╔═╡ 9adf7983-1f80-47ba-8c6a-0c139241b580
+plot_erp(results,
+	mapping = (; linestyle = :coefname, color = :coefname), 
+)
 
 # ╔═╡ 7b66a975-7436-41ed-bb97-2fab7fead3c3
 md"""
-### Combining Plots Easily
+## MakieLayout 👑 - Combining plots made easy
 """
 
 # ╔═╡ e1b85210-df3a-484a-a7b7-e10079c310ee
@@ -164,61 +176,70 @@ Simple combination
 
 # ╔═╡ 69eb22de-5ee1-4bbb-bb5e-56f6ea9976be
 begin 
-	f_comb = Figure(size = (900, 600))
-	with_theme(theme_ggthemr(:fresh)) do
-	    plot_erp!(f_comb[1, 1], coeftable(uf_deconv), mapping = (; color = :coefname))
-	    plot_erp!(
-	        f_comb[1, 2],
-	        effects(Dict(:condition => ["car", "face"]), uf_deconv),
-	        mapping = (; color = :condition),
-	    )
-	    plot_butterfly!(f_comb[2, 1], dat; positions = positions,
-	        topo_attributes = (; label_scatter = (; markersize = 5)),
-	        topo_axis = (; height = Relative(0.5), width = Relative(0.5)))
-	end
-	f_comb
+	eff = effects(Dict(:condition => ["car", "face"]), uf_deconv)
+
+	
+	f = Figure(size = (900, 600))
+	
+	
+	plot_erp!(      f[1, 1], results, mapping = (; color = :coefname))
+	
+	#plot_erp!(      f[1, 2], eff, mapping = (; color = :condition))
+	#=
+	plot_butterfly!(f[2, 1:2], dat; 
+		positions = positions,
+		topo_attributes = (; label_scatter = (; markersize = 5)),
+		topo_axis = (; height = Relative(0.5), width = Relative(0.5))
+	)
+	=#
+	
+	f
 end
 
-# ╔═╡ 561ea077-c578-45b3-a87a-9f6a846d3772
-# you can add a new plot to existing figure
-begin
-	plot_topoplot!(f_comb[2,2], dat_raw[:, 340, 1]; 
-                       positions = positions,
-                       axis = (; xlabel = "[340 ms]"))
-	f_comb
-end
-
-# ╔═╡ 1f9271fd-c23d-456f-b4bd-63fef832eff0
-# Adding Labels for Subplots
-begin
-	for (label, layout) in 
-		zip(
-			["A", "B", "C", "D"], [f_comb[1, 1], f_comb[1, 2], f_comb[2, 1], f_comb[2, 2]]
-		)
-		Label(
-			layout[1, 1, TopLeft()],
-			label,
-			fontsize = 26,
-			font = :bold,
-			padding = (20, 20, 22, 0),
-			halign = :right,
-		)
-	end
-	f_comb
-end
-
-# ╔═╡ 12baf0e1-fce3-4645-8cd8-9cdbd60fd9c3
+# ╔═╡ 0b0a7be4-4f2b-4cae-8a7e-29f9a8e26b6d
 md"""
-!!! hint "Hint"
-    In UnfoldMakie `(label_scatter = false,)` and `(; label_scatter = false)` are both correct ways to create a NamedTuple, which is used as named arguments. 
-
-    only `(label_scatter = false)` will cause an error.
+## MakieLayout - add to existing layouts!
 """
 
+# ╔═╡ 561ea077-c578-45b3-a87a-9f6a846d3772
+# ╠═╡ disabled = true
+#=╠═╡
+# you can add a new plot to existing figure
+begin
+	
+	plot_topoplot!(f[2,0], dat_raw[:, 340, 1]; 
+                       positions = positions,
+                       axis = (; xlabel = "[340 ms]"))
+	
+	f
+end
+  ╠═╡ =#
+
+# ╔═╡ 0b6b409b-3f77-4fd1-b5b6-c618ead4c603
+md"""
+## MakieLayout - Subfigure-labels can be easy!
+"""
+
+# ╔═╡ 1f9271fd-c23d-456f-b4bd-63fef832eff0
+# ╠═╡ disabled = true
+#=╠═╡
+begin
+
+for (label, sub_f) in zip(["A", "B", "C", "D"],[f[1, 1], f[1, 2],f[2, 0],f[2, 1:2]])
+	Label(
+		sub_f[1, 1, TopLeft()],
+		label, 
+		fontsize = 26, font = :bold,
+		)
+end
+	f
+end
+  ╠═╡ =#
 
 # ╔═╡ 8ca0bbae-47c8-4585-bd48-35aeda5f35a3
 md"""
-### Easy Customization🌟 
+### Flexible Customization🌟 
+Makie allows for efficient and logical modification of **many** parameters
 """
 
 # ╔═╡ bf386b1f-f7ca-4cef-8f25-7d021a2c402e
@@ -269,17 +290,22 @@ md"""
 ### Conclusion
 UM.jl is:
 
-⚙️ Highly customizable
+- ⚙️ Highly customizable
 
-⚡ Fast
+- ⚡ Fast
 
-🧑‍💻 Easy to use
+- 🧑‍💻 Easy to use
 
-Want to know more? 📚 Check out our documentation!
+Want to know more? 📚 Check out our extensive documentation!
 
 Something unclear? 🤔 Write an issue, and we'll try to clarify it!
 
 Found a bug or have suggestions? 🐞 Write an issue and we'll address it!
+"""
+
+# ╔═╡ fc74c4e5-01ee-4840-85e9-ea8cff581e90
+md"""
+## Package loading and definitions
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2789,30 +2815,38 @@ version = "3.6.0+0"
 # ╔═╡ Cell order:
 # ╟─c01fdaf6-212c-11f0-0b98-599553f76a76
 # ╟─5417e677-8822-4c20-823d-7f7fdda45fa1
-# ╠═149330eb-f92a-4ae3-a4f5-c7568caad6d1
+# ╟─f3a168b7-6f07-491b-9072-a9544e233ce3
+# ╟─2846aa9a-bf03-4f23-8a52-11eaed5d7cd2
+# ╟─149330eb-f92a-4ae3-a4f5-c7568caad6d1
 # ╟─ff96dd3f-6646-41d9-a4b6-ccefbfcbb855
 # ╟─2bc27bcf-3453-4de9-9058-7855af330bcb
 # ╟─648e17da-d1ae-4733-8ac6-6b2102b07e7f
-# ╟─c9bb4057-2d59-4ea6-bbf2-307084818133
 # ╟─2c34cc63-8bb3-4e73-b8c5-d8002bbb317a
-# ╟─da755221-0b2c-47ea-94c0-bb90fca4b7a8
-# ╠═94d8d50d-a9bc-4825-82c8-b719439a2158
+# ╟─c9bb4057-2d59-4ea6-bbf2-307084818133
 # ╟─f845f097-4457-4c09-8d9e-bbce8de5395f
+# ╟─56b57b4d-0423-4731-9d03-e7f95810f18a
 # ╠═c78fc16e-ff64-44ca-968c-4da949552bee
+# ╟─e3e82c37-da96-4dd9-8e6f-740af535d450
 # ╠═e52eb446-bd2d-465e-8abb-7806448d8ba4
+# ╟─946e9b93-983a-4d88-9b7f-b123a3cccd73
+# ╠═645c098c-b47e-44fc-b224-25c1b48937cc
+# ╟─9be54c44-bac5-437e-8d70-ad1ff8711825
+# ╠═55ce6a62-7f7b-4d71-bf6b-a282f3a26d18
+# ╟─6dbbb028-5046-48b8-bece-20daae2d0b17
 # ╠═fc519351-da2f-45e0-aff5-36efb04c869f
+# ╟─e94eb743-e002-46a2-a6f1-68276a9542a2
 # ╠═9adf7983-1f80-47ba-8c6a-0c139241b580
-# ╟─b939c7c7-f55f-408f-83b7-70084406170e
-# ╠═a75eb514-efff-4449-bf73-02dd4e1de70c
-# ╟─47c31314-388a-411e-b808-e2fef4e06d56
 # ╟─7b66a975-7436-41ed-bb97-2fab7fead3c3
 # ╟─e1b85210-df3a-484a-a7b7-e10079c310ee
 # ╠═69eb22de-5ee1-4bbb-bb5e-56f6ea9976be
+# ╟─0b0a7be4-4f2b-4cae-8a7e-29f9a8e26b6d
 # ╠═561ea077-c578-45b3-a87a-9f6a846d3772
+# ╟─0b6b409b-3f77-4fd1-b5b6-c618ead4c603
 # ╠═1f9271fd-c23d-456f-b4bd-63fef832eff0
-# ╟─12baf0e1-fce3-4645-8cd8-9cdbd60fd9c3
 # ╟─8ca0bbae-47c8-4585-bd48-35aeda5f35a3
-# ╠═bf386b1f-f7ca-4cef-8f25-7d021a2c402e
-# ╟─59e77bf8-839e-4d73-995f-d8dec72a52ef
+# ╟─bf386b1f-f7ca-4cef-8f25-7d021a2c402e
+# ╠═59e77bf8-839e-4d73-995f-d8dec72a52ef
+# ╠═fc74c4e5-01ee-4840-85e9-ea8cff581e90
+# ╠═94d8d50d-a9bc-4825-82c8-b719439a2158
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
