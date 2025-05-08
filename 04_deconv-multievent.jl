@@ -79,7 +79,7 @@ f = @formula 0 ~ 1 + stimulation;
 # ╔═╡ 8c6b8fff-32c2-41a7-9670-f6439157d27b
 # Uncomment when basis was correctly defined
 # hint: add a ; at the end of the line to surpress the log-output
-#m_erp = fit(UnfoldModel,[Any=>(f,basis)],events,eegdata)
+#m_erp = fit(UnfoldModel,f,events,eegdata,basis)
 
 # ╔═╡ f52dff2b-0219-4b80-a473-44047c53875d
 # uncomment when basis was correctly defined
@@ -106,7 +106,7 @@ end
 
 # ╔═╡ d1fe2ef8-82cd-4598-9b1d-6635ca128825
 # ╠═╡ show_logs = false
-m_erp_nodc = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs);
+m_erp_nodc = fit(UnfoldModel,f,events,eegdata_epochs,times);
 
 # ╔═╡ 26ef4e29-0378-4055-ae45-0b6fd16d44ac
 let

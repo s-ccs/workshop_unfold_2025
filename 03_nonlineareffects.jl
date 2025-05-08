@@ -77,7 +77,7 @@ answer_box(md"`f =  @formula(0~1+spl(sac_amp,5)); `")
 
 # ╔═╡ a3c6fe71-2c31-4b19-8133-9a74b471390f
 # uncomment once formula is defined
-# m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs) 
+# m_erp = fit(UnfoldModel,f,events,eegdata_epochs,times) 
 
 # ╔═╡ ec431cde-6d20-40a9-bb63-cfbb79396f2a
 # uncomment once formula is defined
@@ -140,7 +140,7 @@ Now this is not particularly interesting, because our covariate is well balanced
 let 
 	 events_outlier = deepcopy(events)
 	 events_outlier.sac_amp[1] = 100
-	 m_erp = fit(UnfoldModel,[Any=>(f,times)],events_outlier,eegdata_epochs,fit=false)
+	 m_erp = fit(UnfoldModel,f,events_outlier,eegdata_epochs,times,fit=false)
 	## add plotting here!
 
 end

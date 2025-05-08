@@ -102,7 +102,7 @@ Because `sac_amp` is already a float, we can directly add it to the formula:
 
 # ╔═╡ d02e46db-afec-4a60-95c5-a8436cafe8c4
 # uncomment once `f` is defined
-# m_erp = fit(UnfoldModel,[Any=>(f,times)],events,eegdata_epochs)
+# m_erp = fit(UnfoldModel,f,events,eegdata_epochs,times)
 
 # ╔═╡ 318a46bf-5a83-4b30-95ab-c61479e589e3
 question_box(md"""
