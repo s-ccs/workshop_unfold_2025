@@ -34,6 +34,6 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
 TBA
 
 # Lecture Slides
-Slides are shared under CC-by Benedikt Ehinger license. If you find something unclear, please let me know :)
+Slides are shared under CC-by Benedikt Ehinger. If you find something unclear, please let us know :)
 
 [pdf (21mb)](https://cloud.wirdreibei.de/s/gwSWQf3FGJ5YDdg) - [pptx (65mb)](https://cloud.wirdreibei.de/s/4R49pQjwsR2kF8q)
