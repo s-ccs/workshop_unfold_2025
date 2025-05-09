@@ -224,7 +224,7 @@ end
 
 # ╔═╡ c1747b4d-5828-462a-9a70-d5aac9b00d73
 if finished  > 0
-		@bind rainbow PlutoUI.Radio(["Add rainbow cursor!", "Add Unfold fanboy cursor!","Remove all cursors again 😢"])
+		@bind rainbow PlutoUI.Radio(["Add rainbow cursor!", "Add Unfold fan cursor!","Remove all cursors again 😢"])
 else
 	rainbow = nothing
 end
@@ -296,7 +296,7 @@ rainbowCursor : rainbowCursor
 	
 </script>
 """)
-elseif "Add Unfold fanboy cursor!" == rainbow
+elseif "Add Unfold fan cursor!" == rainbow
 HTML("""
 <script>
 	 			 const {
