@@ -6,109 +6,221 @@ using InteractiveUtils
 
 # ╔═╡ 27602d61-0415-4363-957b-10083a425fad
 begin
-	using Unfold, UnfoldBIDS
-	using DataFrames, DataFramesMeta
-	using CairoMakie, AlgebraOfGraphics
-	using Statistics
+	using Unfold, UnfoldBIDS # What we actually use ;)
+	using DataFrames # Tidy dataframe wrangling (think Pandas in python)
+	using CairoMakie, AlgebraOfGraphics # Vizualization
+	using Statistics # Let's aggregate over subjects
 end;
 
 # ╔═╡ c01fdaf6-212c-11f0-0b98-599553f76a76
 md"""
-# Lightning talks ⚡ - UnfoldBIDS.jl
+# Lightning talks ⚡ - Beyond Unfold
+"""
+
+# ╔═╡ ec672851-9b04-4c32-af1c-16092241d191
+md"""
+# UnfoldBIDS.jl
 """
 
 # ╔═╡ bcf5293c-332c-4581-b8ae-ba8586ca7bab
 md"""
-## Integration into the family
+## What even is BIDS?
+"""
+
+# ╔═╡ 5c4c5f3e-f8f7-4b8a-9559-d639ecab316b
+md"""
+- The Brain Imaging Data Structure
+- A set of rules to organise and describe data in a human **and** machine-readable way
+- For more info see the [BIDS documentation](https://bids-specification.readthedocs.io/en/stable/)
+
+![BIDS](https://res.cloudinary.com/teepublic/image/private/s--Xec6FCPs--/ar_7:2,c_fill,h_560,w_1960/d_misc:cover_image_24.jpg,f_avif,q_auto:good/v1674844819/production/stores/2159492/banner.jpg)
+"""
+
+# ╔═╡ 243c0ee2-e98e-4dbc-a80e-b7a5bf04bf5e
+md"""
+## We can make use of this!
+"""
+
+# ╔═╡ f6465fd3-7aa9-4bc2-b40e-66c24d7d5dbb
+md"""
+Given a BIDS dataset, we can predefine functions to analyse a whole dataset!
 """
 
 # ╔═╡ dec797fa-d060-4a9c-9213-cca44ef3cae7
+# ╠═╡ show_logs = false
+let
+	# Point to BIDS folder
+	root_path = "/store/data/erp-core/"
+
+	# Look for your data
+	layout_df = bids_layout(root_path, derivatives=false; task="N170")
+
+	# Load your data
+	data_df = load_bids_eeg_data(layout_df[1:3,:])
+
+	# Set up Unfold analysis parameters once for all subjects
+	sfreq = 1024
+	basisfunction = firbasis(τ=(-0.2,.8),sfreq=sfreq)
+	f  = @formula 0~1
+	bfDict = ["stimulus"=>(f,basisfunction)]
+	
+	UnfoldBIDS.rename_to_latency(data_df, :sample) 
+
+	# Run analysis on all subjects
+	resultsAll = run_unfold(data_df, bfDict; eventcolumn="trial_type", channels=["Pz"]);
+
+	# Results in a tidy dataframe
+	unpack_results(bids_coeftable(resultsAll))
+end;
+
+# ╔═╡ 811ba1bf-a52a-41bc-8cf4-9f8b1d557eb3
 md"""
-![UnfoldBIDS.jl flowchart](https://github.com/unfoldtoolbox/UnfoldBIDS.jl/blob/main/docs/src/assets/2025UnfoldBIDSFlowChart.png?raw=true)
+# Let's look at what is actually happening
 """
 
 # ╔═╡ 72cbb089-ecef-4c3d-b403-79228a23404d
 md"""
-## Setup ⚒️
+## 0. Setup ⚒️
 """
 
 # ╔═╡ 64c57850-93de-4418-afbe-0e658ad53f00
 md"""
-## Find your data 🕵️
+## 1. Find your data 🕵️
 """
 
-# ╔═╡ 12316f13-7d72-4060-8e80-20bc7e7cb253
-begin
-	root_path = "/store/data/erp-core/"
-	layout_df = bids_layout(root_path, derivatives=false; task="N170")
+# ╔═╡ b8226b02-467f-4a0f-9692-c7ca3c2c020d
+root_path = "/store/data/erp-core/"
+
+# ╔═╡ 525ae15d-1cbf-49e2-9208-70020524db87
+let
+	layout = bids_layout(root_path, derivatives=false;)
+	first(layout, 10)
 end
+
+# ╔═╡ 12316f13-7d72-4060-8e80-20bc7e7cb253
+layout_df = bids_layout(root_path, derivatives=false; task="N170")
 
 # ╔═╡ a4821be2-9529-431b-90c4-4e176d1bbc61
 md"""
-## Load your data 🛸
+## 2. Load your data 🛸
 """
 
 # ╔═╡ f09292b7-2183-4a97-9a9d-119e4562edea
+# ╠═╡ show_logs = false
 data_df = load_bids_eeg_data(layout_df[1:3,:])
+
+# ╔═╡ 3e528297-5d7b-43f1-bc24-61a43ad35a45
+md"""
+## 2.5. Inspect events?
+"""
+
+# ╔═╡ 0ba7265d-b13e-4aa0-b26d-c7a7584416f8
+md"""
+UnfoldBIDS has some more functionality that makes your life easier!
+"""
+
+# ╔═╡ 7b58f960-4826-4291-817f-8059522cd743
+unpack_events(data_df)
 
 # ╔═╡ 6412394a-652f-449a-85f5-e2fde01c5f28
 md"""
 ## Process using Unfold.jl 💪
 """
 
-# ╔═╡ 54748650-f6d4-47bf-9015-493681d89641
-begin
-	sfreq = 1024
-	basisfunction = firbasis(τ=(-0.2,.8),sfreq=sfreq)
-	f  = @formula 0~1
-	bfDict = ["stimulus"=>(f,basisfunction)]
-	UnfoldBIDS.rename_to_latency(data_df, :sample) # Unfold expects a :latency collumn in your events; if your event latency is named differently you can use this function as remedy
-	
-	resultsAll = run_unfold(data_df, bfDict; eventcolumn="trial_type", channels=["Pz"]);
-end
+# ╔═╡ 8eacd3af-dc11-4cdb-bf57-8a930b4384c8
+md"""
+It's time to apply what we learned in the workshop, but for an entire dataset!
+
+But maybe we want to filter our data as well?
+"""
 
 # ╔═╡ e6862eb9-fff0-4747-a633-df803e110ab4
-begin
-	function res_and_filter_data!(raw; sfreq=100, l_freq=0.5)
+# ╠═╡ show_logs = false
+function filter_data(raw; channels::AbstractVector{<:Union{String,Integer}}=[])
 	  raw.load_data()
 		
 	  # Filter data
-	  raw.filter(l_freq, nothing)
+	  raw.filter(0.5, 50)
 	
-	end
 	
-	for row in eachrow(data_df)
-	  res_and_filter_data!(row.raw; sfreq, l_freq=0.5)
-	end
+	return UnfoldBIDS.pyconvert(Array, raw.get_data(picks=UnfoldBIDS.pylist(channels), units="uV"))
+
 end
 
-# ╔═╡ fce7215e-e5fb-4b8f-a18b-902a3d8b3bfc
+# ╔═╡ d4be38b8-16e8-4381-94fc-835702e92931
+UnfoldBIDS.rename_to_latency(data_df, :sample) # Unfold expects a :latency collumn in your events; if your event latency is named differently you can use this function as remedy
+
+# ╔═╡ 7161d46f-521f-41b6-ba0a-55d3eac6d99c
 md"""
-## Calculate the mean over subjects
+Now let's apply the filter **and** run Unfold on the entire dataset
+"""
+
+# ╔═╡ 54748650-f6d4-47bf-9015-493681d89641
+# ╠═╡ show_logs = false
+begin
+	# Set up Unfold parameters once
+	sfreq = 1024
+	basis_stimulus = firbasis(τ=(-0.2,.8),sfreq=sfreq)
+	basis_response = firbasis(τ=(-0.5,.5),sfreq=sfreq)
+	f  = @formula 0~1
+	bfDict = ["stimulus"=>(f,basis_stimulus), "response"=>(f,basis_response)]
+
+	# Run Unfold on all subjects in on command 🐙
+	resultsAll = run_unfold(data_df, bfDict; extract_data=filter_data, eventcolumn="trial_type", channels=["Pz"]);
+end;
+
+# ╔═╡ 04d8a32a-6cf9-4500-a08d-92a75b9027c4
+# ╠═╡ show_logs = false
+resultsAll
+
+# ╔═╡ b673d2a0-d4a9-44aa-8752-51150c6464e1
+md"""
+That doesn't really tell us much, let's turn our results into a tidy DataFrame
 """
 
 # ╔═╡ 41695a7d-dcaa-48eb-a297-7e4bfaa94a69
-begin
-	tidy_df = unpack_results(bids_coeftable(resultsAll))
-	first(tidy_df, 5)
-end
+# First let's get our results into a tidy dataframe
+tidy_df = unpack_results(bids_coeftable(resultsAll))
+
+# ╔═╡ c922dece-530e-4b50-b3cf-bc3016eaa250
+plt_s = data(tidy_df) * mapping(:time, :estimate, color=:subject, linestyle=:eventname, group=:eventname) * visual(Lines);
+
+# ╔═╡ 49660c0a-d158-4739-a59e-73271c932eb8
+draw(plt_s, axis=(yticklabelsvisible=true,))
+
+# ╔═╡ fce7215e-e5fb-4b8f-a18b-902a3d8b3bfc
+md"""
+## Aggregate over subjects
+"""
+
+# ╔═╡ 4279dd7b-223e-4022-b968-f03a943c9a75
+md"""
+Because we have a tidy dataframe, it's very easy to group-and-combine our results!
+"""
 
 # ╔═╡ 0fd5373f-fb13-40c0-8ff0-a78d5f9eaed8
-begin
-	mean_df = combine(groupby(tidy_df, [:time, :coefname]), :estimate => mean)
-	
-end
-
-# ╔═╡ 6ce967d2-be14-4c41-8401-c5bd5f40429e
-md"""
-## Visualize 
-"""
+# Calculate the mean over subjects and coefficients
+mean_df = combine(groupby(tidy_df, [:time, :coefname, :eventname]), :estimate => mean);
 
 # ╔═╡ 740c058d-3c32-4694-80f9-6fbdef271f34
 begin
-	plt = data(mean_df) * mapping(:time, :estimate_mean) * visual(Lines)
+	plt = data(mean_df) * mapping(:time, :estimate_mean, color=:eventname, group=:eventname) * visual(Lines)
 	draw(plt, axis=(yticklabelsvisible=true,))
 end
+
+# ╔═╡ cd5424ba-72ca-40ec-afff-12a8f846bd99
+md"""
+# Key take away
+"""
+
+# ╔═╡ 0c592726-76f9-4853-9e8c-33ed3299ec4a
+md"""
+With UnfoldBIDS you can:
+- Find paths to all subject data within a BIDS dataset with one function 🔎
+- Apply MNE-preprocessing ⚒️
+- Apply Unfold.jl style analysis on all subjects in one go ⚡
+- Get tidy dataframes from start to finish, ready for further analysis 🏁
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -116,7 +228,6 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Unfold = "181c99d8-e21b-4ff3-b70b-c233eddec679"
 UnfoldBIDS = "b54e767b-1ebd-4480-ac2a-f5f4d8853074"
@@ -125,7 +236,6 @@ UnfoldBIDS = "b54e767b-1ebd-4480-ac2a-f5f4d8853074"
 AlgebraOfGraphics = "~0.10.4"
 CairoMakie = "~0.13.4"
 DataFrames = "~1.7.0"
-DataFramesMeta = "~0.15.4"
 Statistics = "~1.11.1"
 Unfold = "~0.8.4"
 UnfoldBIDS = "~0.3.3"
@@ -137,7 +247,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.3"
 manifest_format = "2.0"
-project_hash = "6e78122f75df150d4d51602027a2a1991869398b"
+project_hash = "44a75119ec3046333de7cd5c01644928234d638a"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -2157,21 +2267,40 @@ version = "3.6.0+0"
 
 # ╔═╡ Cell order:
 # ╟─c01fdaf6-212c-11f0-0b98-599553f76a76
+# ╟─ec672851-9b04-4c32-af1c-16092241d191
 # ╟─bcf5293c-332c-4581-b8ae-ba8586ca7bab
-# ╟─dec797fa-d060-4a9c-9213-cca44ef3cae7
+# ╟─5c4c5f3e-f8f7-4b8a-9559-d639ecab316b
+# ╟─243c0ee2-e98e-4dbc-a80e-b7a5bf04bf5e
+# ╟─f6465fd3-7aa9-4bc2-b40e-66c24d7d5dbb
+# ╠═dec797fa-d060-4a9c-9213-cca44ef3cae7
+# ╟─811ba1bf-a52a-41bc-8cf4-9f8b1d557eb3
 # ╟─72cbb089-ecef-4c3d-b403-79228a23404d
 # ╠═27602d61-0415-4363-957b-10083a425fad
 # ╟─64c57850-93de-4418-afbe-0e658ad53f00
+# ╠═b8226b02-467f-4a0f-9692-c7ca3c2c020d
+# ╠═525ae15d-1cbf-49e2-9208-70020524db87
 # ╠═12316f13-7d72-4060-8e80-20bc7e7cb253
 # ╟─a4821be2-9529-431b-90c4-4e176d1bbc61
 # ╠═f09292b7-2183-4a97-9a9d-119e4562edea
+# ╟─3e528297-5d7b-43f1-bc24-61a43ad35a45
+# ╟─0ba7265d-b13e-4aa0-b26d-c7a7584416f8
+# ╠═7b58f960-4826-4291-817f-8059522cd743
 # ╟─6412394a-652f-449a-85f5-e2fde01c5f28
+# ╟─8eacd3af-dc11-4cdb-bf57-8a930b4384c8
 # ╠═e6862eb9-fff0-4747-a633-df803e110ab4
+# ╟─d4be38b8-16e8-4381-94fc-835702e92931
+# ╟─7161d46f-521f-41b6-ba0a-55d3eac6d99c
 # ╠═54748650-f6d4-47bf-9015-493681d89641
-# ╟─fce7215e-e5fb-4b8f-a18b-902a3d8b3bfc
+# ╟─04d8a32a-6cf9-4500-a08d-92a75b9027c4
+# ╟─b673d2a0-d4a9-44aa-8752-51150c6464e1
 # ╠═41695a7d-dcaa-48eb-a297-7e4bfaa94a69
+# ╠═c922dece-530e-4b50-b3cf-bc3016eaa250
+# ╠═49660c0a-d158-4739-a59e-73271c932eb8
+# ╟─fce7215e-e5fb-4b8f-a18b-902a3d8b3bfc
+# ╟─4279dd7b-223e-4022-b968-f03a943c9a75
 # ╠═0fd5373f-fb13-40c0-8ff0-a78d5f9eaed8
-# ╟─6ce967d2-be14-4c41-8401-c5bd5f40429e
 # ╠═740c058d-3c32-4694-80f9-6fbdef271f34
+# ╟─cd5424ba-72ca-40ec-afff-12a8f846bd99
+# ╟─0c592726-76f9-4853-9e8c-33ed3299ec4a
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
