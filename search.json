@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "program.html",
+    "href": "program.html",
+    "title": "Workshop program",
+    "section": "",
+    "text": "Note\n\n\n\nPlease note that the program is preliminary and might be subject to change, especially the exact schedule.\n\n\nAll times are in Central European Summer Time (CEST).\n\n\n\n\n\n\n\nTime\nEvent\n\n\n\n\n10:00 - 10:10\nWelcome\n\n\n10:10 - 10:30\nIntroduction to Julia & Unfold.jl\n\n\n10:30 - 11:30\nMass univariate linear models\n\n\n11:30 - 11:45\n☕ Break\n\n\n11:45 - 12:45\nContinuous predictors & marginal effects\n\n\n12:45 - 13:45\n🥙 Lunch break\n\n\n13:45 - 14:30\nNon-linear effects\n\n\n14:30 - 14:45\n☕ Break\n\n\n14:45 - 15:45\nOverlap correction & multiple event types\n\n\n15:45 - 16:00\n☕ Break\n\n\n16:00 - 16:30\nLightning talks: UnfoldMakie.jl, UnfoldSim.jl, UnfoldBIDS.jl, UnfoldMixedModels.jl\n\n\n16:30 - 16:45\nWrap-up\n\n\n\n\n\nEach lesson consists of a lecture (~ 30min) and a subsequent exercise (~30min)."
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Welcome! 🐙",
@@ -42,11 +49,11 @@
     "text": "Contact ✉️\nContact us at: workshop@unfoldtoolbox.org"
   },
   {
-    "objectID": "program.html",
-    "href": "program.html",
-    "title": "Workshop program",
+    "objectID": "registration.html",
+    "href": "registration.html",
+    "title": "Registration",
     "section": "",
-    "text": "Note\n\n\n\nPlease note that the program is preliminary and might be subject to change, especially the exact schedule.\n\n\nAll times are in Central European Summer Time (CEST).\n\n\n\n\n\n\n\nTime\nEvent\n\n\n\n\n10:00 - 10:10\nWelcome\n\n\n10:10 - 10:30\nIntroduction to Julia & Unfold.jl\n\n\n10:30 - 11:30\nMass univariate linear models\n\n\n11:30 - 11:45\n☕ Break\n\n\n11:45 - 12:45\nContinuous predictors & marginal effects\n\n\n12:45 - 13:45\n🥙 Lunch break\n\n\n13:45 - 14:30\nNon-linear effects\n\n\n14:30 - 14:45\n☕ Break\n\n\n14:45 - 15:45\nOverlap correction & multiple event types\n\n\n15:45 - 16:00\n☕ Break\n\n\n16:00 - 16:30\nLightning talks: UnfoldMakie.jl, UnfoldSim.jl, UnfoldBIDS.jl, UnfoldMixedModels.jl\n\n\n16:30 - 16:45\nWrap-up\n\n\n\n\n\nEach lesson consists of a lecture (~ 30min) and a subsequent exercise (~30min)."
+    "text": "Note\n\n\n\nSince our capacity for the practical exercises is limited, we will only be able to accept ~50 participants for the workshop. However, the lectures will also be available via livestream, and everyone is invited to follow along independently.\n\n\nTo register for the free Unfold.jl workshop, please fill out the form below until 07.05.2025. We will inform you via email if you got a place and share the Zoom link."
   },
   {
     "objectID": "installation.html",
@@ -124,12 +131,5 @@
     "title": "Material",
     "section": "04 Multi-event deconvolution",
     "text": "04 Multi-event deconvolution\nhttps://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl"
-  },
-  {
-    "objectID": "registration.html",
-    "href": "registration.html",
-    "title": "Registration",
-    "section": "",
-    "text": "Note\n\n\n\nSince our capacity for the practical exercises is limited, we will only be able to accept ~50 participants for the workshop. However, the lectures will also be available via livestream, and everyone is invited to follow along independently.\n\n\nTo register for the free Unfold.jl workshop, please fill out the form below until 07.05.2025. We will inform you via email if you got a place and share the Zoom link."
   }
 ]
