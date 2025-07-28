@@ -30,9 +30,11 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
 ```
 
 # Lecture videos
-Here is the playlist with all recordings from the workshop.
-::: {#playlist}
-{{< video https://youtube.com/playlist?list=PLldSujfEsgwqRdDY5pgenrYlP0DkflsOs&si=mqThkeFqsnuUMQkt >}}
+Here is the [playlist](https://youtube.com/playlist?list=PLldSujfEsgwqRdDY5pgenrYlP0DkflsOs&si=mqThkeFqsnuUMQkt) with all recordings from the workshop.
+
+First lecture about Julia and Unfold:
+::: {#unfold_video}
+{{< video https://youtu.be/bTfU1MaybqU >}}
 :::
 
 # Lecture Slides
