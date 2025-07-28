@@ -33,9 +33,8 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
 Here is the [playlist](https://youtube.com/playlist?list=PLldSujfEsgwqRdDY5pgenrYlP0DkflsOs&si=mqThkeFqsnuUMQkt) with all recordings from the workshop.
 
 First lecture about Julia and Unfold:
-::: {#unfold_video}
 {{< video https://youtu.be/bTfU1MaybqU >}}
-:::
+
 
 # Lecture Slides
 Slides are shared under CC-by Benedikt Ehinger. If you find something unclear, please let us know :)
