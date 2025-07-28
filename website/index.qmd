@@ -13,6 +13,11 @@ If you're not already familiar with **Unfold** or **regression ERP's**, we recom
 ## Material covered 💪
 During the workshop we will cover everything from **mass-univariate modeling** of EEG data to **marginalized effects** and **overlap correction**. For more information please have a look at our [(preliminary) schedule](program.qmd).
 
+**Upd!** Here is the [playlist](https://youtube.com/playlist?list=PLldSujfEsgwqRdDY5pgenrYlP0DkflsOs&si=mqThkeFqsnuUMQkt) with **all** lectures from the workshop.
+
+First lecture about Julia and Unfold:
+{{< video https://youtu.be/bTfU1MaybqU >}}
+
 ## Important dates & registration 📅
 [__Registration__](registration.qmd): until 07.05.2025
 
