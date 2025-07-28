@@ -30,8 +30,10 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
 ```
 
 # Lecture videos
-
-TBA
+Here is the playlist with all recordings from the workshop.
+::: {.embed}
+https://youtu.be/hYHz-5U6QJ8?si=7hYuOiL6ZAHb7Jb-
+:::
 
 # Lecture Slides
 Slides are shared under CC-by Benedikt Ehinger. If you find something unclear, please let us know :)
