@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.19
+# v0.20.13
 
 using Markdown
 using InteractiveUtils
@@ -26,7 +26,7 @@ begin
 	using PlutoUI, PlutoTeachingTools # Only needed for Sliders + pretty boxes
 
 	using Downloads, LazyArtifacts # Needed to load the data
-	using CSV, DataFrames, DataFramesMeta # Data wrangling
+	using CSV, DataFrames, DataFramesMeta, Statistics # Data wrangling
 	using HypertextLiteral
 	
 	
@@ -75,6 +75,9 @@ md"""
 Let's see that in action!
 """
 
+# ╔═╡ ddcb40c8-b38a-4ee6-b46d-7364814192d7
+index = 1 # Change me in the range of 1:8 and save the notebook (Crtl + s on windows)
+
 # ╔═╡ a3acf759-8400-4874-893a-6e8b536792cf
 begin
 	moonphases = '🌑':'🌘'
@@ -82,9 +85,6 @@ begin
 	<span style="font-size: 10rem;">$(moonphases[index])</span>
 	"""
 end
-
-# ╔═╡ ddcb40c8-b38a-4ee6-b46d-7364814192d7
-index = 1 # Change me in the range of 1:8 and save the notebook (Crtl + s on windows)
 
 # ╔═╡ d457c349-7e9c-490b-a5e2-284991fa5406
 my_tip("Pluto.jl",md"""
@@ -112,13 +112,13 @@ A slider is defined like this:
 ```
 """
 
+# ╔═╡ 62198876-f0c7-4aea-8c18-9775051e2939
+sliding_index = 3
+
 # ╔═╡ fb50b0a7-eed6-446b-943a-43ac7f2c8607
 @htl """
 	<span style="font-size: 10rem;">$(moonphases[sliding_index])</span>
 	"""
-
-# ╔═╡ 62198876-f0c7-4aea-8c18-9775051e2939
-sliding_index = 3
 
 # ╔═╡ 37475b18-23cb-4756-80bf-db6ee117bf3d
 question_box(md"""
@@ -135,31 +135,13 @@ answer_box(md"""
 
 # ╔═╡ d20b3bfb-4ed2-4ec6-b14f-548de0704749
 md"""
-# Load data with PyMNE
+# Load data using PyMNE.jl
 
 To begin with, we will load the oddball data from three subjects of the [ERP-Core dataset](https://erpinfo.org/erp-core). First we will only show the Unfold Analysis on one subject, but later we will show how you can easily pipeline your analysis (as long as your data is in [BIDS](https://bids-specification.readthedocs.io/en/stable/) 😉)
 """
 
-# ╔═╡ 1b4a2a17-0462-487b-87c1-91a38b8efd6b
-aside(warning_box(md"We will download a file called 'Artifacts.toml' into your current directory here. This is needed to download and unzip the data in an easy way. The data itself will only be stored temporarily on your device and will be deleted when you close your Julia session. The .toml file can be safely deleted afterwards."),v_offset=-170)
-
-# ╔═╡ c0d67b86-2050-47b2-a085-628643f40cf4
-begin
-	# Load Artifacts.toml from UnfoldBIDS
-	cdir = @__DIR__
-	
-	# Download artifact.toml and put into current directory 
-    filename = joinpath(cdir, "Artifacts.toml")
-    Downloads.download("https://raw.githubusercontent.com/unfoldtoolbox/UnfoldBIDS.jl/refs/heads/main/Artifacts.toml", filename)
-
-	# download P3 Artifact
-	
-	# remove Artifacts.toml again
-	#rm(filename)
-end
-
 # ╔═╡ af269d7d-c2e7-4af4-8bfe-d178e53fa55a
-sample_data_path = artifact"sample_BIDS"
+sample_data_path = UnfoldBIDS.erp_core_example()
 
 # ╔═╡ 88fd732d-c8b6-4116-b937-28032dd7ee98
 begin
@@ -174,7 +156,9 @@ begin
 	# Load events of the data
 	path = dirname(data_path)
     events = CSV.read(joinpath(path, "sub-001_task-P3_events.tsv"), DataFrame)
-end
+	
+	deleteat!(events, 1:2) # delete the first two events because they are irrelevant
+end;
 
 # ╔═╡ 64c88f5d-004b-4563-ac4e-6d66ad8c6f09
 PlutoTeachingTools.aside(md"""
@@ -200,7 +184,7 @@ For educational purposes we have loaded the raw data here, usually you would've 
 
 # ╔═╡ afff2e78-e50c-4493-8967-60d8939fa138
 md"""
-You might have noticed already that our events DataFrame does not have a reaction time or category column. Let's fix that!
+You might have noticed already that our events DataFrame does not have a reaction time or category column. We have written two functions down below to fix that, you can have a look at them by clicking the crossed-out eye on the left.
 """
 
 # ╔═╡ c2727b8e-9c58-4aeb-a8c8-c9fab9ea20ed
@@ -229,12 +213,20 @@ function add_trial_column!(df::DataFrame)
 	df.trial = missings(String, nrow(df))
 	deviants = [11, 22, 33, 44, 55]
 
-	for row in eachrow(df)
+	for (i,row) in enumerate(eachrow(df))
+		
 		if row.value ∈ deviants && row.trial_type == "stimulus"
 			row.trial = "deviant"
 		elseif row.trial_type == "stimulus"
 			row.trial = "standard"
 		end
+
+		if i-1 != 0 && row.trial_type == "response" && df[i-1,:trial_type] == "stimulus"
+			row.trial = df[i-1,:trial]
+		end
+
+		
+		
 	end
 	return df
 end
@@ -246,6 +238,12 @@ begin
 	
 	# Add reaction time column
 	calculate_reaction_time!(events)
+
+	# Resample event latencies
+	events[:, :sample] = round.(events[:, :sample] /  4)
+
+	# Rename :sample collumn to :latency (Unfold default) because of a bug in Unfold.effects()
+	events[:, :latency] = events[:, :sample] 
 	
 	events
 end
@@ -253,37 +251,80 @@ end
 # ╔═╡ a206205e-c80e-47d6-b434-51905a746b6b
 md"""
 ---
-Next, since our data is still continuous, we have to cut the data into epochs. Additionally, since we work with raw data, we will also apply a simple filter.
+Next, because we work with raw data we will downsample (for computational speed) and filter the data. For this we can use PyMNE, a bridge from Julia towards MNE python. If you are familiar with MNE you will recognize the functionality of the raw object.
 """
 
 # ╔═╡ 39d93e15-1a9a-4746-a6d3-98375735fb10
 function raw_to_filtered_data(raw; channels::AbstractVector{<:Union{String,Integer}}=[], l_freq=0.5, h_freq=45)
 
-  # Load data into memory
-  loaded = raw.copy().load_data()
+	# Load data into memory
+	loaded = raw.copy().load_data()
+	
+	# Resample
+	loaded.resample(raw.info["sfreq"] / 4)
+	
+	# Filter data
+	loaded.notch_filter(60)
+	loaded.filter(l_freq, h_freq, picks="eeg")
+	
+	# Rereference
+	loaded.set_eeg_reference(ref_channels="average")
 
-  # Filter data
-  loaded.filter(l_freq, h_freq, picks="eeg")
 
   return pyconvert(Array, loaded.get_data(picks=pylist(channels), units="uV"))
 end
 
 # ╔═╡ 6606000d-6300-47e1-9e64-ce6f85552803
-# Extract and filter the data
-data = raw_to_filtered_data(eeg_raw; channels=["Pz"])
+# ╠═╡ show_logs = false
+# Extract and filter the data, also only take channel Pz
+data = raw_to_filtered_data(eeg_raw; channels=["Pz"]);
+
+# ╔═╡ ad453ad7-4a60-4201-a2e1-a139a355ed51
+md"""
+And as a last step before the Mass-Univariate analysis, we cut our data into epochs of interest. τ will indicate the time-window around the events of interest and is expressed in seconds of type Tuple: 
+```julia
+τ = (begin::Float, end::Float)
+```
+It's your job to choose a suitable window.
+"""
 
 # ╔═╡ 7905345a-85a5-47f1-a35f-256e33298113
 begin
-	sfreq = pyconvert(Int, eeg_raw.info["sfreq"])
-	τ = (-0.2, 0.8)
-	data_epoch, times = Unfold.epoch(data, @rsubset(events, :trial_type == "stimulus"), τ, sfreq; eventtime=:sample)
+	# Get sample frequency from raw
+	sfreq = pyconvert(Int, eeg_raw.info["sfreq"] / 4)
+
+	# Set window
+	τ = (-0.2, 0.8) # <-- replace me
+
+	# Extract epochs
+	data_epoch, times = Unfold.epoch(data, @rsubset(events, :trial_type == "stimulus"), τ, sfreq)
 
 end
+
+# ╔═╡ e14e9444-221c-4af9-8c9d-46739876d461
+answer_box(md"""
+
+```julia
+τ = (-0.2, 0.8)
+```
+""")
+
+# ╔═╡ 896715de-ba8f-4fca-8eb7-c7fb2684c04f
+
+PlutoTeachingTools.protip(
+md"""
+Glad you asked!
+
+Our mass-univariate model can't do overlap correction yet (see further down). And because we are not interested in the response related potential today we will omit this for now. 
+""",md"""
+Why are we subsetting the events?
+""")
+
 
 # ╔═╡ 49dc6413-f416-4761-96ee-8f301045c2fd
 md"""
 ## Analyze the data
-Let's run a single-subject ERP analysis, extracting the intercept (condition = 🚲) and difference of condition (😊 - 🚲).
+Let's run a single-subject ERP analysis, extracting the intercept (condition = 'target') and difference of condition ('target' - 'deviant').
 """
 
 # ╔═╡ 61ca71f6-e9d4-40c8-8bae-8e033aedbe4f
@@ -408,7 +449,7 @@ coefs = coef(m_erp);
 question_box(md"Next, define `coefs_df` via `coeftable` to receive a tidy dataframe")
 
 # ╔═╡ e1694aae-7a23-41f5-96af-7908266bb959
-coefs_df = coeftable(m_erp); # <-- replace me
+coefs_df = missing; # <-- replace me
 
 # ╔═╡ 69117b1f-ab06-4984-b456-f8f5b5b608a1
 
@@ -430,21 +471,111 @@ md"""
 
 # ╔═╡ b4db2b18-56eb-4c85-b668-a2f476ea7980
 # uncomment once coefs_df is defined
-plot_erp(coefs_df)
+plot_erp(effects(Dict(:trial => ["standard", "deviant"]), m_erp), mapping=(; color=:trial))
 
 # ╔═╡ 40f598dc-85a3-4a89-a3a9-3cda9c0ecd88
 md"""
 # Overlap correction
 """
 
+# ╔═╡ ed795442-e312-4e21-8bff-ce2eb76966ba
+md"""
+Now to some Unfold magic 🪄 \
+To change our Model to include overlap correction, all we have to do is to change the input of our `fit()` call.
+"""
+
 # ╔═╡ 61f81206-5568-4a3b-8863-183fff150879
 begin
+	
 	basisfunction = firbasis(τ=(-0.4,.8),sfreq=sfreq)
-	bf_vec = [Any=>(f,basisfunction)]
-# uncomment once `f` is defined
-m_oc = fit(UnfoldModel, bf_vec, events, data)
+	f_resp = @formula 0 ~ 1
+	
+	bf_vec = ["stimulus"=>(f,basisfunction), "response"=>(f_resp,deepcopy(basisfunction))]
+	
+	# uncomment once `f` is defined
+	m_oc = fit(UnfoldModel, bf_vec, events, data; eventcolumn=:trial_type)
 
 end
+
+# ╔═╡ bd3bbfa1-7ec6-47a9-a6d5-d94fbf482cdb
+begin
+	ef_oc = effects(Dict(:trial => ["standard", "deviant"]), m_oc)
+	plot_erp(@rsubset(ef_oc, :eventname == "stimulus"), mapping=(; color=:trial))
+end
+
+# ╔═╡ 6deba767-0e51-4c58-96e2-1858d412825e
+md"""
+# Group analysis using UnfoldBIDS.jl
+"""
+
+# ╔═╡ 988c071e-1d85-4ca3-b80b-3f41dab1c45d
+md"""
+Now that we've seen how to analyse a single subject, let's apply our analysis to multiple subjects in one go!
+
+Usually, this would mean to meticuosly write down all the subject ID's and then write a loop which runs over the subjects. Luckily, our dataset is in BIDS, so we can make use of the UnfoldBIDS.jl package! This package is a wrapper around Unfold.jl, which easily let's you apply an Unfold style analysis to an entire BIDS conform dataset. 
+"""
+
+# ╔═╡ aa8c633b-911b-4d1c-9cc6-2154983b79c5
+# First, we look up the paths to data and events files of all subjects
+layout = bids_layout(sample_data_path; derivatives=false)
+
+# ╔═╡ 7d22a530-4410-47b4-881a-d2993a882d68
+md"""
+
+"""
+
+# ╔═╡ 6909542e-89aa-4b39-be20-74d7183300b3
+data_df = load_bids_eeg_data(layout)
+
+# ╔═╡ 62676ff8-4b3d-4351-bdaa-6c7aade2f294
+md"""
+Next, we can use our functions from above to transform the events of each subject.
+"""
+
+# ╔═╡ f40059c5-6ffb-4723-889c-3e11e74392a8
+for row in eachrow(data_df)
+		# Add trial column
+	add_trial_column!(row.events)
+	
+	# Add reaction time column
+	calculate_reaction_time!(row.events)
+
+	# Resample event latencies
+	row.events[:, :sample] = round.(row.events[:, :sample] /  4)
+end
+
+# ╔═╡ c876b3e6-b2f7-4d2f-bcee-94381bf8309b
+md"""
+
+"""
+
+# ╔═╡ 9c772a92-a788-4b26-9164-de92fdd8c6a9
+# ╠═╡ show_logs = false
+begin
+	UnfoldBIDS.rename_to_latency(data_df, :sample)
+	m_df = run_unfold(data_df, bf_vec; extract_data=raw_to_filtered_data, channels=["Pz"], eventcolumn=:trial_type, eventfields=[:latency])
+end
+
+# ╔═╡ 4144d34d-d8a3-429d-9874-0d1945042611
+md"""
+Lastly, often we are interested in the common features over subjects. Because UnfoldBIDS.jl mostly works with tidy dataframes it is easy to use the [split-apply-combine](https://dataframes.juliadata.org/stable/man/split_apply_combine/) functionality of DataFrames. 
+"""
+
+# ╔═╡ e23fea33-b925-4770-9d63-1a73c3823dab
+begin
+	efDict = Dict(:trial => ["standard", "deviant"])
+	tidy_df = bids_effects(m_df, efDict)
+
+	mean_df = combine(groupby(tidy_df, [:time, :trial, :eventname]), :yhat => mean => :yhat)
+end
+
+# ╔═╡ 8c160b24-6f6c-4032-9931-3e9a8d9ddcc6
+md"""
+And finally, because we still retain a tidy DataFrame, we can again use UnfoldMakie.jl magic to plot our results!
+"""
+
+# ╔═╡ 965b7edf-ce1a-4444-a070-7ceb9926edc9
+plot_erp(@rsubset(mean_df, :eventname=="stimulus"), mapping=(;color=:trial))
 
 # ╔═╡ 54135145-c32d-4b92-9474-2c349378f7e8
 @bind finished PlutoUI.CounterButton("All tasks finished? Click here!")
@@ -468,6 +599,7 @@ MakieThemes = "e296ed71-da82-5faf-88ab-0034a9761098"
 PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 PyMNE = "6c5003b2-cbe8-491c-a0d1-70088e6a0fd6"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Unfold = "181c99d8-e21b-4ff3-b70b-c233eddec679"
 UnfoldBIDS = "b54e767b-1ebd-4480-ac2a-f5f4d8853074"
 UnfoldMakie = "69a5ce3b-64fb-4f22-ae69-36dd4416af2a"
@@ -476,14 +608,14 @@ UnfoldMakie = "69a5ce3b-64fb-4f22-ae69-36dd4416af2a"
 CSV = "~0.10.15"
 CairoMakie = "~0.13.4"
 DataFrames = "~1.7.0"
-DataFramesMeta = "~0.15.4"
+DataFramesMeta = "~0.15.5"
 HypertextLiteral = "~0.9.5"
 MakieThemes = "~0.1.4"
-PlutoTeachingTools = "~0.3.1"
+PlutoTeachingTools = "~0.4.6"
 PlutoUI = "~0.7.62"
 PyMNE = "~0.2.2"
 Unfold = "~0.8.4"
-UnfoldBIDS = "~0.3.3"
+UnfoldBIDS = "~0.3.4"
 UnfoldMakie = "~0.5.18"
 """
 
@@ -491,9 +623,9 @@ UnfoldMakie = "~0.5.18"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.7"
+julia_version = "1.11.5"
 manifest_format = "2.0"
-project_hash = "6bca935675a68f224d524bcdd1bef5668a02d49f"
+project_hash = "4ce0527cab2f878184d1a545624c56e4a7cef249"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -558,10 +690,10 @@ uuid = "35492f91-a3bd-45ad-95db-fcad7dcfedb7"
 version = "1.2.0"
 
 [[deps.AlgebraOfGraphics]]
-deps = ["Accessors", "Colors", "Dates", "Dictionaries", "FileIO", "GLM", "GeoInterface", "GeometryBasics", "GridLayoutBase", "Isoband", "KernelDensity", "Loess", "Makie", "NaturalSort", "PlotUtils", "PolygonOps", "PooledArrays", "PrecompileTools", "RelocatableFolders", "StatsBase", "StructArrays", "Tables"]
-git-tree-sha1 = "f71b02608cb981a2ac10595c5a1ee389a55ad4b6"
+deps = ["Accessors", "Colors", "DataAPI", "Dates", "Dictionaries", "FileIO", "GLM", "GeoInterface", "GeometryBasics", "GridLayoutBase", "Isoband", "KernelDensity", "Loess", "Makie", "NaturalSort", "PlotUtils", "PolygonOps", "PooledArrays", "PrecompileTools", "RelocatableFolders", "StatsBase", "StructArrays", "Tables"]
+git-tree-sha1 = "7c509af2260a670aab10483569a5e3836a7c0b7e"
 uuid = "cbdf2221-f076-402e-a563-3d30da359d67"
-version = "0.10.4"
+version = "0.10.9"
 
     [deps.AlgebraOfGraphics.extensions]
     AlgebraOfGraphicsDynamicQuantitiesExt = "DynamicQuantities"
@@ -589,9 +721,9 @@ version = "1.1.2"
 
 [[deps.ArrayInterface]]
 deps = ["Adapt", "LinearAlgebra"]
-git-tree-sha1 = "d2cd034553ee6ca084edaaf8ed6c9d50fd01555d"
+git-tree-sha1 = "d81ae5489e13bc03567d4fbbb06c546a5e53c857"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "7.21.0"
+version = "7.22.0"
 
     [deps.ArrayInterface.extensions]
     ArrayInterfaceBandedMatricesExt = "BandedMatrices"
@@ -654,16 +786,16 @@ uuid = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
 version = "0.4.8"
 
 [[deps.BSplineKit]]
-deps = ["ArrayLayouts", "BandedMatrices", "FastGaussQuadrature", "LinearAlgebra", "PrecompileTools", "Random", "Reexport", "SparseArrays", "Static", "StaticArrays", "StaticArraysCore"]
-git-tree-sha1 = "83c03776e573af0a3909334243cb39e626eaf256"
+deps = ["ArrayLayouts", "BandedMatrices", "FastGaussQuadrature", "ForwardDiff", "LinearAlgebra", "PrecompileTools", "Random", "Reexport", "SparseArrays", "Static", "StaticArrays", "StaticArraysCore", "StatsAPI"]
+git-tree-sha1 = "48b9300555c54256c12a539a3025f8d2075bea6a"
 uuid = "093aae92-e908-43d7-9660-e50ee39d5a0a"
-version = "0.17.3"
+version = "0.19.1"
 
 [[deps.BandedMatrices]]
 deps = ["ArrayLayouts", "FillArrays", "LinearAlgebra", "PrecompileTools"]
-git-tree-sha1 = "d5133c6b1326fe10042e41ddf1d46b0a1a4011f4"
+git-tree-sha1 = "4826c9fe6023a87029e54870ad1a9800c7ea6623"
 uuid = "aae01518-5342-5314-be14-df237901396f"
-version = "1.9.5"
+version = "1.10.1"
 
     [deps.BandedMatrices.extensions]
     BandedMatricesSparseArraysExt = "SparseArrays"
@@ -728,9 +860,9 @@ version = "1.1.1"
 
 [[deps.CairoMakie]]
 deps = ["CRC32c", "Cairo", "Cairo_jll", "Colors", "FileIO", "FreeType", "GeometryBasics", "LinearAlgebra", "Makie", "PrecompileTools"]
-git-tree-sha1 = "c1c90ea6bba91f769a8fc3ccda802e96620eb24c"
+git-tree-sha1 = "9bd45574379e50579a78774334f4a1f1238c0af5"
 uuid = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
-version = "0.13.4"
+version = "0.13.10"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -758,9 +890,9 @@ weakdeps = ["JSON", "RecipesBase", "SentinelArrays", "StructTypes"]
     CategoricalArraysStructTypesExt = "StructTypes"
 
 [[deps.Chain]]
-git-tree-sha1 = "9ae9be75ad8ad9d26395bf625dea9beac6d519f1"
+git-tree-sha1 = "765487f32aeece2cf28aa7038e29c31060cb5a69"
 uuid = "8be319e6-bccf-4806-a6f7-6fae938471bc"
-version = "0.6.0"
+version = "1.0.0"
 
 [[deps.ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra"]
@@ -809,15 +941,19 @@ version = "3.31.0"
 
 [[deps.ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
-git-tree-sha1 = "b10d0b65641d57b8b4d5e234446582de5047050d"
+git-tree-sha1 = "67e11ee83a43eb71ddc950302c53bf33f0690dfe"
 uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
-version = "0.11.5"
+version = "0.12.1"
+weakdeps = ["StyledStrings"]
+
+    [deps.ColorTypes.extensions]
+    StyledStringsExt = "StyledStrings"
 
 [[deps.ColorVectorSpace]]
 deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statistics", "TensorCore"]
-git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
+git-tree-sha1 = "8b3b6f87ce8f65a2b4f857528fd8d70086cd72b1"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
-version = "0.10.0"
+version = "0.11.0"
 weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
@@ -854,11 +990,6 @@ weakdeps = ["Dates", "LinearAlgebra"]
 
     [deps.Compat.extensions]
     CompatLinearAlgebraExt = "LinearAlgebra"
-
-[[deps.Compiler]]
-git-tree-sha1 = "382d79bfe72a406294faca39ef0c3cef6e6ce1f1"
-uuid = "807dbc54-b67e-4c79-8afb-eafe4df6f2e1"
-version = "0.1.1"
 
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -940,15 +1071,15 @@ version = "1.16.0"
 
 [[deps.DataFrames]]
 deps = ["Compat", "DataAPI", "DataStructures", "Future", "InlineStrings", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrecompileTools", "PrettyTables", "Printf", "Random", "Reexport", "SentinelArrays", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "fb61b4812c49343d7ef0b533ba982c46021938a6"
+git-tree-sha1 = "a37ac0840a1196cd00317b57e39d6586bf0fd6f6"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.7.0"
+version = "1.7.1"
 
 [[deps.DataFramesMeta]]
 deps = ["Chain", "DataFrames", "MacroTools", "OrderedCollections", "Reexport", "TableMetadataTools"]
-git-tree-sha1 = "21a4335f249f8b5f311d00d5e62938b50ccace4e"
+git-tree-sha1 = "b85924d6d95ce52921d68db865af422faf406aca"
 uuid = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
-version = "0.15.4"
+version = "0.15.5"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -1355,9 +1486,9 @@ version = "0.9.5"
 
 [[deps.IOCapture]]
 deps = ["Logging", "Random"]
-git-tree-sha1 = "b6d6bfdd7ce25b0f9b2f6b3dd56b2673a66c8770"
+git-tree-sha1 = "0ee181ec08df7d7c911901ea38baf16f755114dc"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
-version = "0.2.5"
+version = "1.0.0"
 
 [[deps.IfElse]]
 git-tree-sha1 = "debdd00ffef04665ccbb3e150747a77560e8fad1"
@@ -1584,12 +1715,6 @@ git-tree-sha1 = "4255f0032eafd6451d707a51d5f0248b8a165e4d"
 uuid = "aacddb02-875f-59d6-b918-886e6ef4fbf8"
 version = "3.1.3+0"
 
-[[deps.JuliaInterpreter]]
-deps = ["CodeTracking", "InteractiveUtils", "Random", "UUIDs"]
-git-tree-sha1 = "6ac9e4acc417a5b534ace12690bc6973c25b862f"
-uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
-version = "0.10.3"
-
 [[deps.KernelDensity]]
 deps = ["Distributions", "DocStringExtensions", "FFTW", "Interpolations", "StatsBase"]
 git-tree-sha1 = "ba51324b894edaf1df3ab16e2cc6bc3280a2f1a7"
@@ -1749,12 +1874,6 @@ version = "0.3.29"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
 
-[[deps.LoweredCodeUtils]]
-deps = ["Compiler", "JuliaInterpreter"]
-git-tree-sha1 = "b882a7dd7ef37643066ae8f9380beea8fdd89cae"
-uuid = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
-version = "3.4.2"
-
 [[deps.MIMEs]]
 git-tree-sha1 = "c64d943587f7187e751162b3b84445bbbd79f691"
 uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
@@ -1779,21 +1898,21 @@ version = "0.5.16"
 
 [[deps.Makie]]
 deps = ["Animations", "Base64", "CRC32c", "ColorBrewer", "ColorSchemes", "ColorTypes", "Colors", "Contour", "Dates", "DelaunayTriangulation", "Distributions", "DocStringExtensions", "Downloads", "FFMPEG_jll", "FileIO", "FilePaths", "FixedPointNumbers", "Format", "FreeType", "FreeTypeAbstraction", "GeometryBasics", "GridLayoutBase", "ImageBase", "ImageIO", "InteractiveUtils", "Interpolations", "IntervalSets", "InverseFunctions", "Isoband", "KernelDensity", "LaTeXStrings", "LinearAlgebra", "MacroTools", "MakieCore", "Markdown", "MathTeXEngine", "Observables", "OffsetArrays", "PNGFiles", "Packing", "PlotUtils", "PolygonOps", "PrecompileTools", "Printf", "REPL", "Random", "RelocatableFolders", "Scratch", "ShaderAbstractions", "Showoff", "SignedDistanceFields", "SparseArrays", "Statistics", "StatsBase", "StatsFuns", "StructArrays", "TriplotBase", "UnicodeFun", "Unitful"]
-git-tree-sha1 = "0318d174aa9ec593ddf6dc340b434657a8f1e068"
+git-tree-sha1 = "1d7d16f0e02ec063becd7a140f619b2ffe5f2b11"
 uuid = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
-version = "0.22.4"
+version = "0.22.10"
 
 [[deps.MakieCore]]
 deps = ["ColorTypes", "GeometryBasics", "IntervalSets", "Observables"]
-git-tree-sha1 = "903ef1d9d326ebc4a9e6cf24f22194d8da022b50"
+git-tree-sha1 = "c3159eb1e3aa3e409edbb71f4035ed8b1fc16e23"
 uuid = "20f20a25-4f0e-4fdf-b5d1-57303727442b"
-version = "0.9.2"
+version = "0.9.5"
 
 [[deps.MakieThemes]]
 deps = ["Colors", "Makie", "Random"]
-git-tree-sha1 = "82569165213afc3d714cd0bb476ecd71b60c7fd6"
+git-tree-sha1 = "7df2be39e8f968dce9a31e8f97ed87981d28d472"
 uuid = "e296ed71-da82-5faf-88ab-0034a9761098"
-version = "0.1.4"
+version = "0.1.5"
 
 [[deps.MappedArrays]]
 git-tree-sha1 = "2dab0221fe2b0f2cb6754eaa743cc266339f527e"
@@ -2037,29 +2156,17 @@ git-tree-sha1 = "3ca9a356cd2e113c420f2c13bea19f8d3fb1cb18"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
 
-[[deps.PlutoHooks]]
-deps = ["InteractiveUtils", "Markdown", "UUIDs"]
-git-tree-sha1 = "072cdf20c9b0507fdd977d7d246d90030609674b"
-uuid = "0ff47ea0-7a50-410d-8455-4348d5de0774"
-version = "0.0.5"
-
-[[deps.PlutoLinks]]
-deps = ["FileWatching", "InteractiveUtils", "Markdown", "PlutoHooks", "Revise", "UUIDs"]
-git-tree-sha1 = "8f5fa7056e6dcfb23ac5211de38e6c03f6367794"
-uuid = "0ff47ea0-7a50-410d-8455-4348d5de0420"
-version = "0.1.6"
-
 [[deps.PlutoTeachingTools]]
-deps = ["Downloads", "HypertextLiteral", "Latexify", "Markdown", "PlutoLinks", "PlutoUI"]
-git-tree-sha1 = "8252b5de1f81dc103eb0293523ddf917695adea1"
+deps = ["Downloads", "HypertextLiteral", "Latexify", "Markdown", "PlutoUI"]
+git-tree-sha1 = "dacc8be63916b078b592806acd13bb5e5137d7e9"
 uuid = "661c6b06-c737-4d37-b85c-46df65de6f69"
-version = "0.3.1"
+version = "0.4.6"
 
 [[deps.PlutoUI]]
-deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
-git-tree-sha1 = "d3de2694b52a01ce61a036f18ea9c0f61c4a9230"
+deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Downloads", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
+git-tree-sha1 = "3faff84e6f97a7f18e0dd24373daa229fd358db5"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.62"
+version = "0.7.73"
 
 [[deps.PolygonOps]]
 git-tree-sha1 = "77b3d3605fc1cd0b42d95eba87dfcd2bf67d5ff6"
@@ -2143,9 +2250,16 @@ version = "1.3.0"
 
 [[deps.PyMNE]]
 deps = ["CondaPkg", "PythonCall", "Reexport"]
-git-tree-sha1 = "ec380803882dfc348fedbc01c3f8953142e6b420"
+git-tree-sha1 = "5bf76d3e23489ca76b72d23b924587dd9c10a3b3"
 uuid = "6c5003b2-cbe8-491c-a0d1-70088e6a0fd6"
-version = "0.2.2"
+version = "0.2.3"
+
+    [deps.PyMNE.extensions]
+    PyMNEOndaExt = ["Onda", "TimeSpans"]
+
+    [deps.PyMNE.weakdeps]
+    Onda = "e853f5be-6863-11e9-128d-476edb89bfb5"
+    TimeSpans = "bb34ddd2-327f-4c4a-bfb0-c98fc494ece1"
 
 [[deps.PythonCall]]
 deps = ["CondaPkg", "Dates", "Libdl", "MacroTools", "Markdown", "Pkg", "Serialization", "Tables", "UnsafePointers"]
@@ -2251,21 +2365,11 @@ git-tree-sha1 = "62389eeff14780bfe55195b7204c0d8738436d64"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.1"
 
-[[deps.Revise]]
-deps = ["CodeTracking", "FileWatching", "JuliaInterpreter", "LibGit2", "LoweredCodeUtils", "OrderedCollections", "REPL", "Requires", "UUIDs", "Unicode"]
-git-tree-sha1 = "f6f7d30fb0d61c64d0cfe56cf085a7c9e7d5bc80"
-uuid = "295af30f-e4ad-537b-8983-00126c2a3abe"
-version = "3.8.0"
-weakdeps = ["Distributed"]
-
-    [deps.Revise.extensions]
-    DistributedExt = "Distributed"
-
 [[deps.Rmath]]
 deps = ["Random", "Rmath_jll"]
-git-tree-sha1 = "4395a4cad612f95c1d08352f8c53811d6af3060b"
+git-tree-sha1 = "5b3d50eb374cea306873b371d3f8d3915a018f0b"
 uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
-version = "0.8.1"
+version = "0.9.0"
 
 [[deps.Rmath_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2427,9 +2531,9 @@ version = "0.1.2"
 
 [[deps.Static]]
 deps = ["CommonWorldInvalidations", "IfElse", "PrecompileTools", "SciMLPublic"]
-git-tree-sha1 = "1e44e7b1dbb5249876d84c32466f8988a6b41bbb"
+git-tree-sha1 = "49440414711eddc7227724ae6e570c7d5559a086"
 uuid = "aedffcd0-7271-4cad-89d0-dc628f76c6d3"
-version = "1.3.0"
+version = "1.3.1"
 
 [[deps.StaticArrayInterface]]
 deps = ["ArrayInterface", "Compat", "IfElse", "LinearAlgebra", "PrecompileTools", "Static"]
@@ -2454,9 +2558,9 @@ weakdeps = ["ChainRulesCore", "Statistics"]
     StaticArraysStatisticsExt = "Statistics"
 
 [[deps.StaticArraysCore]]
-git-tree-sha1 = "192954ef1208c7019899fbf8049e717f92959682"
+git-tree-sha1 = "6ab403037779dae8c514bad259f32a447262455a"
 uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
-version = "1.4.3"
+version = "1.4.4"
 
 [[deps.Statistics]]
 deps = ["LinearAlgebra"]
@@ -2476,15 +2580,15 @@ version = "1.7.1"
 
 [[deps.StatsBase]]
 deps = ["AliasTables", "DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
-git-tree-sha1 = "2c962245732371acd51700dbb268af311bddd719"
+git-tree-sha1 = "a136f98cefaf3e2924a66bd75173d1c891ab7453"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.34.6"
+version = "0.34.7"
 
 [[deps.StatsFuns]]
 deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
-git-tree-sha1 = "8e45cecc66f3b42633b8ce14d431e8e57a3e242e"
+git-tree-sha1 = "91f091a8716a6bb38417a6e6f274602a19aaa685"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "1.5.0"
+version = "1.5.2"
 weakdeps = ["ChainRulesCore", "InverseFunctions"]
 
     [deps.StatsFuns.extensions]
@@ -2661,10 +2765,10 @@ uuid = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 version = "1.0.2"
 
 [[deps.Unfold]]
-deps = ["DSP", "DataFrames", "Distributions", "DocStringExtensions", "Effects", "FileIO", "GLM", "ImageTransformations", "Interpolations", "IterativeSolvers", "JLD2", "LinearAlgebra", "Logging", "MLBase", "Missings", "OrderedCollections", "PooledArrays", "ProgressMeter", "Random", "SimpleTraits", "SparseArrays", "StaticArrays", "Statistics", "StatsBase", "StatsFuns", "StatsModels", "Tables", "Term", "TimerOutputs", "TypedTables"]
-git-tree-sha1 = "c01593f683af335a5fd081e32d5ee017ebcd20fe"
+deps = ["DSP", "DataFrames", "Distributions", "DocStringExtensions", "Effects", "FileIO", "GLM", "ImageTransformations", "Interpolations", "IterativeSolvers", "JLD2", "LinearAlgebra", "Logging", "MLBase", "Missings", "OrderedCollections", "PooledArrays", "ProgressMeter", "Random", "SimpleTraits", "SparseArrays", "StaticArrays", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels", "Tables", "Term", "TimerOutputs", "TypedTables"]
+git-tree-sha1 = "43b89bb9f0bb2772d61fc8de7583a694a4fc30f9"
 uuid = "181c99d8-e21b-4ff3-b70b-c233eddec679"
-version = "0.8.4"
+version = "0.8.8"
 
     [deps.Unfold.extensions]
     UnfoldBSplineKitExt = "BSplineKit"
@@ -2680,15 +2784,15 @@ version = "0.8.4"
 
 [[deps.UnfoldBIDS]]
 deps = ["Artifacts", "CSV", "Continuables", "DataFrames", "DataFramesMeta", "LazyArtifacts", "Printf", "ProgressBars", "PyMNE", "Statistics", "StatsModels", "Unfold"]
-git-tree-sha1 = "83e7f3e4297cd2e639c057f3123d6ded17893e7f"
+git-tree-sha1 = "2c0eef0d8c2e2cba8f5c6cb92a3b0a666d9b5eb3"
 uuid = "b54e767b-1ebd-4480-ac2a-f5f4d8853074"
-version = "0.3.3"
+version = "0.3.4"
 
 [[deps.UnfoldMakie]]
 deps = ["AlgebraOfGraphics", "BSplineKit", "CategoricalArrays", "ColorSchemes", "ColorTypes", "Colors", "CoordinateTransformations", "DataFrames", "DataStructures", "DocStringExtensions", "GeometryBasics", "GridLayoutBase", "ImageFiltering", "Interpolations", "LinearAlgebra", "Makie", "MakieThemes", "Random", "SparseArrays", "StaticArrays", "Statistics", "TopoPlots", "Unfold"]
-git-tree-sha1 = "52acc236d912df0d19d29991127a194e49259b4c"
+git-tree-sha1 = "372b940841736f80b45e5e1a71bbdaf6cfcdb407"
 uuid = "69a5ce3b-64fb-4f22-ae69-36dd4416af2a"
-version = "0.5.18"
+version = "0.5.19"
 
     [deps.UnfoldMakie.extensions]
     UnfoldMakiePyMNEExt = "PyMNE"
@@ -2921,23 +3025,24 @@ version = "4.1.0+0"
 # ╟─37475b18-23cb-4756-80bf-db6ee117bf3d
 # ╟─8a37d5f0-2214-476c-be61-eaa948ecba5a
 # ╟─d20b3bfb-4ed2-4ec6-b14f-548de0704749
-# ╟─1b4a2a17-0462-487b-87c1-91a38b8efd6b
-# ╟─c0d67b86-2050-47b2-a085-628643f40cf4
-# ╠═af269d7d-c2e7-4af4-8bfe-d178e53fa55a
+# ╟─af269d7d-c2e7-4af4-8bfe-d178e53fa55a
 # ╠═88fd732d-c8b6-4116-b937-28032dd7ee98
 # ╠═2c80d429-f1bb-43fd-8f76-e433b556e733
 # ╟─64c88f5d-004b-4563-ac4e-6d66ad8c6f09
 # ╟─b3271f3b-b8c8-4c32-a955-c76b4319b203
 # ╟─20f66482-f9ae-4239-a2c3-d9c86da28039
 # ╟─6bf02c3f-50dc-4490-8835-4fe3357e93a5
-# ╠═afff2e78-e50c-4493-8967-60d8939fa138
-# ╠═c2727b8e-9c58-4aeb-a8c8-c9fab9ea20ed
-# ╠═4bb39451-2afd-4753-9e8f-e75019363449
+# ╟─afff2e78-e50c-4493-8967-60d8939fa138
+# ╟─c2727b8e-9c58-4aeb-a8c8-c9fab9ea20ed
+# ╟─4bb39451-2afd-4753-9e8f-e75019363449
 # ╠═b7d8c9b1-1325-4a36-b7b3-b0884ece3e8a
-# ╠═a206205e-c80e-47d6-b434-51905a746b6b
+# ╟─a206205e-c80e-47d6-b434-51905a746b6b
 # ╠═39d93e15-1a9a-4746-a6d3-98375735fb10
 # ╠═6606000d-6300-47e1-9e64-ce6f85552803
+# ╟─ad453ad7-4a60-4201-a2e1-a139a355ed51
 # ╠═7905345a-85a5-47f1-a35f-256e33298113
+# ╟─e14e9444-221c-4af9-8c9d-46739876d461
+# ╟─896715de-ba8f-4fca-8eb7-c7fb2684c04f
 # ╟─49dc6413-f416-4761-96ee-8f301045c2fd
 # ╟─61ca71f6-e9d4-40c8-8bae-8e033aedbe4f
 # ╟─0fe64652-9eea-4c03-9972-5efd2eff2022
@@ -2961,7 +3066,22 @@ version = "4.1.0+0"
 # ╟─3e6083f5-cc55-4934-a53d-f1995eea48a8
 # ╠═b4db2b18-56eb-4c85-b668-a2f476ea7980
 # ╟─40f598dc-85a3-4a89-a3a9-3cda9c0ecd88
+# ╠═ed795442-e312-4e21-8bff-ce2eb76966ba
 # ╠═61f81206-5568-4a3b-8863-183fff150879
+# ╠═bd3bbfa1-7ec6-47a9-a6d5-d94fbf482cdb
+# ╟─6deba767-0e51-4c58-96e2-1858d412825e
+# ╟─988c071e-1d85-4ca3-b80b-3f41dab1c45d
+# ╠═aa8c633b-911b-4d1c-9cc6-2154983b79c5
+# ╠═7d22a530-4410-47b4-881a-d2993a882d68
+# ╠═6909542e-89aa-4b39-be20-74d7183300b3
+# ╟─62676ff8-4b3d-4351-bdaa-6c7aade2f294
+# ╠═f40059c5-6ffb-4723-889c-3e11e74392a8
+# ╠═c876b3e6-b2f7-4d2f-bcee-94381bf8309b
+# ╠═9c772a92-a788-4b26-9164-de92fdd8c6a9
+# ╠═4144d34d-d8a3-429d-9874-0d1945042611
+# ╠═e23fea33-b925-4770-9d63-1a73c3823dab
+# ╟─8c160b24-6f6c-4032-9931-3e9a8d9ddcc6
+# ╠═965b7edf-ce1a-4444-a070-7ceb9926edc9
 # ╠═54135145-c32d-4b92-9474-2c349378f7e8
 # ╟─95276840-88cc-4e14-b9a9-e759c713630a
 # ╟─00000000-0000-0000-0000-000000000001
