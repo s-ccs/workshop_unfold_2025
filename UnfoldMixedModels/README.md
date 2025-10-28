@@ -5,6 +5,6 @@ julia -J jl_image
 ```
 ```julia
 using Pluto
-Pluto.run(host="0.0.0.0",sysimage="jl_image",require_secret_for_open_links=false,require_secret_for_Access=false,warn_about_untrusted_code=false)
+Pluto.run(host="0.0.0.0",sysimage="jl_image",require_secret_for_open_links=false,require_secret_for_access=false,warn_about_untrusted_code=false)
 ```
 

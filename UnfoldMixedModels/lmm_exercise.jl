@@ -20,15 +20,14 @@ end
 using Pkg
 
 # ╔═╡ 56e45727-ea6d-434a-8515-cd6e60bda3a6
-Pkg.activate(expanduser("~/workshop_cuttingGarden2023/sysimage"))
+Pkg.activate(expanduser("."))
 
 # ╔═╡ d9912a4c-5d3a-11ee-381e-03ad95d59994
 begin
-	
-	
 	using Unfold # LMM analysis
 	using UnfoldSim # Simulation
-	using UnfoldMakie,CairoMakie # Plotting + Backend
+	using UnfoldMakie,WGLMakie # Plotting + Backend
+	using UnfoldMixedModels
 	using MixedModels # LMM backend
 	using DisplayAs # better display
 	using Random,StableRNGs,DataFrames,StatsBase, Distributions # some helpers
@@ -39,8 +38,8 @@ end
 
 # ╔═╡ f65f535c-e9f3-4972-ad20-42eeaac43427
 md"""
-# Task 1: Get to know Pluto.jl
-Interactive get-to-know julia + LMMs + EEG notebook for the **Cutting-Garden 2023**
+# Task 1: Get to know 🎈 Pluto.jl 
+Interactive get-to-know julia + LMMs + EEG notebook for the **PracticalMEEG 2025**
 
 Author: [Benedikt Ehinger](www.s-ccs.de)
 
@@ -115,7 +114,7 @@ We can easily use Sliders instead of fixing the parameters.
 A slider is defined like this:
 ```julia
 @bind yourvariable PlutoUI.Slider(from:1:to,show_value=true,
-					default=defaultvalue) # be sure to choose something else than 0!
+					default=defaultvalue) # make sure: default ≠ 0!
  
 ```
 """
@@ -154,7 +153,7 @@ design = MultiSubjectDesign(;
 		n_subjects = 20, n_items = 40,
         items_between =Dict(:condition=>["car","is_face? 😊"], 			
 							:continuous=>range(-5,5,length=10))) 
-first(generate(design),5)
+first(generate_events(design),5)
 end
 
 # ╔═╡ 8371a599-2165-477c-ace3-4f3eb77b5004
@@ -213,7 +212,11 @@ nl_slider = @bind noiselevel PlutoUI.Slider(1:2:40,show_value=true);
    end;
 
 # ╔═╡ 55c04898-9783-4e74-82a9-c38f66df106e
-dat,evts = UnfoldSim.simulate(MersenneTwister(1),design,[p1,n1,p3],UniformOnset(1,1),PinkNoise(noiselevel=noiselevel);return_epoched=true);
+dat,evts = UnfoldSim.simulate(MersenneTwister(1),
+							  design,[p1,n1,p3],
+							  NoOnset(),
+							  PinkNoise(noiselevel=noiselevel);
+							  return_epoched=true);
 
 # ╔═╡ 57d0f9dd-4f52-4933-9386-ab74373b76e8
 md"""
@@ -257,7 +260,7 @@ Do we have a "significant" face effect? How large is it compared to what we simu
 # ╔═╡ d78b7df1-bd30-4bca-a5c9-40dfad22a2d9
 question_box(md"""
 Some **Bonus** tasks:
-- Add an `item` effect (for technical reasons, the item effect needs to be inserted before the subject effect)
+- Add an `item` effect (for technical reasons, the item effect needs to be inserted before the subject effect to the formula)
 - Use `roi_bsl` instead of `bsl` - what parameter changes? 
 """)
 
@@ -287,9 +290,9 @@ times = range(-0.1,0.5,length=size(dat,1)); # timing vector for plotting
 # ╔═╡ 5bff1caf-ac56-4ee7-8164-43b23e523e2e
 begin
 erp2stage = []
-for s = unique(evts.subject)
+for (s_ix,s) = enumerate(unique(evts.subject))
 	ix = evts.subject .== s # get data of single subjects
-	d = @view dat[:,ix]
+	d = @view dat[:,:,s_ix]
 	
 	m = fit(UnfoldModel,@formula(0~1+condition),evts[ix,:],d,times) # fit model
 	r = coeftable(m) # extract results
@@ -311,10 +314,16 @@ f = plot_erp(erp2stage;mapping=(;group=:subject))
 	
 # add GrandAverage ERP lines
 GAerp = combine(groupby(erp2stage,[:time,:coefname]),:estimate => mean=>:estimate)
-[lines!(current_axis(),gp.time,gp.estimate,color=:black,linewidth=5) for gp in groupby(GAerp,:coefname)]
+
+[lines!(current_axis(),gp.time,gp.estimate,color=:black,linewidth=5) 
+ 		for gp in groupby(GAerp,:coefname)]
 
 f
+	
 end
+
+# ╔═╡ 7086ba74-3ad3-48d0-85cb-c4be992c61e5
+erp2stage
 
 # ╔═╡ c938df0c-944f-44a2-bff8-aa89ace5c95b
 begin
@@ -329,9 +338,9 @@ evts.bsl .= NaN
 
 winsorizedmean(x) =  mean(winsor(x))
 	
-for s = unique(evts.subject)
+for (s_ix,s) = enumerate(unique(evts.subject))
 	ix = evts.subject .== s # get data of single subjects
-	d = dat[:,ix] 
+	d = dat[:,:,s_ix] 
 	
 	evts.bsl[ix] = winsorizedmean(eachrow(d[bslwindow,:])) # bsl correction
 	
@@ -349,7 +358,10 @@ end;
 DisplayAs.Text(m_roi)
 
 # ╔═╡ 980e21c2-c7c3-46fd-8d61-f6c71e79a3a7
-dat_bsl = dat .- mean(dat[times.<-0.05,:],dims=1); #baseline
+dat_bsl = dat .- mean(dat[times.<-0.05,:,:],dims=1); #baseline
+
+# ╔═╡ 93e68600-72b0-4aba-913c-6a934370f3b4
+
 
 # ╔═╡ 06de74ec-c56b-4439-9c0d-5f04823e1a47
 md"""
@@ -358,7 +370,7 @@ Baseline Correct? $(@bind dobaseline PlutoUI.CheckBox())
 
 # ╔═╡ 8315f08c-3c76-433a-b9ee-4669a1b715d0
 # ╠═╡ show_logs = false
-uf =fit(UnfoldModel,@formula(0~1+condition+(1|subject)),evts,dobaseline ? dat_bsl : dat,times);
+uf =fit(UnfoldModel,@formula(0~1+condition+(1|subject)),evts,(dobaseline ? dat_bsl : dat)|>x->reshape(x,size(dat,1),:),times);
 
 # ╔═╡ 2806dd13-a328-4d43-957b-51ec11f3d0d8
 plot_erp(coeftable(uf);mapping=(;col=:group),axis=(;limits=(-0.1,0.5,-6,12)))
@@ -373,13 +385,17 @@ question_box(
 	"""
 )
 
+# ╔═╡ 9fb6dbdc-5f5a-4070-acb5-f9eec9d1604a
+md"""
+---
+# Setup
+How the sausage was made 🌭
+"""
+
 # ╔═╡ fc4bc561-ff65-414a-80fb-d2c2e3083656
 TableOfContents()
 
 # ╔═╡ Cell order:
-# ╠═9a051f09-aa5b-41ec-bb77-7ec22978bd9d
-# ╠═56e45727-ea6d-434a-8515-cd6e60bda3a6
-# ╠═d9912a4c-5d3a-11ee-381e-03ad95d59994
 # ╟─f65f535c-e9f3-4972-ad20-42eeaac43427
 # ╟─363cb188-97c7-4ece-b416-08256da0b5f9
 # ╟─47627344-61e0-4992-84a9-612a5e6798f3
@@ -408,6 +424,7 @@ TableOfContents()
 # ╠═91227813-c5c1-4117-8d56-374e8796c475
 # ╟─cdc4b2d3-4d9d-4b56-8153-7175cd86acc4
 # ╠═25f0fdf0-8ca9-4177-a310-8d831288a972
+# ╠═7086ba74-3ad3-48d0-85cb-c4be992c61e5
 # ╟─57d0f9dd-4f52-4933-9386-ab74373b76e8
 # ╠═1f9c0f4d-feff-4b92-b5f5-e03b92ff8bba
 # ╠═82ef9822-c2db-4590-8aa2-6d8bb38264a5
@@ -426,8 +443,13 @@ TableOfContents()
 # ╟─668ab2c9-b3bb-4354-841c-4c7116831df1
 # ╠═b6b7e722-33b0-48b7-98e5-85efe4c049f6
 # ╠═980e21c2-c7c3-46fd-8d61-f6c71e79a3a7
+# ╠═93e68600-72b0-4aba-913c-6a934370f3b4
 # ╠═8315f08c-3c76-433a-b9ee-4669a1b715d0
 # ╠═2806dd13-a328-4d43-957b-51ec11f3d0d8
 # ╟─06de74ec-c56b-4439-9c0d-5f04823e1a47
 # ╟─1c513c17-99ae-4b0d-8caf-a3c5c4d81cf3
-# ╟─fc4bc561-ff65-414a-80fb-d2c2e3083656
+# ╟─9fb6dbdc-5f5a-4070-acb5-f9eec9d1604a
+# ╠═fc4bc561-ff65-414a-80fb-d2c2e3083656
+# ╠═9a051f09-aa5b-41ec-bb77-7ec22978bd9d
+# ╠═56e45727-ea6d-434a-8515-cd6e60bda3a6
+# ╠═d9912a4c-5d3a-11ee-381e-03ad95d59994
