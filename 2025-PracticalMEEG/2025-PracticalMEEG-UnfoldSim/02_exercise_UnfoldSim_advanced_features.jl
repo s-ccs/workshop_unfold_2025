@@ -16,7 +16,7 @@ macro bind(def, element)
     #! format: on
 end
 
-# ╔═╡ 59c4d3b8-f591-4cf1-b869-d5ea8c4f67ed
+# ╔═╡ 860eb08a-44a2-426c-aff2-d48be9cb9038
 begin
 	# Note: For the workshop we use a feature branch that is not yet included in main
 	using UnfoldSim 
@@ -26,307 +26,162 @@ begin
 	using Random # Needed for the shuffle function in the design
 end
 
-# ╔═╡ f334c914-b34a-11f0-1b37-8348fe9a5fb9
+# ╔═╡ 1a131d52-b4f3-11f0-ad30-edb6fb54df09
 md"""
 # Workshop: Simulating continuous event-based EEG data using UnfoldSim.jl
 By Judith Schepers (University of Stuttgart, Germany) @ PracticalMEEG Toolbox Bouquet 2025
 """
 
-# ╔═╡ 64f49545-f6a3-489c-ac0c-14f950ba9b2c
+# ╔═╡ 32ee145d-7044-4a0c-8664-d7965d441eea
 md"""
-# Hands-on session: Explore basic features
+# Hands-on session: Simulate a data set
 """
 
-# ╔═╡ ef3f68c8-aa9c-4de5-a4b1-dda41891c5b1
+# ╔═╡ 32e96c99-5868-43cd-888a-b120bfc2d174
 md"""
 ## Simulation ingredients overview
 """
 
-# ╔═╡ 9329f75a-1d4c-4ea8-8fb1-cd31e66532c3
+# ╔═╡ 7216d454-a528-4da0-ad29-3626db8b884b
 html"""
 <div style="text-align: center;">
 <img src=https://github.com/unfoldtoolbox/UnfoldSim.jl/blob/49289cfb4d556a4a8a4fcd81c6826638ab99d6ca/docs/src/assets/Simulation_illustration.svg?raw=true style="width: 700px; height:auto;">
 </div>"""
 
-# ╔═╡ fe6581cd-9c8e-4a3e-8710-bb78b73195bf
+# ╔═╡ 03efb85f-1239-4747-989b-cd17a5cb767c
 md"""
 ## Simulation exercises
 
-In this part, you will do your first own simulation based on the previous simulation example.
-
-Some parts of the simulation are already given, others you need to provide. \
-For each exercise, there is a Question box that explains the task.
+In this part, you will do a simulation from scratch based on a description of the experiment.
 """
 
-# ╔═╡ 4b782749-ef38-4311-b222-4c375f99336d
+# ╔═╡ e404273b-4715-45bf-a157-4822c68a2c9b
+md"""
+### Description
+Bob takes part in an experiment where he is shown images of cats and dogs. The animals are of different breeds for which some are more frequent then others.
+
+For this toy example, we assume that Bob's brain response consists of two different components:
+- An earlier positive component whose amplitude depends on the image category. It should be more positive for dogs than for cats.
+- A later negative components whose shape (e.g. width) is modulated by the frequency of the stimulus.
+
+The time between the image onsets should be between 50 and 100 samples.
+
+Simulate one time without any noise and another time with a noise type of your choice.
+"""
+
+# ╔═╡ b7f21423-a34d-4eaa-aea5-15fc184abde6
+md"""
+### Documentation
+You can find the newest documentation of the toolbox functionalities [here](https://unfoldtoolbox.github.io/UnfoldSim.jl/previews/PR104/).
+"""
+
+# ╔═╡ 15a70afd-1fda-4f08-827b-e88125f7c084
 md"""
 ### 1. Experimental design
-We will use the same experimental design as in the example.
-
-- Image category: 🚲️ vs. 🙂
-- Continuous predictor (e.g. contrast level): Low |─────────| High
 """
 
-# ╔═╡ 19c729d4-e1c5-42b2-9492-7232f61b05c1
-design =
-    SingleSubjectDesign(;
-        conditions = Dict(
-            :image_category => ["bike", "face"],
-            :continuous => range(0, 5, length = 11),
-        ),
-        event_order_function = shuffle,
-    ) |> x -> RepeatDesign(x, 100);
+# ╔═╡ 0ceb691f-f42a-45d7-86de-dc801eef8efd
+question_box(
+	md"""
+	Define your experimental design in the code cell below based on the information from the description.
 
-# ╔═╡ 89542389-739f-437a-bb5d-891491dfc17b
-events = generate_events(StableRNG(1), design)
+	Note: you don't need to include an extra variable for the animal breed.
+	"""
+)
 
-# ╔═╡ 6df802e5-1899-446b-a600-4d493b2944d8
+# ╔═╡ b32e017a-6f99-4786-b90d-e41ef90df30e
+
+
+# ╔═╡ 8b10b3c7-0d4c-422e-bd77-129c7715d3e1
+# Once your design is defined, uncomment the following code to inspect your design
+# generate_events(StableRNG(1), design)
+
+# ╔═╡ 1c187d97-397f-4729-9b5b-e9ffffcfff2c
 md"""
 ### 2. Event basis functions (Components)
 """
 
-# ╔═╡ 2a159b22-e766-4a5b-9360-cb2fe8407ec4
+# ╔═╡ 7b294b7a-3abf-44fd-8a67-662b638059f5
 question_box(
 	md"""
-	In the line below, you can see the specification of the first component of the simulation example. Your task is to exchange the prespecified basis function `p100()` with your own basis function.
-
-	```
-	c1 = LinearModelComponent(; basis = p100(), formula = @formula(0 ~ 1), β = [5]
-	```
-	
-	You can either specify a basis vector directly (e.g. `[0, 0, 0.5, 1, 0.5, 0, 0]`) or provide a function that evaluates to a vector (e.g. `UnfoldSim.hanning(0.5, 0.3, 100)`).
-	
-	**Define a basis that has a width ~30 samples and a peak at ~50 samples (i.e. it's shifted).**
+	Define the components required by the description in the cell below and combine them in a vector.
 	"""
 )
 
-# ╔═╡ a65d70d3-1482-45c5-b16d-e369f09b9958
-aside(hint(
-	md"""
-	You can use `?UnfoldSim.hanning` to get more information about the function.
-	"""
-), v_offset = -280)
-
-# ╔═╡ 01b55eb9-b12f-4f75-bf37-946cb5b9b3aa
-my_basis = missing # <-- replace me
-
-# ╔═╡ af81eb40-d2ce-4fc8-9e76-5833c555d71e
-let
-	if ismissing(my_basis)
-		still_missing()
-	end
+# ╔═╡ 186322fa-9072-4eae-836c-717fb4e6feb8
+begin
+	c1 = missing
+	c2 = missing
+	
+	components = []
 end
 
-# ╔═╡ ecf153d2-d5f8-4fa7-a5b8-e9c7b2a4dcc9
-md"""
-In the plot below, your basis will be visualised once you defined it and you can tick the box, if you want to see how the target function should look like.
-"""
-
-# ╔═╡ 9f69783b-6a66-4023-84bc-d5573caf86db
-md"""
-Show target basis function \
-$(@bind show_curve CheckBox())
-"""
-
-# ╔═╡ 98389e0e-dd14-4eb1-b41f-f950de8abcb8
-let
-	f = Figure()
-	ax = Axis(
-	f[1, 1],
-	title = "Basis function",
-	titlesize = 18,
-	xlabel = "Time [samples]",
-	ylabel = "Amplitude [µV]",
-	xlabelsize = 16,
-	ylabelsize = 16,
-	xgridvisible = false,
-	ygridvisible = false,
-	)
-
-	# Example function
-	example_basis = UnfoldSim.hanning(0.3, 0.5, 100)
-	if show_curve
-		lines!(ax, example_basis, label = "Target basis function", color = :green)
-	end
-	
-	if !ismissing(my_basis)
-		lines!(ax, my_basis, label = "my_basis", color = :black)
-	end
-
-	if (!ismissing(my_basis)) || show_curve
-		axislegend(position=:lt)
-	end
-	
-	current_figure()
-end
-
-# ╔═╡ d9ab5173-f916-4979-80df-759dcd8bcef7
-answer_box(
-	md"""
-	Possible solution: \
-	`my_basis = UnfoldSim.hanning(0.3, 0.5, 100)`
-	"""
-)
-
-# ╔═╡ d6ea397d-998e-4b0b-8fc6-c7b63b0a7df2
-md"""
-In the code cell below, we define a component for our simulation using the basis function that you specified above. 
-We specify the formula of the component such that there will be a condition effect of `image_category`.
-"""
-
-# ╔═╡ 6681e1c6-fb38-4fe0-9165-031923f9b98b
-# Uncomment the line below once my_basis is defined and run the cell
-# c = LinearModelComponent(; basis = my_basis, formula = @formula(0 ~ 1 + image_category), β = [β_0, β_1]);
-
-# ╔═╡ 4a3732c9-2a6c-4778-961e-d73b0159ed01
+# ╔═╡ f21b2058-b6b6-4f18-a547-0c2b40548bbf
 md"""
 ### 3. Inter-onset distance distribution
 """
 
-# ╔═╡ 83fa218c-99a7-459c-ae34-740d77897f2b
-md"""
-As in the simulation example we will sample the inter-onset distances from a uniform distribution. In this case with a `width` of 40 samples and an offset of 30 samples.
-That means the inter-onset samples will be between 30 and 70 samples which is showcased in the histogram below.
-"""
+# ╔═╡ 33af5bdb-4fc2-4b24-be13-77e170ab879d
+question_box(
+	md"""
+	Define your inter-onset distance distribution in the cell below based on the parameters from the description.
+	"""
+)
 
-# ╔═╡ 8b9c3230-8fb1-4597-8434-e233fb009136
+# ╔═╡ b98aa554-c242-4166-a951-e77666e02a34
+onset = missing # <-- replace me
+
+# ╔═╡ 5cb612de-6432-4ef0-a705-6b9234629edf
 md"""
 ### 4. Noise specification
 """
 
-# ╔═╡ bd4a3dbc-520d-4186-a14b-36a4220cdb3b
+# ╔═╡ b9e8359d-0b84-4592-afa3-405b9ba66a1a
+question_box(
+	md"""
+	Define the `noise` variable with a noise type of your choice.
+
+	Hint: You can use `subtypes(AbstractNoise)` to see all available noise types.
+	"""
+)
+
+# ╔═╡ bb256c49-ba49-4cfe-8c1d-ee56d83e7235
 md"""
 ### Simulate data ⚗️🪄
 """
 
-# ╔═╡ c681c071-d335-442c-abc0-e09494ba76c8
-# Uncomment the line below once my_basis is defined and run the cell
-# eeg_data, events_df = simulate(StableRNG(1), design, c, onset, noise);
+# ╔═╡ 1694568f-b9d3-4369-bff7-fb46c53b6cd7
+question_box(
+	md"""
+	Now you can put all your ingredients together and use the `simulate` function to simulate data.
 
-# ╔═╡ abb1cddc-7911-4ce5-bf80-315e86e6334f
+	Remember to once simulate data with your chosen noise type and a second time without noise.
+	"""
+)
+
+# ╔═╡ afd3ac85-f6ed-45a7-a24c-33661dea7311
+aside(hint(
+	md"""
+	For simulating data without noise have a look at the noise type `NoNoise`.
+	"""
+), v_offset = -150)
+
+# ╔═╡ 076d8ee1-c3ea-4643-a8e2-fe6037e9cf86
+subtypes(AbstractOnset)
+
+# ╔═╡ 403d43ef-4aca-4d58-8dd0-e90ff2b7d846
 md"""
 Once you simulated the data, press the button below to visualise the data. \
 $(@bind plot_data CounterButton("Plot data!"))
 """
 
-# ╔═╡ 0b79227d-eb80-4877-9d1b-84201b5d745a
+# ╔═╡ 9a655bc5-fc75-4825-a5b2-950f4fd7daef
+# Uncomment to control the number of samples that are plotted
+# n_samples = length(eeg_data)
+
+# ╔═╡ 76b289b8-42d5-4c18-944e-80e8ad3c8132
 begin
 	if plot_data > 0
-		f_sim = Figure()#size = (1000, 400))
-		ax_sim = Axis(
-		    f_sim[1, 1],
-		    title = "Simulated EEG data",
-		    titlesize = 18,
-		    xlabel = "Time [samples]",
-		    ylabel = "Amplitude [µV]",
-		    xlabelsize = 16,
-		    ylabelsize = 16,
-		    xgridvisible = false,
-		    ygridvisible = false,
-		)
-		
-		n_samples = 1000
-		lines!(eeg_data[1:n_samples]; color = "black", linewidth = 0.8)
-		#lines!(eeg_data; color = "black")
-		v_lines = [
-		    vlines!(
-		        [r["latency"]];
-		        color = ["orange", "teal"][1+(r["image_category"]=="bike")],
-		        label = r["image_category"],
-		    ) for r in
-		    filter(:latency => x -> x < n_samples, events_df)[:, ["latency", "image_category"]] |>
-		    eachrow
-		]
-		xlims!(ax_sim, 0, n_samples)
-		ylims!(ax_sim, -20, 40)
-		axislegend("Event onset"; unique = true)
-		current_figure()
-	end
-end
-
-# ╔═╡ 79b72b0c-f223-4ff1-902a-3834aca009d1
-md"""
-Minimal event offset \
-$(@bind offset PlutoUI.Slider(0:10:100, default = 50, show_value = true))
-"""
-
-# ╔═╡ 425990ee-d48b-4c37-ab0a-d7c44a7a8842
-onset = UniformOnset(; width = 40, offset = offset); # offset = 50 samples
-
-# ╔═╡ 9d329740-dad5-479e-9858-d70b6e9ba029
-onset_samples = UnfoldSim.simulate_interonset_distances(StableRNG(1), onset, design);
-
-# ╔═╡ 3b55d032-f4af-40b3-9728-7cebaf3aaba1
-begin
-	f_iodd = Figure()
-	ax_iodd = Axis(f_iodd[1,1],
-				   limits = (nothing, nothing, 0, nothing),
-				   xlabel = "Inter-onset distances (in samples)",
-				   #xticks = [offset, offset+50, offset+100],
-				   yticklabelsvisible = false,
-				   yticksvisible = false)
-	hist!(ax_iodd, onset_samples, bins = 40, color = :skyblue4, strokecolor = :white, strokewidth = 1)
-	current_figure()
-end
-
-# ╔═╡ b12d06c7-9600-45bb-bed9-a0cbda41ff3f
-md"""
-Noise level \
-$(@bind noiselevel PlutoUI.Slider(0:2:10, default = 2, show_value = true))
-"""
-
-# ╔═╡ 9ad55663-b283-4409-bdbd-86209c386eec
-noise = PinkNoise(; noiselevel = noiselevel); # noiselevel = 2
-
-# ╔═╡ 6a1ce7a7-3488-494c-bc2e-0de327b57ca5
-noise_samples = simulate_noise(StableRNG(1), noise, 1000);
-
-# ╔═╡ 277d02c1-882b-4acb-9ac2-384d9895e298
-begin
-	f_noise = Figure()
-	ax_noise = Axis(f_noise[1,1],
-				   limits = (0, 1000, -30, 30),
-				   xlabel = "Time (in samples)",
-				   ylabel = "Amplitude [µV]")
-	lines!(ax_noise, noise_samples, color = :goldenrod3, linewidth = 0.8)
-	current_figure()
-end
-
-# ╔═╡ fc1b0109-f693-40ad-9851-11af9d555dae
-question_box(md"How does the simulated signal change when you change the **minimal event offset** (using the slider above)?")
-
-# ╔═╡ 71843903-1e6b-4e99-ad83-d64dfb2ba378
-aside(hint(md"It might be easier to see if you set the noise level to 0."), v_offset=-145)
-
-# ╔═╡ 1d54fafb-e351-4894-94a0-b8d72a8954b0
-answer_box(
-	md"""
-	The **minimal event offset** influences the distance in time between the events. If you increase it the events are further apart and if you decrease it the event responses will overlap. \
-	\
-	Such overlap is also common in real data for example for fixation-related potentials or a combination of stimulus onset and button press.
-	"""
-)
-
-# ╔═╡ 9117a268-5f81-4815-81ea-fa13b2b00d42
-question_box(
-md"""
-Did you notice anything odd in the plot above? If you haven't, let's take a closer look at the simulated data in the plot below.
-
-Set the noise level slider above to 0 and vary the number of samples plotted to get a closer look at the simulated responses.
-
-**Are there differences between responses to face and to bike stimuli?**
-"""
-)
-
-# ╔═╡ 0a5e45d9-9138-45f5-b3ef-3cd6cbff7261
-md"""
-Number of samples plotted \
-$(@bind n_samples_plotted PlutoUI.Slider(200:100:1000, default = 1000, show_value = true))
-"""
-
-# ╔═╡ 5e954aba-d4dd-48da-8707-367e642cd176
-let
-	if !ismissing(my_basis)
 		f_sim = Figure()
 		ax_sim = Axis(
 		    f_sim[1, 1],
@@ -340,80 +195,30 @@ let
 		    ygridvisible = false,
 		)
 		
-		lines!(eeg_data[1:n_samples_plotted]; color = "black", linewidth = 0.8)
-		v_lines = [
-		    vlines!(
-		        [r["latency"]];
-		        color = ["orange", "teal"][1+(r["image_category"]=="bike")],
-		        label = r["image_category"],
-		    ) for r in
-		    filter(:latency => x -> x < n_samples_plotted, events_df)[:, ["latency", "image_category"]] |>
-		    eachrow
-		]
-		xlims!(ax_sim, 0, n_samples_plotted)
-		ylims!(ax_sim, -5, 15)
-		axislegend("Event onset"; unique = true)
+		lines!(eeg_data[1:n_samples]; color = "black", linewidth = 0.8)
+		
+		xlims!(ax_sim, 0, n_samples)
+
+		# axislegend("Event onset"; unique = true)
 		current_figure()
 	end
 end
 
-# ╔═╡ 0519fbb6-1390-4d45-80ea-f8ffb5c61f8b
-answer_box(
-	md"""
-	That was a bit of a trick question 😈 Currently, there are no differences between the responses.
-
-	But wait, didn't we specify in the formula for the component, that there should be a condition effect?!
-
-	Solve the next question to find out what happened.
-	"""
-)
-
-# ╔═╡ 5bfee74f-ff98-451c-8f4d-6f137a2d4b30
+# ╔═╡ ed97fcde-98b4-44e0-8ee6-e4d80bd741de
 question_box(
 	md"""
-	How do the responses to face and bike stimuli change when you vary ``β_0``  and ``β_1`` using the sliders below?
+	**Bonus exercise:** If you are already done with the other exercises, implement a checkbox to either run the simulation with or without noise.
+
+	You might want to have a look at this resource: https://featured.plutojl.org/basic/plutoui.jl
 	"""
 )
 
-# ╔═╡ 6bf5a550-76e8-4d74-be63-ae49d33a916b
-md"""
-``β_0``\
-$(@bind β_0 PlutoUI.Slider(0:1:10, default = 5, show_value = true))
-"""
-
-# ╔═╡ bad02ad6-76b9-4fd5-9e28-64f224ea2b86
-md"""
-``β_1``\
-$(@bind β_1 PlutoUI.Slider(-5:1:5, default = 0, show_value = true))
-"""
-
-# ╔═╡ 1650c546-0d2d-4395-9cfb-396a2aefa822
-answer_box(
-	md"""
-	The variables ``β_0`` and ``β_1`` represent the coefficients for the component regression function that we specified above.
-
-	```
-	c = LinearModelComponent(; basis = my_basis, formula = @formula(0 ~ 1 + image_category), β = [β_0, β_1])
-	```
-
-	In this case, ``β_0`` is the intercept and corresponds to the bike condition.
-	``β_1`` is the difference between the bike and the face condition. That means in order to get the value for the face condition one needs to add up ``β_0`` and ``β_1``.
-
-	In the beginning (i.e. before moving the slider), ``β_1`` was 0, which resulted in no difference between the conditions as you observed in the exercise above.
-	
-	**Note:** The interpretation of the coefficients depends on the underlying variable coding scheme which is by default Dummy coding.
-	
-	-> If you don't know what variable coding schemes are, don't worry! You don't need to know this for following the workshop. 
-	In case you are interested, [this paper](https://doi.org/10.1016/j.jml.2019.104038) is a good starting point or have a look at the [StatsModels.jl documentation](https://juliastats.org/StatsModels.jl/stable/contrasts/).
-	"""
-)
-
-# ╔═╡ cd254b35-36f9-45db-8f20-c91818493ec8
+# ╔═╡ 67fd01d8-62fe-4124-a3c9-64a5c3b6e67c
 md"""
 # Setup
 """
 
-# ╔═╡ 150f8880-19fd-4e7a-94a6-ed4ef131dc04
+# ╔═╡ cf3855aa-3a0f-4c65-ad78-18a0d06c1590
 TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2694,53 +2499,35 @@ version = "4.1.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─f334c914-b34a-11f0-1b37-8348fe9a5fb9
-# ╟─64f49545-f6a3-489c-ac0c-14f950ba9b2c
-# ╟─ef3f68c8-aa9c-4de5-a4b1-dda41891c5b1
-# ╟─9329f75a-1d4c-4ea8-8fb1-cd31e66532c3
-# ╟─fe6581cd-9c8e-4a3e-8710-bb78b73195bf
-# ╟─4b782749-ef38-4311-b222-4c375f99336d
-# ╠═19c729d4-e1c5-42b2-9492-7232f61b05c1
-# ╠═89542389-739f-437a-bb5d-891491dfc17b
-# ╟─6df802e5-1899-446b-a600-4d493b2944d8
-# ╟─2a159b22-e766-4a5b-9360-cb2fe8407ec4
-# ╟─a65d70d3-1482-45c5-b16d-e369f09b9958
-# ╟─af81eb40-d2ce-4fc8-9e76-5833c555d71e
-# ╠═01b55eb9-b12f-4f75-bf37-946cb5b9b3aa
-# ╟─ecf153d2-d5f8-4fa7-a5b8-e9c7b2a4dcc9
-# ╟─9f69783b-6a66-4023-84bc-d5573caf86db
-# ╟─98389e0e-dd14-4eb1-b41f-f950de8abcb8
-# ╟─d9ab5173-f916-4979-80df-759dcd8bcef7
-# ╟─d6ea397d-998e-4b0b-8fc6-c7b63b0a7df2
-# ╠═6681e1c6-fb38-4fe0-9165-031923f9b98b
-# ╟─4a3732c9-2a6c-4778-961e-d73b0159ed01
-# ╟─83fa218c-99a7-459c-ae34-740d77897f2b
-# ╠═425990ee-d48b-4c37-ab0a-d7c44a7a8842
-# ╟─9d329740-dad5-479e-9858-d70b6e9ba029
-# ╟─3b55d032-f4af-40b3-9728-7cebaf3aaba1
-# ╟─8b9c3230-8fb1-4597-8434-e233fb009136
-# ╠═9ad55663-b283-4409-bdbd-86209c386eec
-# ╟─6a1ce7a7-3488-494c-bc2e-0de327b57ca5
-# ╟─277d02c1-882b-4acb-9ac2-384d9895e298
-# ╟─bd4a3dbc-520d-4186-a14b-36a4220cdb3b
-# ╠═c681c071-d335-442c-abc0-e09494ba76c8
-# ╟─abb1cddc-7911-4ce5-bf80-315e86e6334f
-# ╟─0b79227d-eb80-4877-9d1b-84201b5d745a
-# ╟─79b72b0c-f223-4ff1-902a-3834aca009d1
-# ╟─b12d06c7-9600-45bb-bed9-a0cbda41ff3f
-# ╟─fc1b0109-f693-40ad-9851-11af9d555dae
-# ╟─71843903-1e6b-4e99-ad83-d64dfb2ba378
-# ╟─1d54fafb-e351-4894-94a0-b8d72a8954b0
-# ╟─9117a268-5f81-4815-81ea-fa13b2b00d42
-# ╟─0a5e45d9-9138-45f5-b3ef-3cd6cbff7261
-# ╟─5e954aba-d4dd-48da-8707-367e642cd176
-# ╟─0519fbb6-1390-4d45-80ea-f8ffb5c61f8b
-# ╟─5bfee74f-ff98-451c-8f4d-6f137a2d4b30
-# ╟─6bf5a550-76e8-4d74-be63-ae49d33a916b
-# ╟─bad02ad6-76b9-4fd5-9e28-64f224ea2b86
-# ╟─1650c546-0d2d-4395-9cfb-396a2aefa822
-# ╟─cd254b35-36f9-45db-8f20-c91818493ec8
-# ╠═59c4d3b8-f591-4cf1-b869-d5ea8c4f67ed
-# ╠═150f8880-19fd-4e7a-94a6-ed4ef131dc04
+# ╟─1a131d52-b4f3-11f0-ad30-edb6fb54df09
+# ╟─32ee145d-7044-4a0c-8664-d7965d441eea
+# ╟─32e96c99-5868-43cd-888a-b120bfc2d174
+# ╟─7216d454-a528-4da0-ad29-3626db8b884b
+# ╟─03efb85f-1239-4747-989b-cd17a5cb767c
+# ╟─e404273b-4715-45bf-a157-4822c68a2c9b
+# ╟─b7f21423-a34d-4eaa-aea5-15fc184abde6
+# ╟─15a70afd-1fda-4f08-827b-e88125f7c084
+# ╟─0ceb691f-f42a-45d7-86de-dc801eef8efd
+# ╠═b32e017a-6f99-4786-b90d-e41ef90df30e
+# ╠═8b10b3c7-0d4c-422e-bd77-129c7715d3e1
+# ╟─1c187d97-397f-4729-9b5b-e9ffffcfff2c
+# ╟─7b294b7a-3abf-44fd-8a67-662b638059f5
+# ╠═186322fa-9072-4eae-836c-717fb4e6feb8
+# ╟─f21b2058-b6b6-4f18-a547-0c2b40548bbf
+# ╟─33af5bdb-4fc2-4b24-be13-77e170ab879d
+# ╠═b98aa554-c242-4166-a951-e77666e02a34
+# ╟─5cb612de-6432-4ef0-a705-6b9234629edf
+# ╟─b9e8359d-0b84-4592-afa3-405b9ba66a1a
+# ╟─bb256c49-ba49-4cfe-8c1d-ee56d83e7235
+# ╟─1694568f-b9d3-4369-bff7-fb46c53b6cd7
+# ╟─afd3ac85-f6ed-45a7-a24c-33661dea7311
+# ╠═076d8ee1-c3ea-4643-a8e2-fe6037e9cf86
+# ╟─403d43ef-4aca-4d58-8dd0-e90ff2b7d846
+# ╠═9a655bc5-fc75-4825-a5b2-950f4fd7daef
+# ╟─76b289b8-42d5-4c18-944e-80e8ad3c8132
+# ╟─ed97fcde-98b4-44e0-8ee6-e4d80bd741de
+# ╟─67fd01d8-62fe-4124-a3c9-64a5c3b6e67c
+# ╠═860eb08a-44a2-426c-aff2-d48be9cb9038
+# ╠═cf3855aa-3a0f-4c65-ad78-18a0d06c1590
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
