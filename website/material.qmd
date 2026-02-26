@@ -31,17 +31,19 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
 
 # Lecture videos
 
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-  {{< video https://youtu.be/hYHz-5U6QJ8 >}}
-  {{< video https://youtu.be/bTfU1MaybqU >}}
-  {{< video https://youtu.be/G_QyvaikRao >}}
-  {{< video https://youtu.be/VmdIJC1BO48 >}}
-  {{< video https://youtu.be/Z0b_vVH6FVU >}}
-  {{< video https://youtu.be/f_UD9m8oRjg >}}
-  {{< video https://youtu.be/srB5mDIDoMY >}}
-  {{< video https://youtu.be/xB7NXcz7wyA >}}
-  {{< video https://youtu.be/l1e7b1qaWOI >}}
-  {{< video https://youtu.be/GYDmh35IgO4 >}}
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px; align-items:start;">
+
+  <div>{{< youtube hYHz-5U6QJ8 >}}</div>
+  <div>{{< youtube bTfU1MaybqU >}}</div>
+  <div>{{< youtube G_QyvaikRao >}}</div>
+  <div>{{< youtube VmdIJC1BO48 >}}</div>
+  <div>{{< youtube Z0b_vVH6FVU >}}</div>
+  <div>{{< youtube f_UD9m8oRjg >}}</div>
+  <div>{{< youtube srB5mDIDoMY >}}</div>
+  <div>{{< youtube xB7NXcz7wyA >}}</div>
+  <div>{{< youtube l1e7b1qaWOI >}}</div>
+  <div>{{< youtube GYDmh35IgO4 >}}</div>
+
 </div>
 
 Here are the same vidoes on YouTube as a [playlist](https://youtube.com/playlist?list=PLldSujfEsgwqRdDY5pgenrYlP0DkflsOs&si=mqThkeFqsnuUMQkt).
