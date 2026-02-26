@@ -35,6 +35,17 @@ Here is the [playlist](https://youtube.com/playlist?list=PLldSujfEsgwqRdDY5pgenr
 First lecture about Julia and Unfold:
 {{< video https://youtu.be/bTfU1MaybqU >}}
 
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+  {{< video bTfU1MaybqU >}}
+  {{< video G_QyvaikRao >}}
+  {{< video VmdIJC1BO48 >}}
+  {{< video Z0b_vVH6FVU >}}
+  {{< video f_UD9m8oRjg >}}
+  {{< video srB5mDIDoMY >}}
+  {{< video xB7NXcz7wyA >}}
+  {{< video l1e7b1qaWOI >}}
+  {{< video GYDmh35IgO4 >}}
+</div>
 
 # Lecture Slides
 Slides are shared under CC-by Benedikt Ehinger. If you find something unclear, please let us know :)
