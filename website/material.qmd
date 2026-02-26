@@ -31,18 +31,58 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
 
 # Lecture videos
 
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px; align-items:start;">
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:24px; align-items:start;">
 
-  <div>{{< youtube hYHz-5U6QJ8 >}}</div>
-  <div>{{< youtube bTfU1MaybqU >}}</div>
-  <div>{{< youtube G_QyvaikRao >}}</div>
-  <div>{{< youtube VmdIJC1BO48 >}}</div>
-  <div>{{< youtube Z0b_vVH6FVU >}}</div>
-  <div>{{< youtube f_UD9m8oRjg >}}</div>
-  <div>{{< youtube srB5mDIDoMY >}}</div>
-  <div>{{< youtube xB7NXcz7wyA >}}</div>
-  <div>{{< youtube l1e7b1qaWOI >}}</div>
-  <div>{{< youtube GYDmh35IgO4 >}}</div>
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/hYHz-5U6QJ8"
+    title="YouTube video" frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/bTfU1MaybqU"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/G_QyvaikRao"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/VmdIJC1BO48"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/Z0b_vVH6FVU"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/f_UD9m8oRjg"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/srB5mDIDoMY"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/xB7NXcz7wyA"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/l1e7b1qaWOI"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
+
+  <iframe width="100%" height="315"
+    src="https://www.youtube.com/embed/GYDmh35IgO4"
+    title="YouTube video" frameborder="0"
+    allowfullscreen></iframe>
 
 </div>
 
