@@ -32,7 +32,6 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
 # Lecture videos
 
 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-
   {{< video https://youtu.be/hYHz-5U6QJ8 >}}
   {{< video https://youtu.be/bTfU1MaybqU >}}
   {{< video https://youtu.be/G_QyvaikRao >}}
@@ -43,7 +42,6 @@ https://github.com/s-ccs/workshop_unfold_2025/blob/main/04_deconv-multievent.jl
   {{< video https://youtu.be/xB7NXcz7wyA >}}
   {{< video https://youtu.be/l1e7b1qaWOI >}}
   {{< video https://youtu.be/GYDmh35IgO4 >}}
-
 </div>
 
 Here are the same vidoes on YouTube as a [playlist](https://youtube.com/playlist?list=PLldSujfEsgwqRdDY5pgenrYlP0DkflsOs&si=mqThkeFqsnuUMQkt).
